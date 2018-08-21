@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# CIS Debian 7/8 Hardening
+# harbian audit Debian 9 Hardening
 #
 
 #
@@ -20,21 +20,13 @@ PARTITION="/tmp"
 audit () {
     info "Verifying that $PARTITION is a partition"
     FNRET=0
-    is_a_partition "$PARTITION"
+    is_mounted "$PARTITION"
     if [ $FNRET -gt 0 ]; then
-        crit "$PARTITION is not a partition"
-        FNRET=2
+    	crit "$PARTITION is not mounted"
+        FNRET=1
     else
-        ok "$PARTITION is a partition"
-        is_mounted "$PARTITION"
-        if [ $FNRET -gt 0 ]; then
-            warn "$PARTITION is not mounted"
-            FNRET=1
-        else
-            ok "$PARTITION is mounted"
-        fi
+        ok "$PARTITION is mounted"
     fi
-     
     :
 }
 

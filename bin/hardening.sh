@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #
-# CIS Debian 7/8 Hardening
+# harbian audit Debian 9 Hardening
 # Authors : Thibault Dewailly, OVH <thibault.dewailly@corp.ovh.com>
-#
+# Authors : Samson wen, Samson <sccxboy@gmail.com>
 
 #
 # Main script : Execute hardening considering configuration
