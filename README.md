@@ -1,2 +1,2 @@
 # harbian-audit
-Hardened Debian GNU/Linux distro auditing
+Hardened Debian GNU/Linux distro auditing.
