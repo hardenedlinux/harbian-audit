@@ -382,3 +382,14 @@ is_pkg_installed()
         FNRET=1
     fi
 }
+
+is_debian_9()
+{
+    if $(cat /etc/debian_version | grep -q "^9.[0-9]"); then
+        debug "Debian version is 9.*."
+        FNRET=0
+    else
+        debug "Debian version is not 9.*."
+        FNRET=1
+    fi
+}
