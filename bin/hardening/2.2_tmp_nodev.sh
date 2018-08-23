@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #
-# CIS Debian 7/8 Hardening
+# harbian audit Debian 7/8/9 Hardening
 #
 
 #
-# 2.2 Set nodev option for /tmp Partition (Scored)
+# 2.2 Set nodev option for /tmp Partition/filesystem (Scored)
 #
 
 set -e # One error, it's over
@@ -16,32 +16,59 @@ HARDENING_LEVEL=2
 # Quick factoring as many script use the same logic
 PARTITION="/tmp"
 OPTION="nodev"
+SERVICENAME="/etc/systemd/system/tmp.mount"
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    info "Verifying that $PARTITION is a partition"
+    info "Verifying that $PARTITION is a partition/filesystem"
     FNRET=0
-    is_a_partition "$PARTITION"
+    is_debian_9
     if [ $FNRET -gt 0 ]; then
-        crit "$PARTITION is not a partition"
-        FNRET=2
-    else
-        ok "$PARTITION is a partition"
-        has_mount_option $PARTITION $OPTION
+        is_a_partition "$PARTITION"
         if [ $FNRET -gt 0 ]; then
-            crit "$PARTITION has no option $OPTION in fstab!"
-            FNRET=1
+            crit "$PARTITION is not a partition"
+            FNRET=2
         else
-            ok "$PARTITION has $OPTION in fstab"
-            has_mounted_option $PARTITION $OPTION
+            ok "$PARTITION is a partition"
+            has_mount_option $PARTITION $OPTION
             if [ $FNRET -gt 0 ]; then
-                warn "$PARTITION is not mounted with $OPTION at runtime"
-                FNRET=3 
+                crit "$PARTITION has no option $OPTION in fstab!"
+                FNRET=1
             else
-                ok "$PARTITION mounted with $OPTION"
+                ok "$PARTITION has $OPTION in fstab"
+                has_mounted_option $PARTITION $OPTION
+                if [ $FNRET -gt 0 ]; then
+                    warn "$PARTITION is not mounted with $OPTION at runtime"
+                    FNRET=3 
+                else
+                    ok "$PARTITION mounted with $OPTION"
+                fi
+            fi       
+        fi
+    else
+        is_mounted "$PARTITION"
+        if [ $FNRET -gt 0 ]; then
+            crit "$PARTITION is not mounted"
+            FNRET=4
+        else
+            has_mount_option_systemd $SERVICENAME $OPTION 
+            if [ $FNRET -gt 0 ]; then
+                crit "$PARTITION has no option $OPTION in systemd service!"
+                FNRET=5
+            else
+                ok "$PARTITION has $OPTION in systemd service"
+                has_mounted_option $PARTITION $OPTION
+                if [ $FNRET -gt 0 ]; then
+                    warn "$PARTITION is not mounted with $OPTION at runtime"
+                    FNRET=6 
+                else
+                    ok "$PARTITION mounted with $OPTION"
+                fi
+
             fi
-        fi       
+        fi
     fi
+
 }
 
 # This function will be called if the script status is on enabled mode
@@ -57,6 +84,15 @@ apply () {
         remount_partition $PARTITION
     elif [ $FNRET = 3 ]; then
         info "Remounting $PARTITION from fstab"
+        remount_partition $PARTITION
+    elif [ $FNRET = 4 ]; then
+        info "Remounting $PARTITION from systemd"
+        remount_partition $PARTITION
+    elif [ $FNRET = 5 ]; then
+        info "Remounting $PARTITION from systemd"
+        remount_partition $PARTITION
+    elif [ $FNRET = 6 ]; then
+        info "Remounting $PARTITION from systemd"
         remount_partition $PARTITION
     fi 
 }

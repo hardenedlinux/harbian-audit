@@ -289,6 +289,19 @@ has_mount_option() {
     fi
 }
 
+# Verify option $2 in $1 service
+has_mount_option_systemd() {
+    local SERVICENAME=$1
+    local OPTION=$2
+    if $(grep -i "options" "$SERVICENAME" | grep -vE "^#" | grep -q "$2"); then
+        debug "$OPTION has been detected in systemd service $SERVICENAME"
+        FNRET=0
+    else
+        debug "Unable to find $OPTION in systemd service $SERVICENAME"
+        FNRET=1
+    fi
+}
+
 # Verify $1 has the proper option $2 at runtime
 has_mounted_option() {
     local PARTITION=$1
