@@ -15,10 +15,13 @@ HARDENING_LEVEL=3
 
 # Quick factoring as many script use the same logic
 PARTITION="/tmp"
+TMPMOUNTNAME="tmp.mount"
+TMPMOUNTO="/usr/share/systemd/tmp.mount"
+TMPMOUNTN="/etc/systemd/system/tmp.mount"
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    info "Verifying that $PARTITION is a partition"
+    info "Verifying that $PARTITION is a file system/partition"
     FNRET=0
     is_mounted "$PARTITION"
     if [ $FNRET -gt 0 ]; then
@@ -34,11 +37,16 @@ audit () {
 apply () {
     if [ $FNRET = 0 ]; then
         ok "$PARTITION is correctly set"
-    elif [ $FNRET = 2 ]; then
-        crit "$PARTITION is not a partition, correct this by yourself, I cannot help you here"
     else
         info "mounting $PARTITION"
-        mount $PARTITION
+	if [ -a $TMPMOUNTN ]; then
+		$SUDO_CMD systemctl enable "$TMPMOUNTNAME"
+	elif [ -a $TMPMOUNTO ]; then
+		$SUDO_CMD cp $TMPMOUNTO $TMPMOUNTN
+		$SUDO_CMD systemctl enable "$TMPMOUNTNAME"
+	fi
+	$SUDO_CMD systemctl daemon-reload 
+	$SUDO_CMD systemctl start "$TMPMOUNTNAME"
     fi
 }
 
