@@ -16,7 +16,8 @@ HARDENING_LEVEL=2
 # Quick factoring as many script use the same logic
 PARTITION="/tmp"
 OPTION="nodev"
-SERVICENAME="/etc/systemd/system/tmp.mount"
+SERVICEPATH="/etc/systemd/system/tmp.mount"
+SERVICENAME="tmp.mount"
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -51,7 +52,7 @@ audit () {
             crit "$PARTITION is not mounted"
             FNRET=4
         else
-            has_mount_option_systemd $SERVICENAME $OPTION 
+            has_mount_option_systemd $SERVICEPATH $OPTION 
             if [ $FNRET -gt 0 ]; then
                 crit "$PARTITION has no option $OPTION in systemd service!"
                 FNRET=5
@@ -87,13 +88,14 @@ apply () {
         remount_partition $PARTITION
     elif [ $FNRET = 4 ]; then
         info "Remounting $PARTITION from systemd"
-        remount_partition $PARTITION
+        remount_partition_by_systemd $SERVICENAME $PARTITION 
     elif [ $FNRET = 5 ]; then
         info "Remounting $PARTITION from systemd"
-        remount_partition $PARTITION
+        add_option_to_systemd $SERVICEPATH $OPTION $SERVICENAME
+        remount_partition_by_systemd $SERVICENAME $PARTITION
     elif [ $FNRET = 6 ]; then
         info "Remounting $PARTITION from systemd"
-        remount_partition $PARTITION
+        remount_partition_by_systemd $SERVICENAME $PARTITION
     fi 
 }
 
