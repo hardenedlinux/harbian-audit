@@ -429,3 +429,15 @@ is_debian_9()
         FNRET=1
     fi
 }
+
+verify_integrity_all_packages()
+{
+    if [ $($SUDO_CMD dpkg -V | wc -l) -gt 0 ]; then
+        debug "Verify integrity all packages is fail"
+        FNRET=1
+    else
+        debug "Verify integrity all packages is OK"
+        FNRET=0
+    fi
+}
+

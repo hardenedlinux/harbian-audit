@@ -68,7 +68,7 @@ $LONG_SCRIPT_NAME <RUN_MODE> [OPTIONS], where RUN_MODE is one of:
         4: high security policy, passing all tests might be time-consuming and
             require high adaptation of your workflow
         5: placebo, policy rules that might be very difficult to apply and maintain,
-            with questionable security benefits
+            with questionable security benefits, need to confirm manually 
 
     --allow-service <service>
         Use with --set-hardening-level.
