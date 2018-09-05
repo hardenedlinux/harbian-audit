@@ -6,6 +6,7 @@
 
 #
 # 5.7 Install screen (Scored)
+# Authors : Samson wen, Samson <sccxboy@gmail.com> 
 #
 
 set -e # One error, it's over

@@ -1,17 +1,17 @@
 # harbian audit Debian Linux 9 Benchmark  
 
-## 8.5 Verifies integrity all packages
+## 8.5 Verifies integrity all packages (scored) 
 
-### Profile Applicability:
+### Profile Applicability
 Level 5
 
-### Description:
+### Description
 Without cryptographic integrity protections, system command and files can be altered by unauthorized users without detection. Cryptographic mechanisms used for protecting the integrity of information include, for example, signed hash functions using asymmetric cryptography enabling distribution of the public key to verify the hash information while maintaining the confidentiality of the key used to generate the hash.
 
-### Rationale:
+### Rationale
 Verify integrity all packages features to to monitor the files of the packages installed by the system.
 
-### Aduit:
+### Aduit
 Perform the following to determine(example):
 ```
 # dpkg -V 
@@ -19,7 +19,7 @@ Perform the following to determine(example):
 ??5?????? c /etc/vim/vimrc
 ```
 
-### Remediation:
+### Remediation
 Run the following command to determine which package owns the file:
 ```
 # dpkg -S <filename>
@@ -29,3 +29,46 @@ If the confirmation is not modified by owner, the package can be reinstalled fro
 # apt-get --reinstall <packagename> 
 ```
 
+## 5.7 Install screen (scored) 
+
+### Profile Applicability
+Level 4
+
+### Description
+A session time-out lock is a temporary action taken when a user stops work and moves away from the immediate physical vicinity of the information system but does not log out because of the temporary nature of the absence. Rather than relying on the user to manually lock their operating system session prior to vacating the vicinity, operating systems need to be able to identify when a user's session has idled and take action to initiate the session lock. The screen package allows for a session lock to be implemented and configured.
+
+### Rationale
+You can use the lock function of the screen to lock the current terminal and prevent the current session from exiting due to timeout. 
+
+### Aduit
+Verify the operating system has the screen package installed. Check to see if the screen package is installed with the following command:
+```
+# dpkg -s screen | grep  '^Status: install'
+```
+
+### Remediation
+Install the screen program (if it is not on the system) with the following command:
+```
+# apt-get install screen
+```
+The console can now be locked with the following key combination: ctrl+a x 
+
+
+
+
+
+
+
+
+template
+
+### Profile Applicability
+Level 5 
+
+### Description
+
+### Rationale
+
+### Aduit
+
+### Remediation
