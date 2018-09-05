@@ -6,7 +6,7 @@ Profile Applicability:
 Level 5
 
 Description:
-Without cryptographic integrity protections, system command and files can be altered by unauthorized users without detection.Cryptographic mechanisms used for protecting the integrity of information include, for example, signed hash functions using asymmetric cryptography enabling distribution of the public key to verify the hash information while maintaining the confidentiality of the key used to generate the hash.
+Without cryptographic integrity protections, system command and files can be altered by unauthorized users without detection. Cryptographic mechanisms used for protecting the integrity of information include, for example, signed hash functions using asymmetric cryptography enabling distribution of the public key to verify the hash information while maintaining the confidentiality of the key used to generate the hash.
 
 Rationale:
 Verify integrity all packages features to to monitor the files of the packages installed by the system.
