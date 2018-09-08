@@ -14,8 +14,32 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=2
 
 PACKAGE='libpam-cracklib'
+PAMLIBNAME='libpam-cracklib.so'
 PATTERN='^password.*pam_cracklib.so'
 FILE='/etc/pam.d/common-password'
+
+OPTION_RETRY='retry'
+OPTION_MINLEN='minlen'
+OPTION_DCREDIT='dcredit'
+OPTION_UCREDIT='ucredit'
+OPTION_OCREDIT='ocredit'
+OPTION_LCREDIT='lcredit'
+OPTION_DIFOK='difok'
+OPTION_MINCLASS='minclass'
+OPTION_MAXREPEAT='maxrepeat'
+OPTION_MAXCLASSREPEAT='maxclassrepeat'
+
+# condition 
+RETRY_CONDT=3
+MINLEN_CONDT=14
+DCREDIT_CONDT=-1
+UCREDIT_CONDT=-1
+OCUEDIT_CONDT=-1
+LCREDIT_CONDT=-1
+DIFOK_CONDT=8
+MINCLASS_CONDT=4
+MAXREPEAT=3
+MAXCLASSREPEAT_CONDT=4
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -27,6 +51,20 @@ audit () {
         does_pattern_exist_in_file $FILE $PATTERN
         if [ $FNRET = 0 ]; then
             ok "$PATTERN is present in $FILE"
+            check_password_by_pam $OPTION_DCREDIT gt $DCREDIT_CONDT  
+            if [ $FNRET = 0 ]; then
+                ok "$OPTION_DCREDIT set condition is $DCREDIT_CONDT"
+            else
+                cirt "$OPTION_DCREDIT set condition is $DCREDIT_CONDT"
+                FNRET=1
+            fi
+            #ok "$PATTERN is present in $FILE"
+            #check_password_by_pam $OPTION_RETRY gt $RETRY_CONDT  
+            #if [ $FNRET = 0 ]; then
+            #    ok "$OPTION_RETRY set condition is $RETRY_CONDT"
+            #else
+            #    crit "$OPTION_RETRY set condition is $RETRY_CONDT"
+                FNRET=1
         else
             crit "$PATTERN is not present in $FILE"
         fi

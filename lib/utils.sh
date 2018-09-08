@@ -441,18 +441,17 @@ verify_integrity_all_packages()
     fi
 }
 
-check_password_pam()
+check_password_by_pam()
 {
-    LOCATION=$1
-    KEYWORD=$2
-    OPTION=$3
-    COMPARE=$4
-    CONDITION=$5
+    OPTION=$1
+    COMPARE=$2
+    CONDITION=$3
+
+    LOCATION="/etc/pam.d/common-password"  
+    #For debian is common-password ,for Gentoo and Red hat the file is system-auth
+    KEYWORD="pam_cracklib.so"
 
     #Example:
-    #LOCATION="/etc/pam.d/common-password"  
-    #For debian is common-password ,for Gentoo and Red hat the file is system-auth
-    #KEYWORD="pam_cracklib.so"
     #OPTION="ocredit"
     #COMPARE="gt"
     #CONDITION="-1"
