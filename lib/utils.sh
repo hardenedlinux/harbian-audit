@@ -466,16 +466,16 @@ check_password_by_pam()
                 FNRET=0
             else
                 debug "$cndt_value -$COMPARE  $CONDITION is not ok"
-                FNRET=1
+                FNRET=5
             fi 
             
         else
             debug "$KEYWORD $OPTION is not conf"
-            FNRET=1
+            FNRET=4
         fi
     else
         debug "$LOCATION is not exist"
-        FNRET=2   
+        FNRET=3   
     fi
 }
 
