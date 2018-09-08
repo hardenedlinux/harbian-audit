@@ -46,46 +46,51 @@ audit () {
     is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
         crit "$PACKAGE is not installed!"
+        FNRET=1
     else
         ok "$PACKAGE is installed"
         does_pattern_exist_in_file $FILE $PATTERN
         if [ $FNRET = 0 ]; then
-            ok "$PATTERN is present in $FILE"
-            check_password_by_pam $OPTION_DCREDIT gt $DCREDIT_CONDT  
-            if [ $FNRET = 0 ]; then
-                ok "$OPTION_DCREDIT set condition is $DCREDIT_CONDT"
-            else
-                cirt "$OPTION_DCREDIT set condition is $DCREDIT_CONDT"
-                FNRET=1
-            fi
             #ok "$PATTERN is present in $FILE"
-            #check_password_by_pam $OPTION_RETRY gt $RETRY_CONDT  
+            #check_password_by_pam $OPTION_DCREDIT gt $DCREDIT_CONDT  
             #if [ $FNRET = 0 ]; then
-            #    ok "$OPTION_RETRY set condition is $RETRY_CONDT"
+            #    ok "$OPTION_DCREDIT set condition is $DCREDIT_CONDT"
             #else
-            #    crit "$OPTION_RETRY set condition is $RETRY_CONDT"
-                FNRET=1
+            #    crit "$OPTION_DCREDIT set condition is $DCREDIT_CONDT"
+            #    FNRET=1
+            #fi
+            ok "$PATTERN is present in $FILE"
+            check_password_by_pam $OPTION_RETRY eq $RETRY_CONDT  
+            if [ $FNRET = 0 ]; then
+                ok "$OPTION_RETRY set condition is $RETRY_CONDT"
+            else
+                crit "$OPTION_RETRY set condition is $RETRY_CONDT"
+                #FNRET=3
+            fi
         else
             crit "$PATTERN is not present in $FILE"
+            FNRET=2
         fi
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    is_pkg_installed $PACKAGE
+#    is_pkg_installed $PACKAGE
     if [ $FNRET = 0 ]; then
         ok "$PACKAGE is installed"
-    else
+    elif [ $FNRET = 1 ]; then
         crit "$PACKAGE is absent, installing it"
         apt_install $PACKAGE
-    fi
-    does_pattern_exist_in_file $FILE $PATTERN
-    if [ $FNRET = 0 ]; then
-        ok "$PATTERN is present in $FILE"
-    else
-        crit "$PATTERN is not present in $FILE"
+    elif [ $FNRET = 2 ]; then
+        crit "$PATTERN is not present in $FILE, add default config to $FILE"
         add_line_file_before_pattern $FILE "password    requisite           pam_cracklib.so retry=3 minlen=8 difok=3" "# pam-auth-update(8) for details."
+    elif [ $FNRET = 3 ]; then
+        crit "$OPTION_RETRY set is not match legally, reset it 3"
+    elif [ $FNRET = 4 ]; then
+        crit "$OPTION_RETRY set is not match legally, reset it 4"
+    elif [ $FNRET = 5 ]; then
+        crit "$OPTION_RETRY set is not match legally, reset it 5"
     fi 
 }
 
