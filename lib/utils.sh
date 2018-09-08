@@ -442,35 +442,40 @@ verify_integrity_all_packages()
 }
 
 check_password_by_pam()
-{
+{   
     OPTION=$1
     COMPARE=$2
     CONDITION=$3
 
-    LOCATION="/etc/pam.d/common-password"  
-    #For debian is common-password ,for Gentoo and Red hat the file is system-auth
+    LOCATION="/etc/pam.d/common-password"
     KEYWORD="pam_cracklib.so"
 
     #Example:
     #OPTION="ocredit"
     #COMPARE="gt"
     #CONDITION="-1"
-
+    
     if [ -f "$LOCATION" ];then
-        RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep "$KEYWORD.*$OPTION")
-        #above line is remove any comment in the configuration file and use grep to output a exit status
-        #if matched both $KEYWORD and $OPTION there is a success exit status: 0
-        if [ $? -eq 0 ];then
-            if [ "$(echo $RESULT | tr "\t" "\n" | tr " " "\n" | sed -n "/$OPTION/p"| awk -F "=" '{printf $2}')" -$(echo $COMPARE) "$CONDITION" ];then
-                FNRET=1
-            else
+        RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep "$KEYWORD.*$OPTION" | wc -l)
+        echo $RESULT
+        if [ "$RESULT" -eq 1 ]; then
+            debug "$KEYWORD $OPTION is conf"
+            cndt_value=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep "$KEYWORD.*$OPTION" | tr "\t" " " | tr " " "\n" | sed -n "/$OPTION/p" | awk -F "=" '{print $2}')
+            if [ "$cndt_value" "-$COMPARE" "$CONDITION" ]; then
+                debug "$cndt_value -$COMPARE  $CONDITION is ok"
                 FNRET=0
-            fi  
+            else
+                debug "$cndt_value -$COMPARE  $CONDITION is not ok"
+                FNRET=1
+            fi 
+            
         else
+            debug "$KEYWORD $OPTION is not conf"
             FNRET=1
         fi
     else
-        FNRET=2
+        debug "$LOCATION is not exist"
+        FNRET=2   
     fi
 }
 
