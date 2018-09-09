@@ -487,7 +487,6 @@ add_option_to_password_check()
     #local PAMPWDFILE="/etc/pam.d/common-password"
     #local KEYWORD="pam_cracklib.so"
     #local OPTIONSTR="retry=3"
-    set -x
     local PAMPWDFILE=$1
     local KEYWORD=$2
     local OPTIONSTR=$3
@@ -507,7 +506,6 @@ reset_option_to_password_check()
     #local KEYWORD="pam_cracklib.so"
     #local OPTIONNAME="retry"
     #local OPTIONVAL="3"
-    set -x
     local PAMPWDFILE=$1
     local KEYWORD=$2
     local OPTIONNAME=$3
