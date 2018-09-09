@@ -14,7 +14,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=2
 
 PACKAGE='libpam-cracklib'
-PAMLIBNAME='libpam-cracklib.so'
+PAMLIBNAME='pam_cracklib.so'
 PATTERN='^password.*pam_cracklib.so'
 FILE='/etc/pam.d/common-password'
 
@@ -86,11 +86,13 @@ apply () {
         crit "$PATTERN is not present in $FILE, add default config to $FILE"
         add_line_file_before_pattern $FILE "password    requisite           pam_cracklib.so retry=3 minlen=8 difok=3" "# pam-auth-update(8) for details."
     elif [ $FNRET = 3 ]; then
-        crit "$OPTION_RETRY set is not match legally, reset it 3"
+        crit "$FILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
-        crit "$OPTION_RETRY set is not match legally, reset it 4"
+        crit "$OPTION_RETRY is not conf"
+        add_option_to_password_check $FILE $PAMLIBNAME "$OPTION_RETRY=$RETRY_CONDT"
     elif [ $FNRET = 5 ]; then
-        crit "$OPTION_RETRY set is not match legally, reset it 5"
+        crit "$OPTION_RETRY set is not match legally, reset it to $RETRT_CONDT"
+
     fi 
 }
 
