@@ -91,8 +91,8 @@ apply () {
         crit "$OPTION_RETRY is not conf"
         add_option_to_password_check $FILE $PAMLIBNAME "$OPTION_RETRY=$RETRY_CONDT"
     elif [ $FNRET = 5 ]; then
-        crit "$OPTION_RETRY set is not match legally, reset it to $RETRT_CONDT"
-
+        crit "$OPTION_RETRY set is not match legally, reset it to $RETRY_CONDT"
+        reset_option_to_password_check $FILE $PAMLIBNAME "$OPTION_RETRY" "$RETRY_CONDT"
     fi 
 }
 
