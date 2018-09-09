@@ -5,7 +5,7 @@
 #
 
 #
-# 9.2.1 Set Password Creation Requirement Parameters Using pam_cracklib: audit dcredit option (Scored)
+# 9.2.3 Set Password Creation Requirement Parameters Using pam_cracklib: audit dcredit option (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
