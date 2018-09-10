@@ -1,5 +1,30 @@
 # harbian audit Debian Linux 9 Benchmark  
 
+## 5.7 Install screen (scored) 
+
+### Profile Applicability
+Level 4
+
+### Description
+A session time-out lock is a temporary action taken when a user stops work and moves away from the immediate physical vicinity of the information system but does not log out because of the temporary nature of the absence. Rather than relying on the user to manually lock their operating system session prior to vacating the vicinity, operating systems need to be able to identify when a user's session has idled and take action to initiate the session lock. The screen package allows for a session lock to be implemented and configured.
+
+### Rationale
+You can use the lock function of the screen to lock the current terminal and prevent the current session from exiting due to timeout. 
+
+### Aduit
+Verify the operating system has the screen package installed. Check to see if the screen package is installed with the following command:
+```
+# dpkg -s screen | grep  '^Status: install'
+```
+
+### Remediation
+Install the screen program (if it is not on the system) with the following command:
+```
+# apt-get install screen
+```
+The console can now be locked with the following key combination: ctrl+a x 
+
+
 ## 8.5 Verifies integrity all packages (scored) 
 
 ### Profile Applicability
@@ -29,32 +54,255 @@ If the confirmation is not modified by owner, the package can be reinstalled fro
 # apt-get --reinstall <packagename> 
 ```
 
-## 5.7 Install screen (scored) 
+## 9.2.1  Set password creation requirement Parameters Using pam_cracklib: retry option (scored) 
 
 ### Profile Applicability
-Level 4
+Level 2
 
-### Description
-A session time-out lock is a temporary action taken when a user stops work and moves away from the immediate physical vicinity of the information system but does not log out because of the temporary nature of the absence. Rather than relying on the user to manually lock their operating system session prior to vacating the vicinity, operating systems need to be able to identify when a user's session has idled and take action to initiate the session lock. The screen package allows for a session lock to be implemented and configured.
+### Description 
+When user at 3 times enter error password, returning error. 
 
-### Rationale
-You can use the lock function of the screen to lock the current terminal and prevent the current session from exiting due to timeout. 
+### Rationale 
+Prevent multiple attempts and guess the password. 
 
 ### Aduit
-Verify the operating system has the screen package installed. Check to see if the screen package is installed with the following command:
+The "retry" option sets the number of attempt password times. Check for the value of the "retry" option in "/etc/pam.d/common-password" with the following command: 
 ```
-# dpkg -s screen | grep  '^Status: install'
+# grep retry /etc/pam.d/common-password 
+password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3
 ```
+If the value of "retry" is set to more than "3", this is a finding.
 
 ### Remediation
-Install the screen program (if it is not on the system) with the following command:
+Add the following line to "/etc/pam.d/common-password" (or modify the line to have the required value): 
 ```
-# apt-get install screen
+password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3 
 ```
-The console can now be locked with the following key combination: ctrl+a x 
 
+## 9.2.2  Set password creation requirement Parameters Using pam_cracklib: minlen option (scored) 
 
+### Profile Applicability
+Level 2
 
+### Description 
+Passwords must be a minimum of 14 characters in length.
+
+### Rationale 
+The shorter the password, the lower the number of possible combinations that need to be tested before the password is compromised. Password complexity, or strength, is a measure of the effectiveness of a password in resisting attempts at guessing and brute-force Passwords are one factor of several that helps to determine strength and how long it takes to crack a password. Use of more characters in a password helps to exponentially increase the time and/or resources required to compromise the password.
+
+### Aduit
+Verify the operating system enforces a minimum 14-character password length. The "minlen" option sets the minimum number of characters in a new password. Check for the value of the "minlen" option in "/etc/pam.d/common-password " with the following command:
+```
+# grep minlen /etc/pam.d/common-password 
+password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3 
+```
+If the command does not return a "minlen" value of 14 or greater, this is a finding.
+
+### Remediation 
+Configure operating system to enforce a minimum 14-character password length. Add the following line to "/etc/pam.d/common-password" (or modify the line to have the required value): 
+```
+password	  requisite			pam_cracklib.so retry=3 minlen=14 difok=3
+```
+
+## 9.2.3  Set password creation requirement Parameters Using pam_cracklib: dcredit option (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+When passwords are changed or new passwords are assigned, the new password must contain at least one numeric character. 
+
+### Rationale 
+Use of a complex password helps to increase the time and resources required to compromise the password. Password complexity, or strength, is a measure of the effectiveness of a password in resisting attempts at guessing and brute-force attacks. Password complexity is one factor of several that determines how long it takes to crack a password. The more complex the password, the greater the number of possible combinations that need to be tested before the password is compromised. 
+
+### Aduit
+The value to require a number of numeric characters to be set is expressed as a negative number in "/etc/pam.d/common-password ". Check the value for "dcredit" in "/etc/pam.d/common-password" with the following command:
+```
+# grep dcredit /etc/pam.d/common-password  
+password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3  dcredit=-1
+```
+If the value of "dcredit" is not set to a negative value, this is a finding. 
+
+### Remediation
+Configure the operating system to enforce password complexity by requiring that at least one numeric character be used by setting the "dcredit" option. Add the following line to /etc/pam.d/common-password (or modify the line to have the required value): 
+```
+password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3  dcredit=-1
+```
+
+## 9.2.4  Set password creation requirement Parameters Using pam_cracklib: ucredit option (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+When passwords are changed or new passwords are established, the new password must contain at least one upper-case character.
+
+### Rationale 
+Use of a complex password helps to increase the time and resources required to compromise the password. Password complexity, or strength, is a measure of the effectiveness of a password in resisting attempts at guessing and brute-force attacks. Password complexity is one factor of several that determines how long it takes to crack a password. The more complex the password, the greater the number of possible combinations that need to be tested before the password is compromised.
+
+### Aduit 
+The value to require a number of upper-case characters to be set is expressed as a negative number in "/etc/pam.d/common-password". Check the value for "ucredit" in "/etc/pam.d/common-password" with the following command: 
+```
+# grep ucredit /etc/pam.d/common-password 
+password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3 ucredit=-1 
+```
+If the value of "ucredit" is not set to a negative value, this is a finding.
+
+### Remediation
+Add the following line to "/etc/pam.d/common-password" (or modify the line to have the required value): 
+```
+password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3 ucredit=-1
+```
+
+## 9.2.5  Set password creation requirement Parameters Using pam_cracklib: ocredit option (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+When passwords are changed or new passwords are assigned, the new password must contain at least one special character.
+
+### Rationale 
+Use of a complex password helps to increase the time and resources required to compromise the password. Password complexity, or strength, is a measure of the effectiveness of a password in resisting attempts at guessing and brute-force attacks. Password complexity is one factor of several that determines how long it takes to crack a password. The more complex the password, the greater the number of possible combinations that need to be tested before the password is compromised. 
+
+### Aduit 
+Verify the operating system enforces password complexity by requiring that at least one special character be used. Note: The value to require a number of special characters to be set is expressed as a negative number in "/etc/pam.d/common-password". Check the value for "ocredit" in "/etc/pam.d/common-password" with the following command:
+```
+# grep ocredit /etc/pam.d/common-password 
+password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3 nocredit=-1
+```
+If the value of "ocredit" is not set to a negative value, this is a finding.
+
+### Remediation
+Add the following line to "/etc/pam.d/common-password" (or modify the line to have the required value): 
+```
+password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3 ocredit=-1 
+```
+
+## 9.2.6  Set password creation requirement Parameters Using pam_cracklib: lcredit option (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+When passwords are changed or new passwords are established, the new password must contain at least one lower-case character. 
+
+### Rationale 
+Use of a complex password helps to increase the time and resources required to compromise the password. Password complexity, or strength, is a measure of the effectiveness of a password in resisting attempts at guessing and brute-force attacks. Password complexity is one factor of several that determines how long it takes to crack a password. The more complex the password, the greater the number of possible combinations that need to be tested before the password is compromised.
+
+### Aduit
+The value to require a number of lower-case characters to be set is expressed as a negative number in "/etc/pam.d/common-password ". Check the value for "lcredit" in "/etc/pam.d/common-password " with the following command: 
+```
+# grep lcredit /etc/pam.d/common-password 
+password	   requisite			pam_cracklib.so retry=3 minlen=8 difok=3 lcredit=-1 
+```
+If the value of "lcredit" is not set to a negative value, this is a finding.
+
+### Remediation
+Add the following line to "/etc/pam.d/common-password" (or modify the line to have the required value): 
+```
+password  	requisite			pam_cracklib.so retry=3 minlen=8 difok=3 lcredit=-1 
+```
+
+## 9.2.7  Set password creation requirement Parameters Using pam_cracklib: difok option (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+When passwords are changed a minimum of eight of the total number of characters must be changed. 
+
+### Rationale 
+Use of a complex password helps to increase the time and resources required to compromise the password. Password complexity, or strength, is a measure of the effectiveness of a password in resisting attempts at guessing and brute-force attacks. Password complexity is one factor of several that determines how long it takes to crack a password. The more complex the password, the greater the number of possible combinations that need to be tested before the password is compromised.
+
+### Aduit 
+The "difok" option sets the number of characters in a password that must not be present in the old password. Check for the value of the "difok" option in "/etc/pam.d/common-password" with the following command:
+```
+# grep difok /etc/pam.d/common-password 
+password  	requisite			pam_cracklib.so retry=3 minlen=8 difok=3
+```
+If the value of "difok" is set to less than "8", this is a finding.
+
+### Remediation
+Add the following line to "/etc/pam.d/common-password" (or modify the line to have the required value):
+```
+password  	requisite			pam_cracklib.so retry=3 minlen=8 difok=8
+```
+
+## 9.2.8  Set password creation requirement Parameters Using pam_cracklib: minclass option (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+When passwords are changed a minimum of four character classes must be changed.
+
+### Rationale 
+Use of a complex password helps to increase the time and resources required to compromise the password. Password complexity, or strength, is a measure of the effectiveness of a password in resisting attempts at guessing and brute-force attacks. Password complexity is one factor of several that determines how long it takes to crack a password. The more complex the password, the greater the number of possible combinations that need to be tested before the password is compromised.
+ 
+### Aduit
+The "minclass" option sets the minimum number of required classes of characters for the new password (digits, upper-case, lower-case, others). Check for the value of the "minclass" option in "/etc/pam.d/common-password" with the following command:
+```
+# grep minclass /etc/pam.d/common-password
+password  	requisite			pam_cracklib.so retry=3 minlen=8 difok=8 minclass=4
+```
+If the value of "minclass" is set to less than "4", this is a finding.
+
+### Remediation
+Configure the operating system to require the change of at least four character classes when passwords are changed by setting the "minclass" option. Add the following line to "/etc/pam.d/common-password" (or modify the line to have the required value): 
+```
+password  	requisite			pam_cracklib.so retry=3 minlen=8 difok=8 minclass=4 
+```
+
+## 9.2.9  Set password creation requirement Parameters Using pam_cracklib: maxrepeat option (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+When passwords are changed the number of repeating consecutive characters must not be more than three characters. 
+
+### Rationale 
+Use of a complex password helps to increase the time and resources required to compromise the password. Password complexity, or strength, is a measure of the effectiveness of a password in resisting attempts at guessing and brute-force attacks. Password complexity is one factor of several that determines how long it takes to crack a password. The more complex the password, the greater the number of possible combinations that need to be tested before the password is compromised.
+
+### Aduit
+The "maxrepeat" option sets the maximum number of allowed same consecutive characters in a new password. Check for the value of the "maxrepeat" option in "/etc/pam.d/common-password" with the following command:
+```
+# grep maxrepeat /etc/pam.d/common-password 
+password  	requisite			pam_cracklib.so retry=3 minlen=8 difok=8 maxrepeat=3
+```
+If the value of "maxrepeat" is set to more than "3", this is a finding.
+
+### Remediation
+Configure the operating system to require the change of the number of repeating consecutive characters when passwords are changed by setting the "maxrepeat" option. Add the following line to "/etc/pam.d/common-password" (or modify the line to have the required value): 
+```
+password  	requisite			pam_cracklib.so retry=3 minlen=8 difok=8 maxrepeat=3
+```
+
+## 9.2.10  Set password creation requirement Parameters Using pam_cracklib: maxclassrepeat option (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+When passwords are changed the number of repeating characters of the same character class must not be more than four characters. 
+
+### Rationale 
+Use of a complex password helps to increase the time and resources required to compromise the password. Password complexity, or strength, is a measure of the effectiveness of a password in resisting attempts at guessing and brute-force attacks. Password complexity is one factor of several that determines how long it takes to crack a password. The more complex the password, the greater the number of possible combinations that need to be tested before the password is compromised. 
+
+### Aduit 
+The "maxclassrepeat" option sets the maximum number of allowed same consecutive characters in the same class in the new password. Check for the value of the "maxclassrepeat" option in "/etc/pam.d/common-password" with the following command:
+```
+# grep maxclassrepeat /etc/pam.d/common-password
+password	requisite			pam_cracklib.so retry=3 minlen=8 difok=3 maxclassrepeat=4
+```
+If the value of "maxclassrepeat" is set to more than "4", this is a finding.
+
+### Remediation
+Configure the operating system to require the change of the number of repeating characters of the same character class when passwords are changed by setting the "maxclassrepeat" option. Add the following line to "/etc/pam.d/common-password" conf (or modify the line to have the required value):
+```
+password	requisite			pam_cracklib.so retry=3 minlen=8 difok=3 maxclassrepeat=4
+```
 
 
 
