@@ -5,7 +5,7 @@
 #
 
 #
-# 9.2.2 Set Lockout for Failed Password Attempts (Not Scored)
+# 9.2.11 Set Lockout for Failed Password Attempts (Not Scored)
 #
 
 set -e # One error, it's over
