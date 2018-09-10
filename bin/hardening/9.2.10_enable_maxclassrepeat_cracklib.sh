@@ -5,7 +5,7 @@
 #
 
 #
-# 9.2.1 Set Password Creation Requirement Parameters Using pam_cracklib: audit retry option (Scored)
+# 9.2.10 Set Password Creation Requirement Parameters Using pam_cracklib: audit maxclassrepeat option (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -19,10 +19,10 @@ PAMLIBNAME='pam_cracklib.so'
 PATTERN='^password.*pam_cracklib.so'
 FILE='/etc/pam.d/common-password'
 
-OPTIONNAME='retry'
+OPTIONNAME='maxclassrepeat'
 
 # condition 
-CONDT_VAL=3
+CONDT_VAL=4
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {

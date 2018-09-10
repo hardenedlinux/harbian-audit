@@ -5,7 +5,7 @@
 #
 
 #
-# 9.2.1 Set Password Creation Requirement Parameters Using pam_cracklib: audit retry option (Scored)
+# 9.2.8 Set Password Creation Requirement Parameters Using pam_cracklib: audit minclass option (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -19,10 +19,10 @@ PAMLIBNAME='pam_cracklib.so'
 PATTERN='^password.*pam_cracklib.so'
 FILE='/etc/pam.d/common-password'
 
-OPTIONNAME='retry'
+OPTIONNAME='minclass'
 
 # condition 
-CONDT_VAL=3
+CONDT_VAL=4
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -35,7 +35,7 @@ audit () {
         does_pattern_exist_in_file $FILE $PATTERN
         if [ $FNRET = 0 ]; then
             ok "$PATTERN is present in $FILE"
-            check_password_by_pam $OPTIONNAME le $CONDT_VAL  
+            check_password_by_pam $OPTIONNAME ge $CONDT_VAL  
             if [ $FNRET = 0 ]; then
                 ok "$OPTIONNAME set condition is $CONDT_VAL"
             else
