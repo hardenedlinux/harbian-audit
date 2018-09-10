@@ -480,6 +480,33 @@ check_password_by_pam()
     fi
 }
 
+# Only check option name 
+check_password_option_by_pam()
+{   
+    KEYWORD=$1
+    OPTION=$2
+
+    LOCATION="/etc/pam.d/common-password"
+
+    #Example:
+    #KEYWORD="pam_unix.so"
+    #OPTION="sha512"
+    
+    if [ -f "$LOCATION" ];then
+        RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep "$KEYWORD.*$OPTION" | wc -l)
+        echo $RESULT
+        if [ "$RESULT" -eq 1 ]; then
+            debug "$KEYWORD $OPTION is conf"
+            FNRET=0
+        else
+            debug "$KEYWORD $OPTION is not conf"
+            FNRET=4
+        fi
+    else
+        debug "$LOCATION is not exist"
+        FNRET=3   
+    fi
+}
 
 # Add password check option 
 add_option_to_password_check() 
