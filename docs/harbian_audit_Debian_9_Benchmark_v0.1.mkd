@@ -304,7 +304,30 @@ Configure the operating system to require the change of the number of repeating 
 password	requisite			pam_cracklib.so retry=3 minlen=8 difok=3 maxclassrepeat=4
 ```
 
+## 9.2.13  Set password creation requirement Parameters Using pam_unix: sha512 option (scored) 
 
+### Profile Applicability
+Level 2
+
+### Description 
+The PAM system service must be configured to store only encrypted representations of passwords. 
+
+### Rationale 
+Passwords need to be protected at all times, and encryption is the standard method for protecting passwords. If passwords are not encrypted, they can be plainly read (i.e., clear text) and easily compromised. Passwords encrypted with a weak algorithm are no more protected than if they are kept in plain text. 
+
+### Aduit 
+Verify the PAM system service is configured to store only encrypted representations of passwords. The strength of encryption that must be used to hash passwords for all accounts is SHA512. Check that the system is configured to create SHA512 hashed passwords with the following command:
+```
+# grep "password.*pam_unix.*sha512" /etc/pam.d/common-password    
+password	[success=1 default=ignore]	pam_unix.so obscure use_authtok try_first_pass sha512
+```
+If the "/etc/pam.d/common-password" configuration files allow for password hashes other less than SHA512 to be used, this is a finding.
+
+### Remediation
+Configure the operating system to store only SHA512 encrypted representations of passwords. Add the following line in "/etc/pam.d/common-password": 
+```
+password	[success=1 default=ignore]	pam_unix.so obscure use_authtok try_first_pass sha512
+```
 
 
 
