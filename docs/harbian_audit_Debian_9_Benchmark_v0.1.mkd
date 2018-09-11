@@ -328,7 +328,31 @@ Configure the operating system to store only SHA512 encrypted representations of
 ```
 password	[success=1 default=ignore]	pam_unix.so obscure use_authtok try_first_pass sha512
 ```
+ 
+## 10.1.4 Set encrypt method (Scored) 
 
+### Profile Applicability
+Level 3
+
+### Description
+The shadow file must be configured to store only encrypted representations of passwords. 
+
+### Rationale
+Passwords need to be protected at all times, and encryption is the standard method for protecting passwords. If passwords are not encrypted, they can be plainly read (i.e., clear text) and easily compromised. Passwords encrypted with a weak algorithm are no more protected than if they are kept in plain text.
+
+### Aduit
+Verify the system's shadow file is configured to store only encrypted representations of passwords. The strength of encryption that must be used to hash passwords for all accounts is SHA512. Check that the system is configured to create SHA512 hashed passwords with the following command:
+```
+# grep -i encrypt /etc/login.defs
+ENCRYPT_METHOD SHA512
+```
+If the "/etc/login.defs" configuration file does not exist or allows for password hashes other than SHA512 to be used, this is a finding.
+
+### Remediation
+Configure the operating system to store only SHA512 encrypted representations of passwords. Add or update the following line in "/etc/login.defs": 
+```
+ENCRYPT_METHOD SHA512
+````
 
 
 template
