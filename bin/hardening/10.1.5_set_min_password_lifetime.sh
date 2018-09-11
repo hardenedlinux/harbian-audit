@@ -5,7 +5,7 @@
 #
 
 #
-# 10.1.5 Set mininum password lifetim (Scored)
+# 10.1.5 Set mininum password lifetime (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 

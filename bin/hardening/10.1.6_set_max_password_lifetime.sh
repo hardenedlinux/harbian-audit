@@ -5,7 +5,7 @@
 #
 
 #
-# 10.1.6 Set maximum password lifetim (Scored)
+# 10.1.6 Set maximum password lifetime (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
