@@ -328,6 +328,32 @@ Configure the operating system to store only SHA512 encrypted representations of
 ```
 password	[success=1 default=ignore]	pam_unix.so obscure use_authtok try_first_pass sha512
 ```
+
+## 9.2.14  Check auth config is not blank or null passwords using pam_unix (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+The system must not have accounts configured with blank or null passwords.
+
+### Rationale 
+If an account has an empty password, anyone could log on and run commands with the privileges of that account. Accounts with empty passwords should never be used in operational environments. 
+
+### Aduit 
+To verify that null passwords cannot be used, run the following command: 
+```
+# grep nullok /etc/pam.d/common-auth
+# grep nullok_secure /etc/pam.d/common-auth
+```
+If this produces any output, it may be possible to log on with accounts with empty passwords. If null passwords can be used, this is a finding.
+
+### Remediation
+If an account is configured for password authentication but does not have an assigned password, it may be possible to log on to the account without authenticating. Remove any instances of the "nullok" option in "/etc/pam.d/common-auth" to prevent logons with empty passwords. 
+```
+# sed -ie "s/nullok//"  /etc/pam.d/common-auth
+# sed -ie "s/nullok_secure//"  /etc/pam.d/common-auth
+```
  
 ## 10.1.4 Set encrypt method (Scored) 
 
