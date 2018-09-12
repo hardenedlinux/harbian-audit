@@ -545,3 +545,40 @@ reset_option_to_password_check()
     # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=3
     sed -ie "s/${OPTIONNAME}=./${OPTIONNAME}=${OPTIONVAL}/" $PAMPWDFILE
 }
+
+# Only check option name 
+check_auth_option_nullok_by_pam()
+{   
+    KEYWORD=$1
+    OPTION1=$2
+    OPTION2=$3
+
+    LOCATION="/etc/pam.d/common-auth"
+
+    #Example:
+    #KEYWORD="pam_unix.so"
+    #OPTION1="nullok"
+    #OPTION2="nullok_secure"
+    
+    if [ -f "$LOCATION" ];then
+        RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep "$KEYWORD.*$OPTION2" | wc -l)
+        if [ "$RESULT" -eq 1 ]; then
+            debug "$KEYWORD $OPTION2 is conf, that is error conf"
+            FNRET=5
+        else
+            debug "$KEYWORD $OPTION2 is not conf, that is ok"
+            RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep "$KEYWORD.*$OPTION1" | wc -l)
+            if [ "$RESULT" -eq 1 ]; then
+                debug "$KEYWORD $OPTION1 is conf, that is error conf"
+                FNRET=4
+            else
+                debug "$KEYWORD $OPTION1 is not conf, that is ok"
+                FNRET=0
+            fi
+        fi
+    else
+        debug "$LOCATION is not exist"
+        FNRET=3   
+    fi
+}
+
