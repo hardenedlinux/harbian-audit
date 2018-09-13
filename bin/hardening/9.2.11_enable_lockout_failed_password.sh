@@ -22,33 +22,31 @@ audit () {
     is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
         crit "$PACKAGE is not installed!"
+        FNRET=1
     else
         ok "$PACKAGE is installed"
         does_pattern_exist_in_file $FILE $PATTERN
         if [ $FNRET = 0 ]; then
             ok "$PATTERN is present in $FILE"
+            FNRET=0
         else
             crit "$PATTERN is not present in $FILE"
+            FNRET=2
         fi
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    is_pkg_installed $PACKAGE
     if [ $FNRET = 0 ]; then
-        ok "$PACKAGE is installed"
-    else
-        crit "$PACKAGE is absent, installing it"
+        ok "installed"
+    elif [ $FNRET = 1 ]; then
+        crit "Apply:$PACKAGE is absent, installing it"
         apt_install $PACKAGE
+    elif [ $FNRET = 2 ]; then
+        crit "Apply:$PATTERN is not present in $FILE"
+        add_line_file_before_pattern $FILE "auth    required    pam_tally.so onerr=fail deny=6 unlock_time=1800" "# Uncomment and edit /etc/security/time.conf if you need to set"
     fi
-    does_pattern_exist_in_file $FILE $PATTERN
-    if [ $FNRET = 0 ]; then
-        ok "$PATTERN is present in $FILE"
-    else
-        crit "$PATTERN is not present in $FILE"
-        add_line_file_before_pattern $FILE "auth    required    pam_tally.so onerr=fail deny=6 unlock_time=1800" "# Uncomment and edit \/etc\/security\/time.conf if you need to set"
-    fi 
 }
 
 # This function will check config parameters required
