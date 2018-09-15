@@ -17,6 +17,7 @@ HARDENING_LEVEL=3
 NOPASSWD='NOPASSWD'
 PASSWD='PASSWD'
 FILE='/etc/sudoers'
+INCLUDFILE='/etc/sudoers.d/*'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () 
@@ -27,7 +28,13 @@ audit ()
         FNRET=1
     else
         ok "$NOPASSWD is not set on $FILE, it's ok"
-        FNRET=0
+        if [ $(grep $NOPASSWD $INCLUDFILE | wc -l) -gt 0 ]; then 
+            crit "$NOPASSWD is set on $INCLUDFILE, it's error conf"
+            FNRET=1
+        else
+            ok "$NOPASSWD is not set on $INCLUDFILE, it's ok"
+            FNRET=0
+        fi
     fi
 }
 
@@ -36,8 +43,9 @@ apply () {
     if [ $FNRET = 0 ]; then
         ok "APPLY: $NOPASSWD is not set on $FILE, it's ok"
     elif [ $FNRET = 1 ]; then
-        info "$NOPASSWD is set on the $FILE, need remove"
-        chmod 640 $FILE &&  sed -ie "s/$NOPASSWD/$PASSWD/g" $FILE && chmod 440 $FILE
+        info "$NOPASSWD is set on the $FILE or $INCLUDFILE, need remove"
+        backup_file $FILE $INCLUDFILE
+        chmod 640 $FILE $INCLUDFILE &&  sed -i -e "s/$NOPASSWD/$PASSWD/g" $FILE $INCLUDFILE && chmod 440 $FILE $INCLUDFILE
     fi
 }
 
