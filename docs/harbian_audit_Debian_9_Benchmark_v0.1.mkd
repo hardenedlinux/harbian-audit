@@ -449,6 +449,28 @@ If any uncommented line is found with a "NOPASSWD" tag, this is a finding.
 ### Remediation
 Replace any occurrences of "NOPASSWD" tags to "PASSWD" tags in the file.
 
+## 10.1.8 Remove(Replace) not authenticate(!authenticate) to authenticate in the sudoers config file (Scored) 
+
+### Profile Applicability
+Level 3
+
+### Description
+Users must re-authenticate for privilege escalation.
+
+### Rationale
+Without re-authentication, users may access resources or perform tasks for which they do not have authorization. When operating systems provide the capability to escalate a functional capability, it is critical the user reauthenticate.
+
+### Aduit
+Verify the operating system requires users to reauthenticate for privilege escalation. Check the configuration of the "/etc/sudoers" and "/etc/sudoers.d/*" files with the following command:
+```
+# grep -i authenticate /etc/sudoers /etc/sudoers.d/*
+```
+If any line is found with a "!authenticate" tag, this is a finding.
+
+### Remediation
+Replace any occurrences of "!authenticate" tags to "authenticate" tags in the file.
+
+
 
 template
 
