@@ -5,7 +5,8 @@
 #
 
 #
-# 10.1.9 Set how many seconds to wait to allow login when the last login failed (Scored)
+# 10.1.9 Set FAIL_DELAY to wait to allow login when the last login failed (Scored)
+# Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
