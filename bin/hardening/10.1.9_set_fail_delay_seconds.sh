@@ -1,22 +1,29 @@
 #!/bin/bash
 
 #
-# harbian audit 9  Hardening
+# harbian audit 7/8/9  Hardening
 #
 
 #
-# 10.1.9 Set FAIL_DELAY to wait to allow login when the last login failed (Scored)
+# 10.1.9 Set FAIL_DELAY Parameters Using pam_faildelay (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
-HARDENING_LEVEL=3
+HARDENING_LEVEL=2
 
-PACKAGE='login'
-OPTIONS='FAIL_DELAY=4'
-FILE='/etc/login.defs'
+
+PACKAGE='libpam-modules'
+PAMLIBNAME='pam_faildelay.so'
+PATTERN='^auth.*pam_faildelay.so'
+FILE='/etc/pam.d/login'
+
+OPTIONNAME='delay'
+
+# condition (microseconds)
+CONDT_VAL=4000000
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -26,44 +33,40 @@ audit () {
         FNRET=1
     else
         ok "$PACKAGE is installed"
-        for SSH_OPTION in $OPTIONS; do
-            SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-            SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
-            PATTERN="^$SSH_PARAM[[:space:]]*"
-            does_pattern_exist_in_file $FILE "$PATTERN"
+        does_pattern_exist_in_file $FILE $PATTERN
+        if [ $FNRET = 0 ]; then
+            ok "$PATTERN is present in $FILE"
+            check_password_by_pam $FILE $PAMLIBNAME $OPTIONNAME ge $CONDT_VAL  
             if [ $FNRET = 0 ]; then
-                ok "$PATTERN is present in $FILE"
-                if [ $(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' /etc/login.defs  | grep FAIL_DELAY | awk '{print $2}') -lt $SSH_VALUE ]; then
-                    crit "$SSH_PARAM value is less than $SSH_VALUE"
-                    FNRET=3
-                else
-                    ok "$SSH_PARAM value is equal or greater to  $SSH_VALUE"
-                    FNRET=0
-                fi
+                ok "$OPTIONNAME set condition is $CONDT_VAL"
             else
-                crit "$PATTERN is not present in $FILE"
-                FNRET=2
+                crit "$OPTIONNAME set condition is not $CONDT_VAL"
             fi
-        done
+        else
+            crit "$PATTERN is not present in $FILE"
+            FNRET=2
+        fi
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-    SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
     if [ $FNRET = 0 ]; then
-        ok "FAIL_DELAY is set"
+        ok "$PACKAGE is installed"
     elif [ $FNRET = 1 ]; then
         crit "$PACKAGE is absent, installing it"
         apt_install $PACKAGE
     elif [ $FNRET = 2 ]; then
-        warn "$SSH_PARAM is not present in $FILE, adding it"
-        add_end_of_file $FILE "$SSH_PARAM $SSH_VALUE"
+        crit "$PATTERN is not present in $FILE, add default config to $FILE"
+        add_line_file_before_pattern $FILE "auth       optional   pam_faildelay.so  delay=4000000" "# Outputs an issue file prior to each login prompt (Replaces the"
     elif [ $FNRET = 3 ]; then
-        info "Parameter $SSH_PARAM is present but with the wrong value -- Fixing"
-        replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SSH_VALUE"
-    fi
+        crit "$OPTIONNAME set is not match legally, reset it to $CONDT_VAL"
+        reset_option_to_password_check $FILE $PAMLIBNAME "$OPTIONNAME" "$CONDT_VAL"
+    elif [ $FNRET = 4 ]; then
+        crit "444"
+    elif [ $FNRET = 5 ]; then
+        crit "555555555555"
+    fi 
 }
 
 # This function will check config parameters required

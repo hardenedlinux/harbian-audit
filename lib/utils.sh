@@ -443,14 +443,15 @@ verify_integrity_all_packages()
 
 check_password_by_pam()
 {   
-    KEYWORD=$1
-    OPTION=$2
-    COMPARE=$3
-    CONDITION=$4
-
-    LOCATION="/etc/pam.d/common-password"
+    LOCATION=$1
+    KEYWORD=$2
+    OPTION=$3
+    COMPARE=$4
+    CONDITION=$5
 
     #Example:
+    #LOCATION="/etc/pam.d/common-password"
+    #LOCATION="/etc/pam.d/login"
     #KEYWORD="pam_cracklib.so"
     #OPTION="ocredit"
     #COMPARE="gt"
