@@ -527,6 +527,24 @@ add_option_to_password_check()
     sed -ie "s;\(^password.*$KEYWORD.*\);\1 $OPTIONSTR;" $PAMPWDFILE  
 }
 
+# Add auth check option 
+add_option_to_auth_check() 
+{
+    #Example:
+    #local PAMPWDFILE="/etc/pam.d/common-password"
+    #local KEYWORD="pam_cracklib.so"
+    #local OPTIONSTR="retry=3"
+    local PAMPWDFILE=$1
+    local KEYWORD=$2
+    local OPTIONSTR=$3
+    debug "Setting $OPTIONSTR for $KEYWORD"
+    backup_file "$PAMPWDFILE"
+    # For example : 
+    # password  requisite           pam_cracklib.so  minlen=8 difok=3
+    # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=3
+    sed -ie "s;\(^auth.*$KEYWORD.*\);\1 $OPTIONSTR;" $PAMPWDFILE  
+}
+
 # Reset password check option value when option is not set a correct value 
 reset_option_to_password_check()
 {
@@ -545,6 +563,26 @@ reset_option_to_password_check()
     # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=1
     # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=3
     sed -ie "s/${OPTIONNAME}=./${OPTIONNAME}=${OPTIONVAL}/" $PAMPWDFILE
+}
+
+# Reset auth check option value when option is not set a correct value 
+reset_option_to_auth_check()
+{
+    #Example:
+    #local PAMPWDFILE="/etc/pam.d/common-password"
+    #local KEYWORD="pam_cracklib.so"
+    #local OPTIONNAME="retry"
+    #local OPTIONVAL="3"
+    local PAMPWDFILE=$1
+    local KEYWORD=$2
+    local OPTIONNAME=$3
+    local OPTIONVAL=$4
+    debug "Setting $OPTION for $KEYWORD reset option value to $OPTIONVAL"
+    backup_file "$PAMPWDFILE"
+    # For example : 
+    # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=1
+    # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=3
+    sed -ie "s/${OPTIONNAME}=.*/${OPTIONNAME}=${OPTIONVAL}/" $PAMPWDFILE
 }
 
 # Only check option name 

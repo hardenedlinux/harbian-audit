@@ -60,12 +60,13 @@ apply () {
         crit "$PATTERN is not present in $FILE, add default config to $FILE"
         add_line_file_before_pattern $FILE "auth       optional   pam_faildelay.so  delay=4000000" "# Outputs an issue file prior to each login prompt (Replaces the"
     elif [ $FNRET = 3 ]; then
-        crit "$OPTIONNAME set is not match legally, reset it to $CONDT_VAL"
-        reset_option_to_password_check $FILE $PAMLIBNAME "$OPTIONNAME" "$CONDT_VAL"
+        crit "$FILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
-        crit "444"
-    elif [ $FNRET = 5 ]; then
-        crit "555555555555"
+        crit "$OPTIONNAME is not conf"
+        add_option_to_auth_check $FILE $PAMLIBNAME "$OPTIONNAME=$CONDT_VAL"
+     elif [ $FNRET = 5 ]; then
+        crit "$OPTIONNAME set is not match legally, reset it to $CONDT_VAL"
+        reset_option_to_auth_check $FILE $PAMLIBNAME "$OPTIONNAME" "$CONDT_VAL"
     fi 
 }
 
