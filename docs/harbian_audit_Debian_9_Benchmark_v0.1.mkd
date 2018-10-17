@@ -473,7 +473,7 @@ Replace any occurrences of "!authenticate" tags to "authenticate" tags in the fi
 ## 10.1.9  Set FAIL_DELAY to wait to allow login when the last login failed (Scored) 
 
 ### Profile Applicability
-Level 3
+Level 2
 
 ### Description
 The delay between logon prompts following a failed console logon attempt must be at least four seconds.
@@ -482,17 +482,17 @@ The delay between logon prompts following a failed console logon attempt must be
 Configuring the operating system to implement organization-wide security implementation guides and security checklists verifies compliance with federal standards and establishes a common security baseline across DoD that reflects the most restrictive security posture consistent with operational requirements. Configuration settings are the set of parameters that can be changed in hardware, software, or firmware components of the system that affect the security posture and/or functionality of the system. Security-related parameters are those parameters impacting the security state of the system, including the parameters required to satisfy other security control requirements. Security-related parameters include, for example, registry settings; account, file, and directory permission settings; and settings for functions, ports, protocols, services, and remote connections.
 
 ### Aduit
-Verify the operating system enforces a delay of at least four seconds between console logon prompts following a failed logon attempt. Check the value of the "fail_delay" parameter in the "/etc/login.defs" file with the following command:
+Verify the operating system enforces a delay of at least four seconds between console logon prompts following a failed logon attempt. Check the value of the "delay" parameter in the "/etc/pam.d/login" file with the following command:
 ```
-# grep -i fail_delay /etc/login.defs
-FAIL_DELAY 4
+# grep -i delay /etc/pam.d/login
+auth       optional   pam_faildelay.so delay=4000000
 ```
-If the value of "FAIL_DELAY" is not set to "4" or greater, this is a finding.
+If the value of "delay" is not set to "4000000" or greater, this is a finding.
 
 ### Remediation
-Configure the operating system to enforce a delay of at least four seconds between logon prompts following a failed console logon attempt. Modify the "/etc/login.defs" file to set the "FAIL_DELAY" parameter to "4" or greater: 
+Configure the operating system to enforce a delay of at least four seconds between logon prompts following a failed console logon attempt. Modify the "/etc/pam.d/login" file to set the "delay" parameter to "4000000" or greater: 
 ```
-FAIL_DELAY 4
+auth       optional   pam_faildelay.so delay=4000000
 ```
 
 template
