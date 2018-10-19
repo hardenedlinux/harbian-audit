@@ -24,6 +24,59 @@ Install the screen program (if it is not on the system) with the following comma
 ```
 The console can now be locked with the following key combination: ctrl+a x 
 
+## 8.1.19 Recored ssh-keysign command usage (scored) 
+
+### Profile Applicability
+Level 4
+
+### Description
+All uses of the ssh-keysign command must be audited.
+
+### Rationale
+Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged ssh commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise.
+
+### Aduit
+Verify the operating system generates audit records when successful/unsuccessful attempts to use the "ssh-keysign" command occur. Check for the following system call being audited by performing the following command to check the file system rules in "/etc/audit/audit.rules": 
+```
+# grep -i /usr/lib/openssh/ssh-keysign /etc/audit/audit.rules
+-a always,exit -F path=/usr/lib/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
+```
+If the command does not return any output, this is a finding.
+
+### Remediation
+Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "ssh-keysign" command occur. Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+```
+-a always,exit -F path=/usr/lib/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
+```
+The audit daemon must be restarted for the changes to take effect.
+
+## 8.1.20 Recored open_by_handle_at syscall (scored) 
+
+### Profile Applicability
+Level 4
+
+### Description
+All uses of the open_by_handle_at command must be audited.
+
+### Rationale
+Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter).
+
+### Aduit
+Verify the operating system generates audit records when successful/unsuccessful attempts to use the "open_by_handle_at" command occur. Check the file system rules in "/etc/audit/audit.rules" with the following commands:
+```
+# grep -iw open_by_handle_at /etc/audit/audit.rules
+-a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k access 
+-a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k access
+```
+If there are no audit rules defined for the open_by_handle_at syscall, this is a finding. If the output does not produce a rule containing -F exit=-EPERM, this is a finding. If the output does not produce a rule containing -F exit=-EACCES, this is a finding.
+
+### Remediation
+Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "open_by_handle_at" command occur. Add or update the following rule in "/etc/audit/rules.d/audit.rules":
+```
+-a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k access
+-a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k access
+```
+The audit daemon must be restarted for the changes to take effect.
 
 ## 8.5 Verifies integrity all packages (scored) 
 
