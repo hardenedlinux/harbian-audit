@@ -25,7 +25,7 @@ audit () {
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
         IFS=$d_IFS
-        does_pattern_exist_in_file $FILE $AUDIT_VALUE
+        does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
         IFS=$c_IFS
         if [ $FNRET != 0 ]; then
             crit "$AUDIT_VALUE is not in file $FILE"
@@ -41,7 +41,7 @@ apply () {
     IFS=$'\n'
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
-        does_pattern_exist_in_file $FILE $AUDIT_VALUE
+        does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
         if [ $FNRET != 0 ]; then
             warn "$AUDIT_VALUE is not in file $FILE, adding it"
             add_end_of_file $FILE $AUDIT_VALUE
