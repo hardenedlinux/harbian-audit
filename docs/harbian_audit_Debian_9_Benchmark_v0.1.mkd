@@ -78,6 +78,41 @@ Configure the operating system to generate audit records when successful/unsucce
 ```
 The audit daemon must be restarted for the changes to take effect.
 
+## 8.1.21 Recored Events that privileged-passwd command usage (Scored) 
+
+### Profile Applicability
+Level 4
+
+### Description
+All uses of the passwd command must be audited.
+
+### Rationale
+Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged password commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise.
+
+### Aduit
+Verify the operating system generates audit records when successful/unsuccessful attempts to use the "passwd" command occur. Check the file system rule in "/etc/audit/audit.rules" with the following command:
+```
+# grep -i /usr/bin/passwd /etc/audit/audit.rules
+-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+# grep -i /sbin/unix_chkpwd /etc/audit/audit.rules
+-a always,exit -F path=/sbin/unix_chkpwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+# grep -i /usr/bin/gpasswd /etc/audit/audit.rules
+-a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+# grep -i /usr/bin/chage /etc/audit/audit.rules
+-a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd'
+```
+If the command does not return any output, this is a finding.
+
+### Remediation
+Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "passwd" command occur. Add or update the following rule in "/etc/audit/rules.d/audit.rules":
+```
+-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+-a always,exit -F path=/sbin/unix_chkpwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+-a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+-a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+```
+The audit daemon must be restarted for the changes to take effect.
+
 ## 8.5 Verifies integrity all packages (scored) 
 
 ### Profile Applicability
