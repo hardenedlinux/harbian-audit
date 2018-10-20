@@ -5,7 +5,7 @@
 #
 
 #
-# 8.1.19  Recored /usr/bin/passwd command usage (Scored)
+# 8.1.19  Recored Events that privileged-passwd command usage (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -14,7 +14,11 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd'
+AUDIT_PARAMS='-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+-a always,exit -F path=/sbin/unix_chkpwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+-a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
+-a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd'
+
 FILE='/etc/audit/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
