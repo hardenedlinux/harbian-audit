@@ -56,7 +56,7 @@ The audit daemon must be restarted for the changes to take effect.
 Level 4
 
 ### Description
-All uses of the open_by_handle_at command must be audited.
+All uses of the open_by_handle_at commands must be audited.
 
 ### Rationale
 Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter).
@@ -84,7 +84,7 @@ The audit daemon must be restarted for the changes to take effect.
 Level 4
 
 ### Description
-All uses of the privileged-passwd command must be audited.
+All uses of the privileged-passwd commands must be audited.
 
 ### Rationale
 Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged password commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise.
@@ -119,7 +119,7 @@ The audit daemon must be restarted for the changes to take effect.
 Level 4
 
 ### Description
-All uses of the privileged-priv-change command must be audited.
+All uses of the privileged-priv-change commands must be audited.
 
 ### Rationale
 Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged access commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise.
@@ -149,6 +149,36 @@ Configure the operating system to generate audit records when successful/unsucce
 -a always,exit -F path=/usr/bin/chsh -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
 -a always,exit -F path=/usr/bin/sudoedit -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
 ```
+The audit daemon must be restarted for the changes to take effect.
+
+## 8.1.23 Recored Events that privileged-postfix commands usage (Scored) 
+
+### Profile Applicability
+Level 4
+
+### Description
+All uses of the privileged-postfix commands must be audited.
+
+### Rationale
+Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged postfix commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise.
+
+### Aduit
+Verify the operating system generates audit records when successful/unsuccessful attempts to use the "privileged-postfix" commands occur.Check for the following system call being audited by performing the following command to check the file system rules in "/etc/audit/audit.rules": 
+```
+# grep -i /usr/sbin/postdrop /etc/audit/audit.rules
+-a always,exit -F path=/usr/sbin/postdrop -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-postfix
+# grep -i /usr/sbin/postqueue /etc/audit/audit.rules
+-a always,exit -F path=/usr/sbin/postqueue -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-postfix
+```
+If the command does not return any output, this is a finding.
+
+### Remediation 
+Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "privileged-postfix" commands occur. Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+```
+-a always,exit -F path=/usr/sbin/postdrop -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-postfix
+-a always,exit -F path=/usr/sbin/postqueue -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-postfix
+```
+
 The audit daemon must be restarted for the changes to take effect.
 
 ## 8.5 Verifies integrity all packages (scored) 
