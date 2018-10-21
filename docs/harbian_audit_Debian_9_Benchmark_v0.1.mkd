@@ -24,6 +24,31 @@ Install the screen program (if it is not on the system) with the following comma
 ```
 The console can now be locked with the following key combination: ctrl+a x 
 
+## 6.17 ensure virul scan server is enabled (scored) 
+
+### Profile Applicability
+Level 4
+
+### Description
+The system must use a virus scan program.
+
+### Rationale
+Virus scanning software can be used to protect a system from penetration from computer viruses and to limit their spread through intermediate systems.  The virus scanning software should be configured to perform scans dynamically on accessed files. If this capability is not available, the system must be configured to scan, at a minimum, all altered files on the system on a daily basis.
+
+### Aduit
+Verify the system is using a virus scan program. check for the presence of "clamav" on the system with the following command:
+```
+# systemctl | grep clamav-freshclam 
+clamav-freshclam.service                                                                         loaded active running   ClamAV virus database updater 
+```
+If neither of these applications are loaded and active, ask the System Administrator if there is an antivirus package installed and active on the system. If no antivirus scan program is active on the system, this is a finding.
+
+### Remediation
+Install the clamav program (if it is not on the system) with the following command:
+```
+# apt-get install -y clamav
+```
+
 ## 8.1.19 Recored ssh-keysign command usage (scored) 
 
 ### Profile Applicability
