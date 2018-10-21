@@ -5,7 +5,8 @@
 #
 
 #
-# 8.1.7 Record Events That Modify the System's Mandatory Access Controls (Scored)
+# 8.1.24  Recored crontab command usage (Scored)
+# Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
@@ -13,7 +14,7 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-w /etc/selinux/ -p wa -k MAC-policy'
+AUDIT_PARAMS='-a always,exit -F path=/usr/bin/crontab -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-cron'
 FILE='/etc/audit/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
