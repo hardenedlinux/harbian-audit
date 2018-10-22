@@ -12,13 +12,11 @@ set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=3
-VIRULSERVER='clamav-freshclam'
-
-PACKAGES='clamav'
+VIRULSERVER='clamav-daemon'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(dpkg -l  | grep $PACKAGES | wc -l) -ge 1 ]; then
+    if [ $(dpkg -l  | grep $VIRULSERVER | wc -l) -ge 1 ]; then
         if [ $(systemctl | grep  $VIRULSERVER | grep "active running" | wc -l) -ne 1 ]; then
             crit "$VIRULSERVER is not runing"
             FNRET=2
@@ -27,7 +25,7 @@ audit () {
             FNRET=0
         fi
     else
-        crit "$PACKAGES is not installed"
+        crit "$VIRULSERVER is not installed"
         FNRET=1
     fi
 }
