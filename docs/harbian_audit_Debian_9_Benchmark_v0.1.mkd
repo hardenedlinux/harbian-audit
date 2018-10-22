@@ -38,15 +38,15 @@ Virus scanning software can be used to protect a system from penetration from co
 ### Aduit
 Verify the system is using a virus scan program. check for the presence of "clamav" on the system with the following command:
 ```
-# systemctl | grep clamav-freshclam 
-clamav-freshclam.service                                                                         loaded active running   ClamAV virus database updater 
+# systemctl | grep clamav-daemon
+clamav-daemon.service                                                                         loaded active running   Clam AntiVirus userspace daemon 
 ```
 If neither of these applications are loaded and active, ask the System Administrator if there is an antivirus package installed and active on the system. If no antivirus scan program is active on the system, this is a finding.
 
 ### Remediation
 Install the clamav program (if it is not on the system) with the following command:
 ```
-# apt-get install -y clamav
+# apt-get install -y clamav-daemon
 ```
 
 ## 8.1.19 Recored ssh-keysign command usage (scored) 
