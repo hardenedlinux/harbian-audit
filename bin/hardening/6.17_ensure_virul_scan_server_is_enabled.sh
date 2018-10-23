@@ -5,13 +5,14 @@
 #
 
 #
-# 6.17 Ensure virul scan Server is enabled (Not Scored)
+# 6.17 Ensure virul scan Server is enabled (Scored)
+# Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
-HARDENING_LEVEL=3
+HARDENING_LEVEL=4
 VIRULSERVER='clamav-daemon'
 
 # This function will be called if the script status is on enabled / audit mode
