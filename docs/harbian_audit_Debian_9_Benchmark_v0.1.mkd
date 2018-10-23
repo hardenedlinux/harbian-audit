@@ -49,6 +49,35 @@ Install the clamav program (if it is not on the system) with the following comma
 # apt-get install -y clamav-daemon
 ```
 
+## 6.18 ensure virul scan server update is enabled (scored) 
+
+### Profile Applicability
+Level 4
+
+### Description
+The system must update the virus scan program every seven days or more frequently.
+
+### Rationale
+Virus scanning software can be used to protect a system from penetration from computer viruses and to limit their spread through intermediate systems.  The virus scanning software should be configured to check for software and virus definition updates with a frequency no longer than seven days. If a manual process is required to update the virus scan software or definitions, it must be documented with the Information System Security Officer (ISSO).
+
+### Aduit
+Verify the system is using a virus scan program and the virus definition file is less than seven days old. Check for the presence of "clamav" on the system with the following command:
+```
+# systemctl | grep clamav
+clamav-daemon.service                                                                            loaded active running   Clam AntiVirus userspace daemon 
+```
+If "clamav" is active on the system, check the dates of the virus database with the following commands:
+```
+# grep -i databasedirectory /etc/clamav/clamd.conf
+DatabaseDirectory /var/lib/clamav
+# ls -al /var/lib/clamav/daily.cvd 
+-rw-r--r-- 1 clamav clamav 51698014 Oct 26  2018 /var/lib/clamav/daily.cvd
+```
+If the database file has a date older than seven days from the current date, this is a finding.
+
+### Remediation
+Update the virus scan software and virus definition files, enable clamav-freshclam service.
+
 ## 8.1.19 Recored ssh-keysign command usage (scored) 
 
 ### Profile Applicability
