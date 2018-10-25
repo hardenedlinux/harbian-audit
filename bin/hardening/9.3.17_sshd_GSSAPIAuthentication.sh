@@ -5,7 +5,7 @@
 #
 
 #
-# 9.3.16 Set SSHD GSSAPIAuthentication to yes (Scored)
+# 9.3.17 Set SSHD GSSAPIAuthentication to yes (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
