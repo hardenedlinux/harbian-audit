@@ -669,7 +669,190 @@ Configure the operating system to provide users with feedback on when account ac
 ```
 session     optional      pam_lastlog.so showfailed
 ```
- 
+
+## 9.3.15 Set login display the date and time of last fail logon using pam_lastlog (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+The system must display the date and time of the last successful account logon upon an SSH logon.
+
+### Rationale 
+Providing users with feedback on when account accesses via SSH last occurred facilitates user recognition and reporting of unauthorized account use.
+
+### Aduit 
+Verify SSH provides users with feedback on when account accesses last occurred. Check that "PrintLastLog" keyword in the sshd daemon configuration file is used and set to "yes" with the following command:
+```
+# grep -i printlastlog /etc/ssh/sshd_config
+PrintLastLog yes
+```
+If the "PrintLastLog" keyword is set to "no", is missing, or is commented out, this is a finding.
+
+### Remediation
+Add the following line to "/etc/ssh/sshd_config":
+```
+PrintLastLog yes
+```
+The SSH service must be restarted for changes to "sshd_config" to take effect.
+
+## 9.3.16 Set SSHD ignoreuserknownhosts to yes (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+The SSH daemon must not allow authentication using known hosts authentication.
+
+### Rationale 
+Configuring this setting for the SSH daemon provides additional assurance that remote logon via SSH will require a password, even in the event of misconfiguration elsewhere.
+
+### Aduit 
+Verify the SSH daemon does not allow authentication using known hosts authentication. To determine how the SSH daemon's "IgnoreUserKnownHosts" option is set, run the following command:
+```
+# grep -i IgnoreUserKnownHosts /etc/ssh/sshd_config
+IgnoreUserKnownHosts yes
+```
+If the value is returned as "no", the returned line is commented out, or no output is returned, this is a finding.
+
+### Remediation
+Configure the SSH daemon to not allow authentication using known hosts authentication. Add the following line in "/etc/ssh/sshd_config", or uncomment the line and set the value to "yes":
+```
+IgnoreUserKnownHosts yes
+```
+The SSH service must be restarted for changes to take effect.
+
+## 9.3.17 Set SSHD GSSAPIAuthentication to yes (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+The SSH daemon must not permit Generic Security Service Application Program Interface (GSSAPI) authentication unless needed.
+
+### Rationale 
+GSSAPI authentication is used to provide additional authentication mechanisms to applications. Allowing GSSAPI authentication through SSH exposes the systems GSSAPI to remote hosts, increasing the attack surface of the system. GSSAPI authentication must be disabled unless needed.
+
+### Aduit 
+Verify the SSH daemon does not permit GSSAPI authentication unless approved. Check that the SSH daemon does not permit GSSAPI authentication with the following command:
+```
+# grep -i gssapiauth /etc/ssh/sshd_config
+GSSAPIAuthentication no
+```
+If the "GSSAPIAuthentication" keyword is missing, is set to "yes" and is not documented with the Information System Security Officer (ISSO), or the returned line is commented out, this is a finding.
+
+### Remediation
+Uncomment the "GSSAPIAuthentication" keyword in "/etc/ssh/sshd_config" (this file may be named differently or be in a different location if using a version of SSH that is provided by a third-party vendor) and set the value to "no": 
+```
+GSSAPIAuthentication no
+```
+The SSH service must be restarted for changes to take effect. If GSSAPI authentication is required, it must be documented, to include the location of the configuration file, with the ISSO.
+
+
+## 9.3.18 Set SSHD KerberosAuthentication to yes (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+The SSH daemon must not permit Kerberos authentication unless needed.
+
+### Rationale 
+Kerberos authentication for SSH is often implemented using Generic Security Service Application Program Interface (GSSAPI). If Kerberos is enabled through SSH, the SSH daemon provides a means of access to the system's Kerberos implementation. Vulnerabilities in the system's Kerberos implementation may then be subject to exploitation. To reduce the attack surface of the system, the Kerberos authentication mechanism within SSH must be disabled for systems not using this capability.
+
+### Aduit 
+Verify the SSH daemon does not permit Kerberos to authenticate passwords unless approved. Check that the SSH daemon does not permit Kerberos to authenticate passwords with the following command:
+```
+# grep -i kerberosauth /etc/ssh/sshd_config
+KerberosAuthentication no
+```
+If the "KerberosAuthentication" keyword is missing, or is set to "yes" and is not documented with the Information System Security Officer (ISSO), or the returned line is commented out, this is a finding.
+
+### Remediation
+Uncomment the "KerberosAuthentication" keyword in "/etc/ssh/sshd_config" (this file may be named differently or be in a different location if using a version of SSH that is provided by a third-party vendor) and set the value to "no":
+```
+KerberosAuthentication no
+```
+The SSH service must be restarted for changes to take effect. If Kerberos authentication is required, it must be documented, to include the location of the configuration file, with the ISSO.
+
+## 9.3.19 Set SSHD StrictModes to yes (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+The SSH daemon must perform strict mode checking of home directory configuration files.
+
+### Rationale 
+If other users have access to modify user-specific SSH configuration files, they may be able to log on to the system as another user.
+
+### Aduit 
+Verify the SSH daemon performs strict mode checking of home directory configuration files. The location of the "sshd_config" file may vary if a different daemon is in use. Inspect the "sshd_config" file with the following command:
+```
+# grep -i strictmodes /etc/ssh/sshd_config
+StrictModes yes
+```
+If "StrictModes" is set to "no", is missing, or the returned line is commented out, this is a finding.
+
+### Remediation
+Uncomment the "StrictModes" keyword in "/etc/ssh/sshd_config" (this file may be named differently or be in a different location if using a version of SSH that is provided by a third-party vendor) and set the value to "yes":
+```
+StrictModes yes
+```
+The SSH service must be restarted for changes to take effect.
+
+## 9.3.20 Set SSHD UsePrivilegeSeparation to sandbox (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+The SSH daemon must use privilege separation.
+
+### Rationale 
+SSH daemon privilege separation causes the SSH process to drop root privileges when not needed, which would decrease the impact of software vulnerabilities in the unprivileged section.
+
+### Aduit 
+Verify the SSH daemon performs privilege separation. Check that the SSH daemon performs privilege separation with the following command:
+```
+# grep -i usepriv /etc/ssh/sshd_config
+UsePrivilegeSeparation sandbox
+```
+If the "UsePrivilegeSeparation" keyword is set to "no", is missing, or the retuned line is commented out, this is a finding.
+
+### Remediation
+Uncomment the "UsePrivilegeSeparation" keyword in "/etc/ssh/sshd_config" (this file may be named differently or be in a different location if using a version of SSH that is provided by a third-party vendor) and set the value to "sandbox":
+```
+UsePrivilegeSeparation sandbox
+```
+The SSH service must be restarted for changes to take effect.
+
+## 9.3.21 Set SSHD Compression to no  (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+The SSH daemon must not allow compression or must only allow compression after successful authentication.
+
+### Rationale 
+If compression is allowed in an SSH connection prior to authentication, vulnerabilities in the compression software could result in compromise of the system from an unauthenticated connection, potentially with root privileges.
+
+### Aduit 
+Verify the SSH daemon performs compression after a user successfully authenticates. Check that the SSH daemon performs compression after a user successfully authenticates with the following command:
+```
+# grep -i compression /etc/ssh/sshd_config
+Compression delayed
+```
+If the "Compression" keyword is set to "yes", is missing, or the retuned line is commented out, this is a finding.
+
+### Remediation
+Uncomment the "Compression" keyword in "/etc/ssh/sshd_config" (this file may be named differently or be in a different location if using a version of SSH that is provided by a third-party vendor) on the system and set the value to "no":
+```
+Compression no
+```
+The SSH service must be restarted for changes to take effect.
+
 ## 10.1.4 Set encrypt method (Scored) 
 
 ### Profile Applicability
