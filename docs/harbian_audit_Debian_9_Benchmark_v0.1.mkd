@@ -644,6 +644,31 @@ If an account is configured for password authentication but does not have an ass
 # sed -ie "s/nullok//"  /etc/pam.d/common-auth
 # sed -ie "s/nullok_secure//"  /etc/pam.d/common-auth
 ```
+
+## 9.2.15  Set login display the date and time of last fail logon using pam_lastlog (scored) 
+
+### Profile Applicability
+Level 3
+
+### Description 
+The system must display the date and time of the last successful account logon upon logon.
+
+### Rationale 
+Providing users with feedback on when account accesses last occurred facilitates user recognition and reporting of unauthorized account use.
+
+### Aduit 
+Verify users are provided with feedback on when account accesses last occurred. Check that "pam_lastlog" is used and not silent with the following command:
+```
+# grep pam_lastlog /etc/pam.d/login
+session optional pam_lastlog.so showfailed
+```
+If "pam_lastlog" is missing from "/etc/pam.d/login" file, this is a finding.
+
+### Remediation
+Configure the operating system to provide users with feedback on when account accesses last occurred by setting the required configuration options in "/etc/pam.d/login". Add the following line to the top of "/etc/pam.d/login":
+```
+session     optional      pam_lastlog.so showfailed
+```
  
 ## 10.1.4 Set encrypt method (Scored) 
 
