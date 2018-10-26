@@ -486,12 +486,12 @@ check_password_option_by_pam()
 {   
     KEYWORD=$1
     OPTION=$2
-
-    LOCATION="/etc/pam.d/common-password"
+    LOCATION=$3
 
     #Example:
     #KEYWORD="pam_unix.so"
     #OPTION="sha512"
+    #LOCATION="/etc/pam.d/common-password"
     
     if [ -f "$LOCATION" ];then
         RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep "$KEYWORD.*$OPTION" | wc -l)
@@ -526,6 +526,25 @@ add_option_to_password_check()
     # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=3
     sed -ie "s;\(^password.*$KEYWORD.*\);\1 $OPTIONSTR;" $PAMPWDFILE  
 }
+
+# Add session check option 
+add_option_to_session_check() 
+{
+    #Example:
+    #local PAMPWDFILE="/etc/pam.d/login"
+    #local KEYWORD="pam_lastlog.so"
+    #local OPTIONSTR="showfailed"
+    local PAMPWDFILE=$1
+    local KEYWORD=$2
+    local OPTIONSTR=$3
+    debug "Setting $OPTIONSTR for $KEYWORD"
+    backup_file "$PAMPWDFILE"
+    # For example : 
+    # password  requisite           pam_cracklib.so  minlen=8 difok=3
+    # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=3
+    sed -ie "s;\(^session.*$KEYWORD.*\);\1 $OPTIONSTR;" $PAMPWDFILE  
+}
+
 
 # Add auth check option 
 add_option_to_auth_check() 

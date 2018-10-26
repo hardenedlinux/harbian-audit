@@ -5,7 +5,7 @@
 #
 
 #
-# 9.2.13 Set password with the SHA512 algorithm (Scored)
+# 9.2.15 Set login display the date and time of last fail logon (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -15,10 +15,10 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 PACKAGE='libpam-modules'
-PATTERN='^password.*pam_unix.so'
-FILE='/etc/pam.d/common-password'
-KEYWORD='pam_unix.so'
-OPTIONNAME='sha512'
+PATTERN='^session.*pam_lastlog.so'
+FILE='/etc/pam.d/login'
+KEYWORD='pam_lastlog.so'
+OPTIONNAME='showfailed'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -35,7 +35,7 @@ audit () {
             if [ $FNRET = 0 ]; then
                 ok "$OPTIONNAME is already configured"
             else
-                crit "$OPTIONNAME is not configured"
+                crit "$OPTIONNAME is not configured $FNRET"
             fi
         else
             crit "$PATTERN is not present in $FILE"
@@ -49,7 +49,7 @@ apply () {
     if [ $FNRET = 0 ]; then
         ok "$PACKAGE is installed"
     elif [ $FNRET = 1 ]; then
-        crit "$PACKAGE is absent, installing it"
+        warn "$PACKAGE is absent, installing it"
         apt_install $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "$PATTERN is not present in $FILE"
@@ -57,8 +57,8 @@ apply () {
     elif [ $FNRET = 3 ]; then
         crit "$FILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
-        crit "$OPTIONNAME is not conf in $FILE"
-        add_option_to_password_check $FILE $KEYWORD $OPTIONNAME
+        warn "$OPTIONNAME is not conf in $FILE, add $OPTIONNAME "
+        add_option_to_session_check $FILE $KEYWORD $OPTIONNAME
     fi 
 }
 
