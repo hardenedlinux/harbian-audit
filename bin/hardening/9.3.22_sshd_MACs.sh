@@ -5,7 +5,7 @@
 #
 
 #
-# 9.3.21 Set SSHD Compression to no (Scored)
+# 9.3.22 Set SSHD MACs to hmac-sha2-256,hmac-sha2-512 (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
