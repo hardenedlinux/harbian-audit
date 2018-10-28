@@ -853,6 +853,86 @@ Compression no
 ```
 The SSH service must be restarted for changes to take effect.
 
+## 9.3.22 Set SSHD MACs to hmac-sha2-256,hmac-sha2-512  (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+The SSH daemon must be configured to only use Message Authentication Codes (MACs) employing FIPS 140-2 approved cryptographic hash algorithms.
+
+### Rationale 
+DoD information systems are required to use FIPS 140-2 approved cryptographic hash functions. The only SSHv2 hash algorithm meeting this requirement is SHA.
+
+### Aduit 
+Verify the SSH daemon is configured to only use MACs employing FIPS 140-2-approved ciphers. Check that the SSH daemon is configured to only use MACs employing FIPS 140-2-approved ciphers with the following command:
+```
+# grep -i macs /etc/ssh/sshd_config
+MACs hmac-sha2-256,hmac-sha2-512
+```
+If any ciphers other than "hmac-sha2-256" or "hmac-sha2-512" are listed or the retuned line is commented out, this is a finding.
+
+### Remediation
+Edit the "/etc/ssh/sshd_config" file to uncomment or add the line for the "MACs" keyword and set its value to "hmac-sha2-256" and/or "hmac-sha2-512" (this file may be named differently or be in a different location if using a version of SSH that is provided by a third-party vendor):
+```
+MACs hmac-sha2-256,hmac-sha2-512
+```
+The SSH service must be restarted for changes to take effect. 
+
+## 9.3.23 Check SSH public host key permission  (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+The SSH public host key files must have mode 0644 or less permissive.
+
+### Rationale 
+If a public host key file is modified by an unauthorized user, the SSH service may be compromised.
+
+### Aduit 
+Verify the SSH public host key files have mode "0644" or less permissive. Note: SSH public key files may be found in other directories on the system depending on the installation. The following command will find all SSH public key files on the system:
+```
+# find /etc/ssh/ -name "*key.pub" -perm /133 -exec ls -l {} \;
+-rw-rw-rw- 1 root root 91 Jun 13 00:40 /etc/ssh/ssh_host_ed25519_key.pub
+-rw-rw-rw- 1 root root 391 Jun 13 00:40 /etc/ssh/ssh_host_rsa_key.pub
+```
+If any file has a mode more permissive than "0644", this is a finding.
+
+### Remediation
+Note: SSH public key files may be found in other directories on the system depending on the installation. Change the mode of public host key files under "/etc/ssh" to "0644" with the following command:
+```
+# chmod 0644 /etc/ssh/*.key.pub
+```
+
+## 9.3.24 Check SSH private host key permission  (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description 
+The SSH private host key files must have mode 0600 or less permissive.
+
+### Rationale 
+If an unauthorized user obtains the private SSH host key file, the host could be impersonated.
+
+### Aduit 
+Verify the SSH private host key files have mode "0600" or less permissive. Check the mode of the private host key files under "/etc/ssh" file with the following command:
+```
+# find /etc/ssh/ -type f -name "*ssh_host*key" -exec ls -l {} \;
+-rwxrwxrwx 1 root root 399 Jun 13 00:40 /etc/ssh/ssh_host_ed25519_key
+-rwxrwxrwx 1 root root 1679 Jun 13 00:40 /etc/ssh/ssh_host_rsa_key
+-rwxrwxrwx 1 root root 227 Jun 13 00:40 /etc/ssh/ssh_host_ecdsa_key
+```
+
+If any file has a mode more permissive than "0600", this is a finding.
+
+### Remediation
+Configure the mode of SSH private host key files under "/etc/ssh" to "0600" with the following command:
+```
+# chmod 0600 /etc/ssh/ssh_host*key
+```
+
 ## 10.1.4 Set encrypt method (Scored) 
 
 ### Profile Applicability
