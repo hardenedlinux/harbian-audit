@@ -314,6 +314,32 @@ Fixtext: Configure the operating system to generate audit records when successfu
 ```
 The audit daemon must be restarted for the changes to take effect.
 
+## 8.1.26 Recored pam_tally/pam_tally2 command usage (scored)
+
+### Profile Applicability
+Level 4
+
+### Description
+All uses of the pam_tally/pam_tally2 command must be audited.
+
+### Rationale
+Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one.
+
+### Aduit
+Verify the operating system generates audit records when successful/unsuccessful attempts to use the "pam_tally/pam_tally2" command occur. Check the auditing rules in "/etc/audit/audit.rules" with the following command:
+```
+# grep "/sbin/pam_tally[2]*" /etc/audit/audit.rules
+-a always,exit -F path=/sbin/pam_tally -F perm=wxa -F auid>=1000 -F auid!=4294967295  -k privileged-pam
+-a always,exit -F path=/sbin/pam_tally2 -F perm=wxa -F auid>=1000 -F auid!=4294967295  -k privileged-pam
+```
+If the command does not return any output, this is a finding.
+
+Fixtext: Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "pam_tally/pam_tally2" command occur. Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+```
+-a always,exit -F path=/sbin/pam_tally -F perm=wxa -F auid>=1000 -F auid!=4294967295  -k privileged-pam
+-a always,exit -F path=/sbin/pam_tally2 -F perm=wxa -F auid>=1000 -F auid!=4294967295  -k privileged-pam
+```
+The audit daemon must be restarted for the changes to take effect.
 
 ## 8.5 Verifies integrity all packages (scored) 
 
