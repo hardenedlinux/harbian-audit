@@ -16,7 +16,7 @@ HARDENING_LEVEL=4
 AUDIT_PARAMS='-w /var/log/faillog -p wa -k logins
 -w /var/log/lastlog -p wa -k logins
 -w /var/log/tallylog -p wa -k logins'
-FILE='/etc/audit/audit.rules'
+FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {

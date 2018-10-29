@@ -18,7 +18,7 @@ AUDIT_PARAMS='-w /etc/group -p wa -k identity
 -w /etc/gshadow -p wa -k identity
 -w /etc/shadow -p wa -k identity
 -w /etc/security/opasswd -p wa -k identity'
-FILE='/etc/audit/audit.rules'
+FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {

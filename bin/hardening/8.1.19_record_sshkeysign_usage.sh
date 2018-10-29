@@ -15,7 +15,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=4
 
 AUDIT_PARAMS='-a always,exit -F path=/usr/lib/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh'
-FILE='/etc/audit/audit.rules'
+FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {

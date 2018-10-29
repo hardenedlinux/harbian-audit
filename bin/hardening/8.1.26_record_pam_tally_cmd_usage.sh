@@ -16,7 +16,7 @@ HARDENING_LEVEL=4
 
 AUDIT_PARAMS='-a always,exit -F path=/sbin/pam_tally -F perm=wxa -F auid>=1000 -F auid!=4294967295 -k privileged-pam
 -a always,exit -F path=/sbin/pam_tally2 -F perm=wxa -F auid>=1000 -F auid!=4294967295 -k privileged-pam'
-FILE='/etc/audit/audit.rules'
+FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {

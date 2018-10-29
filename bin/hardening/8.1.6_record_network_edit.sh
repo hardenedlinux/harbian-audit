@@ -19,7 +19,7 @@ AUDIT_PARAMS='-a exit,always -F arch=b64 -S sethostname -S setdomainname -k syst
 -w /etc/issue.net -p wa -k system-locale
 -w /etc/hosts -p wa -k system-locale
 -w /etc/network -p wa -k system-locale'
-FILE='/etc/audit/audit.rules'
+FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {

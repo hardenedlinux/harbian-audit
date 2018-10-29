@@ -14,7 +14,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=4
 
 AUDIT_PARAMS='-w /etc/selinux/ -p wa -k MAC-policy'
-FILE='/etc/audit/audit.rules'
+FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
