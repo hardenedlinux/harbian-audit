@@ -6,6 +6,7 @@
 
 #
 # 9.2.11 Set Lockout for Failed Password Attempts (Not Scored)
+# The number in the original document is 9.2.2
 #
 
 set -e # One error, it's over
@@ -45,7 +46,7 @@ apply () {
         apt_install $PACKAGE
     elif [ $FNRET = 2 ]; then
         crit "Apply:$PATTERN is not present in $FILE"
-        add_line_file_before_pattern $FILE "auth    required    pam_tally.so onerr=fail deny=6 unlock_time=1800" "# Uncomment and edit /etc/security/time.conf if you need to set"
+        add_line_file_before_pattern $FILE "auth required pam_tally2.so onerr=fail deny=6 unlock_time=1800" "# Uncomment and edit /etc/security/time.conf if you need to set"
     fi
 }
 

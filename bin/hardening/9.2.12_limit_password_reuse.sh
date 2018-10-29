@@ -6,6 +6,7 @@
 
 #
 # 9.2.12 Limit Password Reuse (Scored)
+# The number in the original document is 9.2.3
 #
 
 set -e # One error, it's over
