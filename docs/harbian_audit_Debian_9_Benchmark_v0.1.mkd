@@ -51,6 +51,39 @@ Install SSH packages onto the host with the following commands:
 # apt-get install -y openssh-server openssh-client
 ```
 
+## 5.9 Ensure ctrl-alt-del key sequence is disabled (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description
+The x86 Ctrl-Alt-Delete key sequence must be disabled.
+
+### Rationale
+A locally logged-on user who presses Ctrl-Alt-Delete, when at the console, can reboot the system. If accidentally pressed, as could happen in the case of a mixed OS environment, this can create the risk of short-term loss of availability of systems due to unintentional reboot. In the GNOME graphical environment, risk of unintentional reboot from the Ctrl-Alt-Delete sequence is reduced because the user will be prompted before any action is taken.
+
+### Aduit
+Verify the operating system is not configured to reboot the system when Ctrl-Alt-Delete is pressed. Check that the ctrl-alt-del.service is not active with the following command:
+```
+# find /lib/systemd/ /etc/systemd/ -name ctrl-alt-del.target -exec ls -l {} \;| grep -v "/dev/null" | awk '{print $NF}'
+/lib/systemd/system/ctrl-alt-del.target
+/etc/systemd/system/ctrl-alt-del.target
+```
+If the ctrl-alt-del.target is not link to /dev/null, this is a finding.
+
+### Remediation
+Configure the system to disable the Ctrl-Alt_Delete sequence for the command line with the following command:
+if config file is in /lib/systemd/:
+```
+# rm /lib/systemd/system/ctrl-alt-del.target
+# systemctl daemon-reload
+```
+if config file is in /etc/systemd/:
+```
+# systemctl mask /etc/systemd/ctrl-alt-del.target
+# systemctl daemon-reload
+```
+
 ## 6.17 ensure virul scan server is enabled (scored) 
 
 ### Profile Applicability
