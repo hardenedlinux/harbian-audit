@@ -136,6 +136,19 @@ add_line_file_before_pattern() {
     FNRET=0
 }
 
+add_line_file_after_pattern() {
+    local FILE=$1
+    local LINE=$2
+    local PATTERN=$3
+
+    backup_file "$FILE"
+    debug "Inserting $LINE before $PATTERN in $FILE"
+    PATTERN=$(sed 's@/@\\\/@g' <<< $PATTERN)
+    debug "sed -i '/$PATTERN/a $LINE' $FILE"
+    sed -i "/$PATTERN/a $LINE" $FILE
+    FNRET=0
+}
+
 replace_in_file() {
     local FILE=$1
     local SOURCE=$2
