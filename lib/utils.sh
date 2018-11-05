@@ -494,7 +494,7 @@ check_param_pair_by_pam()
 }
 
 # Only check option name 
-check_password_option_by_pam()
+check_no_param_option_by_pam()
 {   
     KEYWORD=$1
     OPTION=$2
@@ -554,7 +554,7 @@ add_option_to_session_check()
     # For example : 
     # password  requisite           pam_cracklib.so  minlen=8 difok=3
     # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=3
-    sed -ie "s;\(^session.*$KEYWORD.*\);\1 $OPTIONSTR;" $PAMPWDFILE  
+    sed -i "s;\(^session.*$KEYWORD.*\);\1 $OPTIONSTR;" $PAMPWDFILE  
 }
 
 
@@ -573,7 +573,7 @@ add_option_to_auth_check()
     # For example : 
     # password  requisite           pam_cracklib.so  minlen=8 difok=3
     # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=3
-    sed -ie "s;\(^auth.*$KEYWORD.*\);\1 $OPTIONSTR;" $PAMPWDFILE  
+    sed -i "s;\(^auth.*$KEYWORD.*\);\1 $OPTIONSTR;" $PAMPWDFILE  
 }
 
 # Reset password check option value when option is not set a correct value 
@@ -593,7 +593,7 @@ reset_option_to_password_check()
     # For example : 
     # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=1
     # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=3
-    sed -ie "s/${OPTIONNAME}=./${OPTIONNAME}=${OPTIONVAL}/" $PAMPWDFILE
+    sed -i "s/${OPTIONNAME}=./${OPTIONNAME}=${OPTIONVAL}/" $PAMPWDFILE
 }
 
 # Reset auth check option value when option is not set a correct value 
@@ -613,7 +613,7 @@ reset_option_to_auth_check()
     # For example : 
     # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=1
     # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=3
-    sed -ie "s/${OPTIONNAME}=.*/${OPTIONNAME}=${OPTIONVAL}/" $PAMPWDFILE
+    sed -i "s/${OPTIONNAME}=.*/${OPTIONNAME}=${OPTIONVAL}/" $PAMPWDFILE
 }
 
 # Only check option name 

@@ -31,7 +31,7 @@ audit () {
         does_pattern_exist_in_file $FILE $PATTERN
         if [ $FNRET = 0 ]; then
             ok "$PATTERN is present in $FILE"
-            check_password_option_by_pam $KEYWORD $OPTIONNAME $FILE
+            check_no_param_option_by_pam $KEYWORD $OPTIONNAME $FILE
             if [ $FNRET = 0 ]; then
                 ok "$OPTIONNAME is already configured"
             else
