@@ -18,6 +18,8 @@ HARDENING_LEVEL=3
 PACKAGE='libpam-modules-bin'
 AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_tally[2]?.so'
 AUTHFILE='/etc/pam.d/common-auth'
+AUTHRULE='auth required pam_tally2.so audit silent deny=3 unlock_time=900'
+ADDPATTERNLINE='# pam-auth-update(8) for details.'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -47,7 +49,7 @@ apply () {
         apt_install $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "Apply:$AUTHPATTERN is not present in $AUTHFILE"
-        add_line_file_after_pattern $AUTHFILE "auth required pam_tally2.so audit deny=3 unlock_time=900" "# pam-auth-update(8) for details."
+        add_line_file_after_pattern $AUTHFILE $AUTHRULE $ADDPATTERNLINE
     fi
 }
 
