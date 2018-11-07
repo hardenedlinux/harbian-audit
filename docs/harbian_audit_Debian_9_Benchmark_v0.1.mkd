@@ -653,6 +653,31 @@ Configure the operating system to require the change of the number of repeating 
 password	requisite			pam_cracklib.so retry=3 minlen=8 difok=3 maxclassrepeat=4
 ```
 
+## 9.2.11 Set deny times for Password Attempts  (scored) 
+
+### Profile Applicability
+Level 3
+
+### Description 
+Accounts subject to three unsuccessful logon attempts must be deny login.
+
+### Rationale 
+By limiting the number of failed logon attempts, the risk of unauthorized system access via user password guessing, otherwise known as brute-forcing, is reduced. 
+
+### Aduit 
+Check that the system deny an account for the maximum period after three unsuccessful logon attempts with the following command:
+```
+# grep -w "^auth.*pam_tally2.so.*deny" /etc/pam.d/common-auth
+auth required pam_tally2.so deny=3 unlock_time=900 even_deny_root
+```
+If the "deny" setting is less than or equal to "3" on both lines with the "pam_tally2.so" module name or is missing from a line, this is a finding.
+
+### Remediation
+Configure the operating system to deny an account when three unsuccessful logon attempts are made. Modify "/etc/pam.d/common-auth" files to match the following lines:
+```
+auth required pam_tally2.so deny=3 unlock_time=900 even_deny_root
+```
+
 ## 9.2.13  Set password creation requirement Parameters Using pam_unix: sha512 option (scored) 
 
 ### Profile Applicability
