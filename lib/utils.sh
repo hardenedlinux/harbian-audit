@@ -469,9 +469,8 @@ check_param_pair_by_pam()
     #OPTION="ocredit"
     #COMPARE="gt"
     #CONDITION="-1"
-    
     if [ -f "$LOCATION" ];then
-        RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep "$KEYWORD.*$OPTION" | wc -l)
+        RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep -w "$KEYWORD.*$OPTION" | wc -l)
         echo $RESULT
         if [ "$RESULT" -eq 1 ]; then
             debug "$KEYWORD $OPTION is conf"
@@ -563,7 +562,7 @@ add_option_to_session_check()
 add_option_to_auth_check() 
 {
     #Example:
-    #local PAMPWDFILE="/etc/pam.d/common-password"
+    #local PAMPWDFILE="/etc/pam.d/common-auth"
     #local KEYWORD="pam_cracklib.so"
     #local OPTIONSTR="retry=3"
     local PAMPWDFILE=$1
