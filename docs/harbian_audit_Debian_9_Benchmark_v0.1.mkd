@@ -668,14 +668,14 @@ By limiting the number of failed logon attempts, the risk of unauthorized system
 Check that the system deny an account for the maximum period after three unsuccessful logon attempts with the following command:
 ```
 # grep -w "^auth.*pam_tally2.so.*deny" /etc/pam.d/common-auth
-auth required pam_tally2.so deny=3 unlock_time=900 even_deny_root
+auth required pam_tally2.so deny=3 unlock_time=900 
 ```
 If the "deny" setting is less than or equal to "3" on both lines with the "pam_tally2.so" module name or is missing from a line, this is a finding.
 
 ### Remediation
 Configure the operating system to deny an account when three unsuccessful logon attempts are made. Modify "/etc/pam.d/common-auth" files to match the following lines:
 ```
-auth required pam_tally2.so deny=3 unlock_time=900 even_deny_root
+auth required pam_tally2.so deny=3 unlock_time=900 
 ```
 
 ## 9.2.13  Set password creation requirement Parameters Using pam_unix: sha512 option (scored) 
@@ -752,6 +752,56 @@ If "pam_lastlog" is missing from "/etc/pam.d/login" file, this is a finding.
 Configure the operating system to provide users with feedback on when account accesses last occurred by setting the required configuration options in "/etc/pam.d/login". Add the following line to the top of "/etc/pam.d/login":
 ```
 session     optional      pam_lastlog.so showfailed
+```
+
+## 9.2.16 Set lockout time for Failed Password Attempts (scored) 
+
+### Profile Applicability
+Level 3
+
+### Description 
+Accounts subject to three unsuccessful login attempts must be set unlock_time for associated account.
+
+### Rationale 
+By limiting the number of failed login attempts, the risk of unauthorized system access via user password guessing, otherwise known as brute-forcing, is reduced. Limits are imposed by locking the account.
+
+### Aduit 
+Check that the system unlock_time an account for the maximum period after three unsuccessful logon attempts with the following command:
+```
+# grep -w "^auth.*pam_tally2.so.*unlock_time" /etc/pam.d/common-auth
+auth required pam_tally2.so deny=3 unlock_time=900 
+```
+If the "unlock_time" setting is less than "900" on both lines with the "pam_tally2.so" module name or is missing from a line, this is a finding.
+
+### Remediation
+Configure the operating system to deny an account when three unsuccessful logon attempts are made. Modify "/etc/pam.d/common-auth" files to match the following lines:
+```
+auth required pam_tally2.so deny=3 unlock_time=900 
+```
+
+## 9.2.17 Ensure unsuccessful root login occur the associated account must be locked  (scored) 
+
+### Profile Applicability
+Level 3
+
+### Description 
+Accounts subject to three unsuccessful root login attempts must be deny login.
+
+### Rationale 
+By limiting the number of failed logon attempts, the risk of unauthorized system access via user password guessing, otherwise known as brute-forcing, is reduced. 
+
+### Aduit 
+Check that the system deny an account for the maximum period after three unsuccessful logon attempts with the following command:
+```
+# grep -w "^auth.*pam_tally2.so.*even_deny_root" /etc/pam.d/common-auth
+auth required pam_tally2.so deny=3 unlock_time=900 even_deny_root
+```
+If the "even_deny_root" is missing from a line, this is a finding.
+
+### Remediation
+Configure the operating system to deny an account when three unsuccessful logon attempts are made. Modify "/etc/pam.d/common-auth" files to match the following lines:
+```
+auth required pam_tally2.so deny=3 unlock_time=900 even_deny_root
 ```
 
 ## 9.3.15 Set login display the date and time of last fail logon using pam_lastlog (scored) 
