@@ -8,6 +8,7 @@
 # 9.2.11 Set Lockout for Failed Password Attempts (Scored)
 # The number in the original document is 9.2.2
 # for login and ssh service
+# Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
@@ -16,10 +17,13 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 PACKAGE='libpam-modules-bin'
+PAMLIBNAME='pam_tally2.so'
 AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_tally2.so'
 AUTHFILE='/etc/pam.d/common-auth'
-AUTHRULE='auth required pam_tally2.so audit silent deny=3 unlock_time=900'
+AUTHRULE='auth required pam_tally2.so deny=3 even_deny_root unlock_time=900'
 ADDPATTERNLINE='# pam-auth-update(8) for details.'
+DENYOPTION='deny'
+DENY_VAL=3
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -32,7 +36,12 @@ audit () {
         does_pattern_exist_in_file $AUTHFILE $AUTHPATTERN
         if [ $FNRET = 0 ]; then
                 ok "$AUTHPATTERN is present in $AUTHFILE."
-                FNRET=0
+                check_param_pair_by_pam $AUTHFILE $PAMLIBNAME $DENYOPTION le $DENY_VAL
+                if [ $FNRET = 0 ]; then
+                    ok "$DENYOPTION set condition is $DENY_VAL"
+                else
+                    crit "$DENYOPTION set condition is not $DENY_VAL"
+                fi
         else
             crit "$AUTHPATTERN is not present in $AUTHFILE"
             FNRET=2
@@ -43,13 +52,21 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "installed"
+        ok "$PACKAGE is installed"
     elif [ $FNRET = 1 ]; then
         warn "Apply:$PACKAGE is absent, installing it"
         apt_install $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "Apply:$AUTHPATTERN is not present in $AUTHFILE"
         add_line_file_after_pattern "$AUTHFILE" "$AUTHRULE" "$ADDPATTERNLINE"
+    elif [ $FNRET = 3 ]; then
+        crit "$AUTHFILE is not exist, please check"
+    elif [ $FNRET = 4 ]; then
+        warn "Apply:$DENYOPTION is not conf"   
+        add_option_to_auth_check $AUTHFILE $PAMLIBNAME "$DENYOPTION=$DENY_VAL"
+    elif [ $FNRET = 5 ]; then                                                
+        warn "Apply:$DENYOPTION set is not match legally, reset it to $DENY_VAL"
+        reset_option_to_password_check $AUTHFILE $PAMLIBNAME "$DENYOPTION" "$DENY_VAL"
     fi
 }
 
