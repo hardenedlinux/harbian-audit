@@ -1,14 +1,13 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 9  Hardening
 #
 
 #
-# 9.2.11 Set deny times for Password Attempts (Scored)
-# The number in the original document is 9.2.2
-# for login and ssh service
+# 9.2.17 Ensure unsuccessful root logon occur the associated account must be locked. (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
+# for login and ssh service
 #
 
 set -e # One error, it's over
@@ -22,8 +21,7 @@ AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_tally2.so'
 AUTHFILE='/etc/pam.d/common-auth'
 AUTHRULE='auth required pam_tally2.so deny=3 even_deny_root unlock_time=900'
 ADDPATTERNLINE='# pam-auth-update(8) for details.'
-DENYOPTION='deny'
-DENY_VAL=3
+DENYROOT='even_deny_root'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -36,11 +34,11 @@ audit () {
         does_pattern_exist_in_file $AUTHFILE $AUTHPATTERN
         if [ $FNRET = 0 ]; then
                 ok "$AUTHPATTERN is present in $AUTHFILE."
-                check_param_pair_by_pam $AUTHFILE $PAMLIBNAME $DENYOPTION le $DENY_VAL
+                check_no_param_option_by_pam $PAMLIBNAME $DENYROOT $AUTHFILE
                 if [ $FNRET = 0 ]; then
-                    ok "$DENYOPTION set condition is $DENY_VAL"
+                    ok "$DENYROOT is already configured"
                 else
-                    crit "$DENYOPTION set condition is not $DENY_VAL"
+                    crit "$DENYROOT is not present in $AUTHFILE"
                 fi
         else
             crit "$AUTHPATTERN is not present in $AUTHFILE"
@@ -62,11 +60,8 @@ apply () {
     elif [ $FNRET = 3 ]; then
         crit "$AUTHFILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
-        warn "Apply:$DENYOPTION is not conf"   
-        add_option_to_auth_check $AUTHFILE $PAMLIBNAME "$DENYOPTION=$DENY_VAL"
-    elif [ $FNRET = 5 ]; then                                                
-        warn "Apply:$DENYOPTION set is not match legally, reset it to $DENY_VAL"
-        reset_option_to_password_check $AUTHFILE $PAMLIBNAME "$DENYOPTION" "$DENY_VAL"
+        warn "Apply:$DENYROOT is not conf"   
+        add_option_to_auth_check $AUTHFILE $PAMLIBNAME $DENYROOT
     fi
 }
 
