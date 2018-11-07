@@ -16,7 +16,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 PACKAGE='libpam-modules-bin'
-AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_tally[2]?.so'
+AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_tally2.so'
 AUTHFILE='/etc/pam.d/common-auth'
 AUTHRULE='auth required pam_tally2.so audit silent deny=3 unlock_time=900'
 ADDPATTERNLINE='# pam-auth-update(8) for details.'
@@ -49,7 +49,7 @@ apply () {
         apt_install $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "Apply:$AUTHPATTERN is not present in $AUTHFILE"
-        add_line_file_after_pattern $AUTHFILE $AUTHRULE $ADDPATTERNLINE
+        add_line_file_after_pattern "$AUTHFILE" "$AUTHRULE" "$ADDPATTERNLINE"
     fi
 }
 

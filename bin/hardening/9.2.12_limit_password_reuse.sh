@@ -32,7 +32,7 @@ audit () {
         does_pattern_exist_in_file $FILE $PATTERN
         if [ $FNRET = 0 ]; then
             ok "$PATTERN is present in $FILE"
-            check_password_by_pam $FILE $KEYWORD $OPTIONNAME ge $CONDT_VAL
+            check_param_pair_by_pam $FILE $KEYWORD $OPTIONNAME ge $CONDT_VAL
             if [ $FNRET = 0 ]; then
                 ok "$OPTIONNAME set condition to $CONDT_VAL is ok"
             else

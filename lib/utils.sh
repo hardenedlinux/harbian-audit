@@ -454,7 +454,7 @@ verify_integrity_all_packages()
     fi
 }
 
-check_password_by_pam()
+check_param_pair_by_pam()
 {   
     LOCATION=$1
     KEYWORD=$2
