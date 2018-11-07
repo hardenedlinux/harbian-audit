@@ -5,7 +5,7 @@
 #
 
 #
-# 9.2.11 Set Lockout for Failed Password Attempts (Scored)
+# 9.2.16 Set Lockout for Failed Password Attempts (Scored)
 # for login and ssh service
 #
 
