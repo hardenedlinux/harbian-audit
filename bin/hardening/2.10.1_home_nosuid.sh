@@ -1,11 +1,12 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9   Hardening
+# harbian audit 9   Hardening
 #
 
 #
 # 2.10.1 Set nosuid option for /home filesystem/Partition (Scored)
+# Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
