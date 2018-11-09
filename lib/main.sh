@@ -2,6 +2,7 @@ LONG_SCRIPT_NAME=$(basename $0)
 SCRIPT_NAME=${LONG_SCRIPT_NAME%.sh}
 # Variable initialization, to avoid crash
 CRITICAL_ERRORS_NUMBER=0 # This will be used to see if a script failed, or passed
+NONEXISTENT_NUMBER=0 #This will be used to see if service is exist 
 status=""
 forcedstatus=""
 SUDO_CMD=""
@@ -68,12 +69,15 @@ elif [ "$forcedstatus" = "audit" ] ; then
     else
         info "Audit argument passed but script is disabled"
     fi
+elif [ $NONEXISTENT_NUMBER -gt 0 ]; then
+    status=nonexistent
 fi
 
 if [ -z $status ]; then
     crit "Could not find status variable for $SCRIPT_NAME, considered as disabled"
     exit 2
 fi
+
 
 case $status in
     enabled | true )
@@ -93,6 +97,10 @@ case $status in
     disabled | false )
         info "$SCRIPT_NAME is disabled, ignoring"
         exit 2 # Means unknown status
+        ;;
+    nonexistent)
+        no_entity "Check ${SCRIPT_NAME} Service is nonexistent "
+        exit 3
         ;;
     *)
         warn "Wrong value for status : $status. Must be [ enabled | true | audit | disabled | false ]"

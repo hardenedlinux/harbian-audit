@@ -243,8 +243,15 @@ for SCRIPT in $(ls $CIS_ROOT_DIR/bin/hardening/*.sh -v); do
             DISABLED_CHECKS=$((DISABLED_CHECKS+1))
         ;;
     esac
-
-    TOTAL_CHECKS=$((TOTAL_CHECKS+1))
+    if [ $SCRIPT_EXITCODE -eq 3 ]; then
+    {
+        debug "$SCRIPT maybe is nonexist service in this system"
+    }
+    else
+    {
+        TOTAL_CHECKS=$((TOTAL_CHECKS+1))
+    }
+    fi
  
 done
 

@@ -63,6 +63,12 @@ crit () {
     CRITICAL_ERRORS_NUMBER=$((CRITICAL_ERRORS_NUMBER+1))
 }
 
+no_entity() {
+    if [ $MACHINE_LOG_LEVEL -ge 1 ]; then _logger $BGREEN "[ none entity, so it's not scored ] $*"; fi
+    # This variable incrementation is used to measure whether the service exists in tests
+    NONEXISTENT_NUMBER=$((NONEXISTENT_NUMBER+1))
+}
+
 warn () {
     if [ $MACHINE_LOG_LEVEL -ge 2 ]; then _logger $BYELLOW "[WARN] $*"; fi
 }
