@@ -5,7 +5,7 @@
 #
 
 #
-# 2.10.1 Set nosuid option for /home filesystem/Partition (Scored)
+# 2.26 Set nosuid option for /home filesystem/Partition (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
