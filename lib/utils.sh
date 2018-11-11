@@ -266,7 +266,7 @@ is_kernel_option_enabled() {
 # Verify $1 is a partition declared in fstab
 is_a_partition() {
 
-    local PARTITION_NAME=$1
+    local PARTITION=$1
     FNRET=128
     if $(grep "[[:space:]]$1[[:space:]]" /etc/fstab | grep -vqE "^#"); then
         debug "$PARTITION found in fstab"
@@ -279,7 +279,7 @@ is_a_partition() {
 
 # Verify that $1 is mounted at runtime
 is_mounted() {
-    local PARTITION_NAME=$1
+    local PARTITION=$1
     if $(grep -q "[[:space:]]$1[[:space:]]" /proc/mounts); then
         debug "$PARTITION found in /proc/mounts, it's mounted"
         FNRET=0
@@ -339,6 +339,19 @@ add_option_to_fstab() {
     # /dev/sda9       /home           ext4  auto,acl,errors=remount-ro,nodev  0       2
     debug "Sed command :  sed -ie \"s;\(.*\)\(\s*\)\s\($PARTITION\)\s\(\s*\)\(\w*\)\(\s*\)\(\w*\)*;\1\2 \3 \4\5\6\7,$OPTION;\" /etc/fstab"
     sed -ie "s;\(.*\)\(\s*\)\s\($PARTITION\)\s\(\s*\)\(\w*\)\(\s*\)\(\w*\)*;\1\2 \3 \4\5\6\7,$OPTION;" /etc/fstab
+}
+
+# Setup mount option in fstab (todo)
+add_option_to_fstab_by_type() {
+    local FSTYPE=$1
+    local OPTION=$2
+    debug "Setting $OPTION for $FSTYPE in fstab by filesystem type"
+    backup_file "/etc/fstab"
+    # For example : 
+    # /dev/sda9       /storage           nfs  auto,acl,errors=remount-ro  0       2
+    # /dev/sda9       /storage        nfs  auto,acl,errors=remount-ro,nosuid  0       2
+    debug "Sed command :  sed -ie \"s;\(.*\)\(\s*\)\s\(\s*)\s\(\s*\)\(\w*\)\(\s*\)\(\w*\)*;\1\2 \3 \4\5\6\7,$OPTION;\" /etc/fstab"
+    sed -ie "s;\(.*\)\(\s*\)\s\(\s*\)\s\(\s*\)\(\w*\)\(\s*\)\(\w*\)*;\1\2 \3 \4\5\6\7,$OPTION;" /etc/fstab
 }
 
 remount_partition() {
