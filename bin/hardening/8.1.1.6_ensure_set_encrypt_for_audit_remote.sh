@@ -5,7 +5,7 @@
 #
 
 #
-# 8.1.1.6 Ensure enable_krb5 set to yew for remote audit service (Scored)
+# 8.1.1.6 Ensure enable_krb5 set to yes for remote audit service (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
