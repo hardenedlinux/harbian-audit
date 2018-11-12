@@ -256,6 +256,81 @@ If a remote server is not configured, or the line is commented out, ask the Syst
 ### Remediation (Need manual fix)
 Configure the operating system to off-load audit records onto a different system or media from the system being audited. Set the remote server option in "/etc/audisp/audisp-remote.conf" with the IP address of the log aggregation server.
 
+## 8.1.1.6 Ensure enable_krb5 set to yes for remote audit service (scored) 
+
+### Profile Applicability
+Level 4
+
+### Description
+The operating system must encrypt the transfer of audit records off-loaded onto a different system or media from the system being audited.
+
+### Rationale
+Information stored in one location is vulnerable to accidental or incidental deletion or alteration.\n\nOff-loading is a common process in information systems with limited audit storage capacity.
+
+### Aduit
+Verify the operating system encrypts audit records off-loaded onto a different system or media from the system being audited. To determine if the transfer is encrypted, use the following command:
+```
+# grep -i enable_krb5 /etc/audisp/audisp-remote.conf
+enable_krb5 = yes
+```
+If the value of the "enable_krb5" option is not set to "yes" or the line is commented out, ask the System Administrator to indicate how the audit logs are off-loaded to a different system or media. If there is no evidence that the transfer of the audit logs being off-loaded to another system or media is encrypted, this is a finding.
+
+### Remediation (Need manual fix)
+Configure the operating system to encrypt the transfer of off-loaded audit records onto a different system or media from the system being audited. Uncomment the "enable_krb5" option in "/etc/audisp/audisp-remote.conf" and set it with the following line:
+```
+enable_krb5 = yes
+```
+
+## 8.1.1.7 Ensure set action for audit storage volume is fulled (scored) 
+
+### Profile Applicability
+Level 4
+
+### Description
+The audit system must take appropriate action when the audit storage volume is full.
+
+### Rationale
+Taking appropriate action in case of a filled audit storage volume will minimize the possibility of losing audit records.
+
+### Aduit
+Verify the action the operating system takes if the disk the audit records are written to becomes full. To determine the action that takes place if the disk is full on the remote server, use the following command:
+```
+# grep -i disk_full_action /etc/audisp/audisp-remote.conf
+disk_full_action = single
+```
+If the value of the "disk_full_action" option is not "syslog", "single", or "halt", or the line is commented out, this is a finding.
+
+### Remediation (Need manual fix)
+Configure the action the operating system takes if the disk the audit records are written to becomes full. Uncomment or edit the "disk_full_action" option in "/etc/audisp/audisp-remote.conf" and set it to "syslog", "single", or "halt", such as the following line:
+```
+disk_full_action = syslog
+```
+
+## 8.1.1.8 Ensure set action for network failure on remote audit service (scored) 
+
+### Profile Applicability
+Level 4
+
+### Description
+The audit system must take appropriate action when the network connection fails.
+
+### Rationale
+Taking appropriate action in case of network connection is failure.
+
+### Aduit
+Verify the action the operating system takes if the network connection fails. To determine the action that takes place if the network connection failure on the remote server, use the following command:
+```
+# grep -i network_failure_action /etc/audisp/audisp-remote.conf
+network_failure_action = single
+```
+If the value of the "network_failure_action" option is not "syslog", "single", or "halt", or the line is commented out, this is a finding.
+
+### Remediation (Need manual fix)
+Configure the action the operating system takes if the network connection is failure. Uncomment or edit the "network_failure_action" option in "/etc/audisp/audisp-remote.conf" and set it to "syslog", "single", or "halt", such as the following line:
+```
+network_failure_action = syslog
+```
+
 ## 8.1.19 Recored ssh-keysign command usage (scored) 
 
 ### Profile Applicability
