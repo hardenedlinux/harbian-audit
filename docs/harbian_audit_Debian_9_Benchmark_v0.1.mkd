@@ -196,6 +196,30 @@ If the database file has a date older than seven days from the current date, thi
 ### Remediation
 Update the virus scan software and virus definition files, enable clamav-freshclam service.
 
+## 7.1.3  Disable promiscuous mode for network interface (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description
+Network interfaces must not be in promiscuous mode.
+
+### Rationale
+Network interfaces in promiscuous mode allow for the capture of all network traffic visible to the system. If unauthorized individuals can access these applications, it may allow then to collect information such as logon IDs, passwords, and key exchanges between systems. If the system is being used to perform a network troubleshooting function, the use of these tools must be documented with the Information System Security Officer (ISSO) and restricted to only authorized personnel.
+
+### Aduit
+Verify network interfaces are not in promiscuous mode unless approved by the ISSO and documented. Check for the status with the following command: 
+```
+# ip link | grep -i promisc
+```
+If network interfaces are found on the system in promiscuous mode and their use has not been approved by the ISSO and documented, this is a finding.
+
+### Remediation
+Configure network interfaces to turn off promiscuous mode unless approved by the ISSO and documented. Set the promiscuous mode of an interface to off with the following command:
+```
+#ip link set dev <devicename> multicast off promisc off
+```
+
 ## 8.1.1.4 Set failure mode of audit service (scored) 
 
 ### Profile Applicability
