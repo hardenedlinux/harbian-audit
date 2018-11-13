@@ -6,6 +6,7 @@
 
 #
 # 4.5 Activate AppArmor (Scored)
+# Add by Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
@@ -13,26 +14,57 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=3
 
-PACKAGE='apparmor'
+PACKAGES='apparmor apparmor-profiles apparmor-utils'
+GRUBPATTERN="GRUB_CMDLINE_LINUX=\"apparmor=1[[:space:]]*security=apparmor\"" 
+GRUBFILE='/etc/default/grub'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    is_pkg_installed $PACKAGE
-    if [ $FNRET != 0 ]; then
-        crit "$PACKAGE is absent!"
-    else
+    for PACKAGE in ${PACKAGES}
+    do
+        is_pkg_installed $PACKAGE
+        if [ $FNRET != 0 ]; then
+            crit "$PACKAGE is absent!"
+            FNRET=1
+            exit 1
+        fi
+    done
+    if [ $FNRET = 0 ]; then
         ok "$PACKAGE is installed"
+        if [ $(grep ${GRUBPATTERN} ${GRUBFILE} | wc -l) -eq 1 ]; then
+            ok "There are apparmor=1 and security=apparmor to GRUB_CMDLINE_LINUX in /etc/default/grub"
+            if [ $(apparmor_status | grep 'profiles are loaded' | awk '{print $1}') -eq 0 ]; then
+                crit "AppArmor profiles not enable in the system "
+                FNRET=3
+            else
+                ok "AppArmor profiles is enable in the system "
+                FNRET=0
+            fi
+        else
+            crit "There are not apparmor=1 and security=apparmor to GRUB_CMDLINE_LINUX in /etc/default/grub"
+            FNRET=2
+        fi
     fi
-    :
+
+
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    is_pkg_installed $PACKAGE
-    if [ $FNRET != 0 ]; then
-        crit "$PACKAGE is not installed, please install $PACKAGE and configure it"
-    else
-        ok "$PACKAGE is installed"
+    if [ $FNRET = 0 ]; then
+        ok "AppArmor profiles is enable in the system "
+    elif [ $FNRET = 1 ]; then
+        warn "$PACKAGE is not installed, install $PACKAGES"
+        for PACKAGE in ${PACKAGES}
+        do
+            apt_install $PACKAGE
+        done
+    elif [ $FNRET = 2 ]; then
+        warn "Set apparmor=1 and security=apparmor to GRUB_CMDLINE_LINUX in /etc/default/grub"
+        replace_in_file ${GRUBFILE} "^GRUB_CMDLINE_LINUX=.*" "" "${GRUBPATTERN}"
+    elif [ $FNRET = 3 ]; then
+        warn "Enable AppArmor profiles in the system "
+        aa-enforce /etc/apparmor.d/*
     fi
     :
 }
