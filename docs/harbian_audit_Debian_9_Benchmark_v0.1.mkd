@@ -331,6 +331,49 @@ Configure the action the operating system takes if the network connection is fai
 network_failure_action = syslog
 ```
 
+## 8.1.1.9 Set space left for auditd service  (scored) 
+
+### Profile Applicability
+Level 4
+
+### Description
+The operating system must immediately notify the System Administrator (SA) and Information System Security Officer ISSO (at a minimum) when allocated audit record storage volume reaches 75% of the repository maximum audit record storage capacity.
+
+### Rationale
+If security personnel are not notified immediately when storage volume reaches 75 percent utilization, they are unable to plan for audit record storage capacity expansion.
+
+### Aduit
+Verify the operating system immediately notifies the SA and ISSO (at a minimum) when allocated audit record storage volume reaches 75 percent of the repository maximum audit record storage capacity. Check the system configuration to determine the partition the audit records are being written to with the following command:
+```
+# grep log_file /etc/audit/auditd.conf
+log_file = /var/log/audit/audit.log
+```
+Check the size of the partition that audit records are written to (with the example being "/var/log/audit/"):
+```
+# df -B 1m /var/log/audit/
+Filesystem     1M-blocks  Used Available Use% Mounted on
+/dev/sda1          18015  2002     15076  12% /
+```
+Determine what the threshold is for the system to take action when 75 percent of the repository maximum audit record storage capacity is reached:
+```
+# grep -i space_left /etc/audit/auditd.conf
+space_left = 225 
+```
+If the value of the "space_left" keyword is not equal or greater to 25 percent of the total partition size, this is a finding.
+
+### Remediation 
+Configure the operating system to immediately notify the SA and ISSO (at a minimum) when allocated audit record storage volume reaches 75 percent of the repository maximum audit record storage capacity. Check the system configuration to determine the partition the audit records are being written to: 
+```
+# grep log_file /etc/audit/auditd.conf
+```
+Determine the size of the partition that audit records are written to (with the example being "/var/log/audit/"):
+```
+# df -B 1m /var/log/audit/
+Filesystem     1M-blocks  Used Available Use% Mounted on
+/dev/sda1          18015  2002     15076  12% /
+```
+Set the value of the "space_left" keyword in "/etc/audit/auditd.conf" to 25 percent of the partition size.
+
 ## 8.1.19 Recored ssh-keysign command usage (scored) 
 
 ### Profile Applicability
