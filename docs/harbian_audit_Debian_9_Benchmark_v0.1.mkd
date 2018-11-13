@@ -1468,7 +1468,7 @@ Configure the operating system to assign home directories to all new local inter
 CREATE_HOME yes
 ```
 
-## 10.1.11  Set maxlogins for all accounts (Scored) 
+## 10.1.11 Set maxlogins for all accounts (Scored) 
 
 ### Profile Applicability
 Level 2
@@ -1493,6 +1493,31 @@ Configure the operating system to limit the number of concurrent sessions to "10
 * hard maxlogins 10
 ```
 
+## 10.1.12 Ensure no shosts configure file on system (Scored) 
+
+### Profile Applicability
+Level 3
+
+### Description
+There must be no .shosts and shosts.equiv files on the system.
+
+### Rationale
+The .shosts and shosts.equiv files are used to configure host-based authentication for individual users or the system via SSH. Host-based authentication is not sufficient for preventing unauthorized access to the system, as it does not require interactive identification and authentication of a connection request, or for the use of two-factor authentication.
+
+### Aduit
+Verify there are no ".shosts" and "shosts.equiv" files on the system. Check the system for the existence of these files with the following command:
+```
+# find / -name .shosts
+# find / -name shosts.equiv
+```
+If any ".shosts" and "shosts.equiv" files are found on the system, this is a finding.
+
+### Remediation
+Remove any found ".shosts" and "shosts.equiv" files from the system.
+```
+# rm /[path]/[to]/[file]/.shosts
+# rm /[path]/[to]/[file]/shosts.equiv
+```
 
 
 
