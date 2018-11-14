@@ -29,34 +29,73 @@ UUID=a411dc99-f2a1-4c87-9e05-184977be8539 /home   ext4   rw,relatime,discard,dat
 ### Remediation
 Configure the "/etc/fstab" to use the "nosuid" option on file systems that contain user home directories.
 
-## 2.27 Set nosuid option for /home filesystem/Partition (scored) 
+## 2.27 Set nosuid option for nfs/nfs4 filesystem/Partition (scored) 
 
 ### Profile Applicability
 Level 2
 
 ### Description
-File systems that contain user home directories must be mounted to prevent files with the setuid and setgid bit set from being executed.
+File systems that are being imported via Network File System (NFS) must be mounted to prevent files with the setuid and setgid bit set from being executed.
 
 ### Rationale
-The "nosuid" mount option causes the system to not execute setuid and setgid files with owner privileges. This option must be used for mounting any file system not containing approved setuid and setguid files. Executing files from untrusted file systems increases the opportunity for unprivileged users to attain unauthorized administrative access.
+The "nosuid" mount option causes the system to not execute "setuid" and "setgid" files with owner privileges. This option must be used for mounting any file system not containing approved "setuid" and "setguid" files. Executing files from untrusted file systems increases the opportunity for unprivileged users to attain unauthorized administrative access.
 
 ### Aduit
-Verify file systems that contain user home directories are mounted with the "nosuid" option. Find the file system(s) that contain the user home directories with the following command:
-Note: If a separate file system has not been created for the user home directories (user home directories are mounted under "/"), this is not a finding as the "nosuid" option cannot be used on the "/" system.
+Verify file systems that are being NFS exported are mounted with the "nosuid" option. Find the file system(s) that contain the directories being exported with the following command:
 ```
-# cut -d: -f 1,3,6 /etc/passwd | egrep ":[1-4][0-9]{3}"
-smithj:1001:/home/smithj
-thomasr:1002:/home/thomasr
+# more /etc/fstab | grep nfs
+UUID=59754be2-37c0-4938-973f-e8865dc84d10 /hardenedlinux               nfs    errors=remount-ro 0       2
+arrakis.internal.falcot.com:/shared /srv/shared               nfs4  rw 0       2
 ```
-
-Check the file systems that are mounted at boot time with the following command:
-```
-# more /etc/fstab
-UUID=a411dc99-f2a1-4c87-9e05-184977be8539 /home   ext4   rw,relatime,discard,data=ordered,nosuid 0 2
-```     
+If a file system found in "/etc/fstab" refers to NFS and it does not have the "nosuid" option set, this is a finding.
 
 ### Remediation
-Configure the "/etc/fstab" to use the "nosuid" option on file systems that contain user home directories.
+Configure the "/etc/fstab" to use the "nosuid" option on file systems that are being exported via NFS/NFS4.
+
+## 2.28 Set noexec option for nfs/nfs4 filesystem/Partition (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description
+File systems that are being imported via Network File System (NFS) must be mounted to prevent binary files from being executed.
+
+### Rationale
+The "noexec" mount option causes the system to not execute binary files. This option must be used for mounting any file system not containing approved binary files as they may be incompatible. Executing files from untrusted file systems increases the opportunity for unprivileged users to attain unauthorized administrative access.
+
+### Aduit
+Verify file systems that are being NFS exported are mounted with the "noexec" option. Find the file system(s) that contain the directories being exported with the following command:
+```
+# more /etc/fstab | grep nfs
+UUID=59754be2-37c0-4938-973f-e8865dc84d10 /hardenedlinux               nfs    errors=remount-ro 0       2
+arrakis.internal.falcot.com:/shared /srv/shared               nfs4  rw 0       2
+```
+If a file system found in "/etc/fstab" refers to NFS and it does not have the "noexec" option set, and use of NFS exported binaries is not documented with the Information System Security Officer (ISSO) as an operational requirement, this is a finding.
+
+### Remediation
+Configure the "/etc/fstab" to use the "noexec" option on file systems that are being exported via NFS/NFS4.
+
+## 2.29 Set RPCSEC_GSS option for nfs/nfs4 filesystem/Partition (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description
+The Network File System (NFS) must be configured to use RPCSEC_GSS.
+
+### Rationale
+When an NFS server is configured to use RPCSEC_SYS, a selected userid and groupid are used to handle requests from the remote user. The userid and groupid could mistakenly or maliciously be set incorrectly. The RPCSEC_GSS method of authentication uses certificates on the server and client systems to more securely authenticate the remote mount request.
+
+### Aduit
+Verify "AUTH_GSS" is being used to authenticate NFS mounts. To check if the system is importing an NFS file system, look for any entries in the "/etc/fstab" file that have a file system type of "nfs" with the following command:
+```
+# cat /etc/fstab | grep nfs
+192.168.21.5:/mnt/export /data1 nfs4 rw,sync ,soft,sec=krb5:krb5i:krb5p
+```
+If the system is mounting file systems via NFS and has the sec option without the "krb5:krb5i:krb5p" settings, the "sec" option has the "sys" setting, or the "sec" option is missing, this is a finding.
+
+### Remediation
+Update the "/etc/fstab" file so the option "sec" is defined for each NFS mounted file system and the "sec" option does not have the "sys" setting. \n\nEnsure the "sec" option is defined as "krb5:krb5i:krb5p"
 
 ## 5.7 Install screen (scored) 
 
