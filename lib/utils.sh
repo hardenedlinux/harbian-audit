@@ -346,19 +346,6 @@ add_option_to_fstab() {
     sed -ie "s;\(^[^#].*${PARTITION}\)\(\s.*\)\(\s\w.*\)\(\s[0-2]\s*[0-2]\);\1\2\3,${OPTION}\4;" /etc/fstab
 }
 
-# Setup mount option in fstab (todo)
-add_option_to_fstab_by_type() {
-    local FSTYPE=$1
-    local OPTION=$2
-    debug "Setting $OPTION for $FSTYPE in fstab by filesystem type"
-    backup_file "/etc/fstab"
-    # For example : 
-    # /dev/sda9       /storage           nfs  auto,acl,errors=remount-ro  0       2
-    # /dev/sda9       /storage        nfs  auto,acl,errors=remount-ro,nosuid  0       2
-    debug "Sed command :  sed -ie \"s;\(.*\)\(\s*\)\s\(\s*)\s\(\s*\)\(\w*\)\(\s*\)\(\w*\)*;\1\2 \3 \4\5\6\7,$OPTION;\" /etc/fstab"
-    sed -ie "s;\(.*\)\(\s*\)\s\(\s*\)\s\(\s*\)\(\w*\)\(\s*\)\(\w*\)*;\1\2 \3 \4\5\6\7,$OPTION;" /etc/fstab
-}
-
 remount_partition() {
     local PARTITION=$1
     debug "Remounting $PARTITION"
