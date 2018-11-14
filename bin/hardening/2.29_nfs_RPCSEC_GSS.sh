@@ -5,7 +5,7 @@
 #
 
 #
-# 2.27 Set nosuid option for nfs/nfs4 filesystem/Partition (Scored)
+# 2.29 Set RPCSEC_GSS option for nfs/nfs4 filesystem/Partition (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -16,7 +16,7 @@ HARDENING_LEVEL=2
 
 # Quick factoring as many script use the same logic
 PARTITION_TYPE="nfs"
-OPTION="nosuid"
+OPTION="sec=krb5:krb5i:krb5p"
 FSTAB='/etc/fstab'
 
 # This function will be called if the script status is on enabled / audit mode
