@@ -5,36 +5,36 @@
 #
 
 #
-# 1.1 Install Updates, Patches and Additional Security Software (Scored)
+# 1.3 Enable verify the signature of local packages (Scored)
+# Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
-HARDENING_LEVEL=3
+HARDENING_LEVEL=2
+OPTION='no-debsig'
+CONFFILE='/etc/dpkg/dpkg.cfg'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    info "Checking if apt needs an update"
-    apt_update_if_needed 
-    info "Fetching upgrades ..."
-    apt_check_updates "CIS_APT"
-    if [ $FNRET -gt 0 ]; then
-        crit "$RESULT"
+    if [ $(grep -v "^#" ${CONFFILE} | grep -c ${OPTION}) -gt 0 ]; then
+        crit "The signature of local packages option is disable "
         FNRET=1
     else
-        ok "No upgrades available"
+        ok "The signature of local packages option is enable "
         FNRET=0
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    if [ $FNRET -gt 0 ]; then 
-        info "Applying Upgrades..."
-        DEBIAN_FRONTEND='noninteractive' apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' upgrade -y
+    if [ $FNRET = 0 ]; then 
+        ok "The signature of local packages option is enable "
     else
-        ok "No Upgrades to apply"
+        warn "Set to enabled signature of local packages option"
+            sed -i "/^${OPTION}/d" ${CONFFILE}
+            #sed -i "s/${OPTION}.*true.*/${OPTION} \"false\";/g" ${CONFFILE}
     fi
 }
 

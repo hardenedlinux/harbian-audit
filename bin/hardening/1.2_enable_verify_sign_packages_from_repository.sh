@@ -5,36 +5,38 @@
 #
 
 #
-# 1.1 Install Updates, Patches and Additional Security Software (Scored)
+# 1.2 Enable Option for signature of packages from a repository (Scored)
+# Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
-HARDENING_LEVEL=3
+HARDENING_LEVEL=2
+OPTION='AllowUnauthenticated'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    info "Checking if apt needs an update"
-    apt_update_if_needed 
-    info "Fetching upgrades ..."
-    apt_check_updates "CIS_APT"
-    if [ $FNRET -gt 0 ]; then
-        crit "$RESULT"
+    if [ $(grep -v "^#" /etc/apt/ -r | grep -c "${OPTION}.*true") -gt 0 ]; then
+        crit "The signature of packages option is disable "
         FNRET=1
     else
-        ok "No upgrades available"
+        ok "The signature of packages option is enable "
         FNRET=0
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    if [ $FNRET -gt 0 ]; then 
-        info "Applying Upgrades..."
-        DEBIAN_FRONTEND='noninteractive' apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' upgrade -y
+    if [ $FNRET = 0 ]; then 
+        ok "The signature of packages option is enable "
     else
-        ok "No Upgrades to apply"
+        warn "Set to enabled signature of packages option"
+        for CONFFILE in $(grep -i "${OPTION}" /etc/apt/ -r | grep -v "^#" | awk -F: '{print $1}')
+        do
+            sed -i "/${OPTION}/d" ${CONFFILE}
+            #sed -i "s/${OPTION}.*true.*/${OPTION} \"false\";/g" ${CONFFILE}
+        done
     fi
 }
 
