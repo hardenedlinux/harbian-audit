@@ -5,7 +5,7 @@
 #
 
 #
-# 10.1.11 Set maxlogins for all accounts  (Scored)
+# 10.1.13 Disabled Kernel core dumps  (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -15,8 +15,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=2
 
 PACKAGE='libpam-modules'
-OPTIONS='maxsyslogins'
-OPVALUE=10
+OPTIONS='core'
 FILE='/etc/security/limits.conf'
 
 # This function will be called if the script status is on enabled / audit mode
@@ -33,18 +32,11 @@ audit () {
             FNRET=2
         else
             COUNT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILE | grep "${OPTIONS}" | wc -l)
-            if [ $COUNT -gt 0 ]; then
-                ok "$OPTIONS is set in $FILE."
-                VALUE=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILE | grep ".*[[:space:]].*${OPTIONS}[[:space:]].*${OPVALUE}" | wc -l)
-                if [ $VALUE -eq 0 ]; then
-                    crit "$OPTIONS value is incorrect in $FILE"
-                    FNRET=4
-                else
-                    ok "$OPTIONS value is correct in $FILE"
-                    FNRET=0
-                fi
+            if [ $COUNT -eq 0 ]; then
+                ok "Kernel $OPTIONS dump is disabled."
+                FNRET=0
             else
-                crit "$OPTIONS is not set in $FILE."
+                crit "Kernel $OPTIONS dump is enabled."
                 FNRET=3
             fi
         fi
@@ -62,11 +54,8 @@ apply () {
     elif [ $FNRET = 2 ]; then
         warn "$FILE is not exist, need manual check."
     elif [ $FNRET = 3 ]; then
-        warn "$OPTIONS value not exist in $FILE, add it"
-        add_end_of_file $FILE "* hard ${OPTIONS}  $OPVALUE"
-    elif [ $FNRET = 4 ]; then
-        warn "$OPTIONS value is incorrect in $FILE, reset it"
-        replace_in_file $FILE "^[^#].*${OPTIONS}[[:space:]].*" "\* hard ${OPTIONS}  $OPVALUE"
+        warn "$OPTIONS exist in $FILE, delete it"
+        delete_line_in_file $FILE "^[^#].*${OPTIONS}"
     fi
 }
 
