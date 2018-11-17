@@ -11,6 +11,8 @@
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
+HARDENING_LEVEL=4
+
 USER='root'
 PATTERN='ACTION=="add", SUBSYSTEMS=="usb", TEST=="authorized_default", ATTR{authorized_default}="0"' # We do test disabled by default, whitelist is up to you
 FILES_TO_SEARCH='/etc/udev/rules.d'
