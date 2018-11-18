@@ -1673,17 +1673,3 @@ If the kernel core dump is set, this is a finding.
 ### Remediation
 If kernel core dumps are not required, delete the contain "core" line in /etc/security/limits.conf.
 
-
-
-template
-
-### Profile Applicability
-Level 5 
-
-### Description
-
-### Rationale
-
-### Aduit
-
-### Remediation
