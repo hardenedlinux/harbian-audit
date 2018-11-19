@@ -47,7 +47,7 @@ apply () {
         ok "$PATTERN is present in $FILE"
     else
         crit "$PATTERN is not present in $FILE"
-        add_line_file_before_pattern $FILE "auth       required   pam_wheel.so" "# Uncomment this if you want wheel members to be able to"
+        add_line_file_before_pattern $FILE "auth       required   pam_wheel.so use_uid" "# Uncomment this if you want wheel members to be able to"
     fi 
 }
 
