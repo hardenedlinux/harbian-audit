@@ -251,6 +251,29 @@ if config file is in /etc/systemd/:
 # systemctl daemon-reload
 ```
 
+## 5.10 Ensure sudo is installed (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description
+Systems must have sudo installed.
+
+### Rationale
+The su command allows a user to run a command or shell as another user. The program has been superseded by sudo, which allows for more granular control over privileged access. 
+
+### Aduit
+Verify the operating system has the sudo package installed. Check to see if the sudo package is installed with the following command:
+```
+# dpkg -s sudo | grep  '^Status: install'
+```
+
+### Remediation
+Install the sudo program (if it is not on the system) with the following command:
+```
+# apt-get install sudo
+```
+
 ## 6.17 ensure virul scan server is enabled (scored) 
 
 ### Profile Applicability
