@@ -35,6 +35,7 @@ apply () {
         else
             crit "$PACKAGE is absent, installing it"
             apt_install $PACKAGE
+	    aideinit
             info "${PACKAGE} is now installed but not fully functionnal, please see readme to go further"
         fi
 }
