@@ -1,11 +1,12 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 9  Hardening
 #
 
 #
-# 8.3.1 Install tripwire package (Scored)
+# 8.3.1 Install aide package (Scored)
+# Moidfy by; Samson Wen (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over
@@ -14,7 +15,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=4
 
 # NB : in CIS, AIDE has been chosen, however we chose tripwire
-PACKAGE='tripwire'
+PACKAGE='aide'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -34,7 +35,7 @@ apply () {
         else
             crit "$PACKAGE is absent, installing it"
             apt_install $PACKAGE
-            info "Tripwire is now installed but not fully functionnal, please see readme to go further"
+            info "${PACKAGE} is now installed but not fully functionnal, please see readme to go further"
         fi
 }
 
