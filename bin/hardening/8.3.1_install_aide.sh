@@ -29,15 +29,15 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-        is_pkg_installed $PACKAGE
-        if [ $FNRET = 0 ]; then
-            ok "$PACKAGE is installed"
-        else
-            crit "$PACKAGE is absent, installing it"
-            apt_install $PACKAGE
+    is_pkg_installed $PACKAGE
+    if [ $FNRET = 0 ]; then
+        ok "$PACKAGE is installed"
+    else
+        crit "$PACKAGE is absent, installing it"
+        apt_install $PACKAGE
 	    aideinit
-            info "${PACKAGE} is now installed but not fully functionnal, please see readme to go further"
-        fi
+        info "${PACKAGE} is now installed but not fully functionnal, please see readme to go further"
+    fi
 }
 
 # This function will check config parameters required
