@@ -344,13 +344,17 @@ add_option_to_fstab() {
 #    sed -ie "s;\(^[^#].*${PARTITION}\)\(\s.*\)\(\s\w.*\)\(\s[0-2]\s*[0-2]\);\1\2\3,${OPTION}\4;" /etc/fstab
     MOUNT_OPTION=$(grep -v "^#" /etc/fstab | awk '$2=="${PARTITION}" {print $4}')
     CURLINE=$(grep -v "^#" /etc/fstab -n | grep "/home" | awk -F: '{print $1}')
+	#This case is for option of starting with "no", example: nosuid noexec nodev
+	NOTNOOPTION=$(echo $OPTION | cut -c 3-)
 
     if [ "${MOUNT_OPTION}" == "defaults" ]; then
        NEWOP='rw,nosuid,nodev,noexec,auto,async'
-       sed -i "s${CURLINE}/$MOUNT_OPTION/$NEWOP/"
-   elif [ $(echo $MOUNT_OPTION | grep -w $(echo $OPTION | cut -c 3-) | wc -l) -gt 0 ]; then
-        
-
+       sed -i "${CURLINE}s/$MOUNT_OPTION/$NEWOP/" /etc/fstab
+	#This case is for option of starting with "no", example: nosuid noexec nodev
+	elif [ $(echo $MOUNT_OPTION | grep -cw ${NOTNOOPTION}) -gt 0 ]; then
+		sed -i "${CURLINE}s/${NOTNOOPTION}/${OPTION}/" /etc/fstab 
+	elif [ $(echo $MOUNT_OPTION | grep -cw $OPTION)) -eq 0 ]; then
+		sed -i "${CURLINE}s/${MOUNT_OPTION}/${MOUNT_OPTION},${OPTION}/" /etc/fstab
     fi    
 }
 
