@@ -46,7 +46,6 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    set -x
     if [ $FNRET = 0 ]; then
         ok "$PARTITION is correctly set"
     elif [ $FNRET = 2 ]; then

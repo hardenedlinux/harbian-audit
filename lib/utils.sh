@@ -342,19 +342,23 @@ add_option_to_fstab() {
     # UUID=40327bc9-f9d1-5816-a312-df307cc8732e /home               ext4  errors=remount-ro,nosuid 0       2
 #    debug "Sed command :  sed -ie \"s;\(.*\)\(\s*\)\s\($PARTITION\)\s\(\s*\)\(\w*\)\(\s*\)\(\w*\)*;\1\2 \3 \4\5\6\7,$OPTION;\" /etc/fstab"
 #    sed -ie "s;\(^[^#].*${PARTITION}\)\(\s.*\)\(\s\w.*\)\(\s[0-2]\s*[0-2]\);\1\2\3,${OPTION}\4;" /etc/fstab
-    MOUNT_OPTION=$(grep -v "^#" /etc/fstab | awk '$2=="${PARTITION}" {print $4}')
+    MOUNT_OPTION=$(grep -v "^#" /etc/fstab | awk '$2=="'${PARTITION}'" {print $4}')
     CURLINE=$(grep -v "^#" /etc/fstab -n | grep "/home" | awk -F: '{print $1}')
-	#This case is for option of starting with "no", example: nosuid noexec nodev
-	NOTNOOPTION=$(echo $OPTION | cut -c 3-)
+    #This case is for option of starting with "no", example: nosuid noexec nodev
+    NOTNOOPTION=$(echo $OPTION | cut -c 3-)
 
     if [ "${MOUNT_OPTION}" == "defaults" ]; then
-       NEWOP='rw,nosuid,nodev,noexec,auto,async'
-       sed -i "${CURLINE}s/$MOUNT_OPTION/$NEWOP/" /etc/fstab
+        if [ "$OPTION" == "noexec" ]; then
+       	    NEWOP='rw,nosuid,nodev,noexec,auto,async'
+        else
+       	    NEWOP='rw,nosuid,nodev,auto,async'
+        fi
+       	sed -i "${CURLINE}s/$MOUNT_OPTION/$NEWOP/" /etc/fstab
 	#This case is for option of starting with "no", example: nosuid noexec nodev
-	elif [ $(echo $MOUNT_OPTION | grep -cw ${NOTNOOPTION}) -gt 0 ]; then
-		sed -i "${CURLINE}s/${NOTNOOPTION}/${OPTION}/" /etc/fstab 
-	elif [ $(echo $MOUNT_OPTION | grep -cw $OPTION)) -eq 0 ]; then
-		sed -i "${CURLINE}s/${MOUNT_OPTION}/${MOUNT_OPTION},${OPTION}/" /etc/fstab
+    elif [ $(echo $MOUNT_OPTION | grep -cw ${NOTNOOPTION}) -gt 0 ]; then
+	    sed -i "${CURLINE}s/${NOTNOOPTION}/${OPTION}/" /etc/fstab 
+    elif [ $(echo $MOUNT_OPTION | grep -cw $OPTION) -eq 0 ]; then
+	    sed -i "${CURLINE}s/${MOUNT_OPTION}/${MOUNT_OPTION},${OPTION}/" /etc/fstab
     fi    
 }
 
