@@ -2,6 +2,8 @@
 
 #
 # harbian audit 7/8/9  Hardening
+# Modify author:
+# Samson-W (sccxboy@gmail.com)
 #
 
 #
@@ -14,59 +16,50 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=4
 
 FILE='/etc/default/grub'
-OPTIONS='GRUB_CMDLINE_LINUX="audit=1"'
+KEYWORD='GRUB_CMDLINE_LINUX'
+OPTION='audit'
+SETVAL=1
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
     does_file_exist $FILE
     if [ $FNRET != 0 ]; then
         crit "$FILE does not exist"
+        FNRET=1
     else
         ok "$FILE exists, checking configuration"
-        for GRUB_OPTION in $OPTIONS; do
-        GRUB_PARAM=$(echo $GRUB_OPTION | cut -d= -f 1)
-        GRUB_VALUE=$(echo $GRUB_OPTION | cut -d= -f 2,3)
-        PATTERN="^$GRUB_PARAM=$GRUB_VALUE"
-        debug "$GRUB_PARAM should be set to $GRUB_VALUE"
-        does_pattern_exist_in_file $FILE "$PATTERN"
-        if [ $FNRET != 0 ]; then
-            crit "$PATTERN is not present in $FILE"
+        if [ $(grep -w "^${KEYWORD}" ${FILE} | grep -c ${OPTION}) -eq 1 ]; then 
+            ok "$OPTION is present in $FILE"
+            if [ $(grep -w "^${KEYWORD}" $FILE | grep -c "${OPTION}=${SETVAL}") -eq 1 ]; then
+                ok "${OPTION}'s set is correctly."
+                FNRET=0
+            else
+                crit "${OPTION}'s set is not correctly."
+                FNRET=3
+            fi
         else
-            ok "$PATTERN is present in $FILE"
-        fi
-        done
+            crit "$OPTION is not present in $FILE"
+            FNRET=2
+        fi 
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    does_file_exist $FILE
-    if [ $FNRET != 0 ]; then
+    if [ $FNRET = 0 ]; then
+        ok "${OPTION}'s set is correctly."
+    elif [ $FNRET = 1 ]; then
         warn "$FILE does not exist, creating it"
         touch $FILE
-    else
-        ok "$FILE exists"
+    elif [ $FNRET = 2 ]; then
+        warn "$OPTION is not present in $FILE, add it to $KEYWORD line, need to reboot the system  after setting it"
+        sed -ie "s;\(${KEYWORD}=\)\(\".*\)\(\"\);\1\2 ${OPTION}=${SETVAL}\3;" $FILE
+        /usr/sbin/update-grub2 
+    elif [ $FNRET = 3 ]; then
+        warn "Parameter $OPTION is present but with the wrong value -- Fixing, need to reboot the system after setting it"
+        sed -ie "s/${OPTION}=./${OPTION}=${SETVAL}/" $FILE 
+        /usr/sbin/update-grub2
     fi
-    for GRUB_OPTION in $OPTIONS; do
-        GRUB_PARAM=$(echo $GRUB_OPTION | cut -d= -f 1)
-        GRUB_VALUE=$(echo $GRUB_OPTION | cut -d= -f 2,3)
-        debug "$GRUB_PARAM should be set to $GRUB_VALUE"
-        PATTERN="^$GRUB_PARAM=$GRUB_VALUE"
-        does_pattern_exist_in_file $FILE "$PATTERN"
-        if [ $FNRET != 0 ]; then
-            warn "$PATTERN is not present in $FILE, adding it"
-            does_pattern_exist_in_file $FILE "^$GRUB_PARAM"
-            if [ $FNRET != 0 ]; then
-                info "Parameter $GRUB_PARAM seems absent from $FILE, adding at the end" 
-                add_end_of_file $FILE "$GRUB_PARAM = $GRUB_VALUE"
-            else
-                info "Parameter $GRUB_PARAM is present but with the wrong value -- Fixing"
-                replace_in_file $FILE "^$GRUB_PARAM=.*" "$GRUB_PARAM=$GRUB_VALUE"
-            fi
-        else
-            ok "$PATTERN is present in $FILE"
-        fi
-    done
 }
 
 # This function will check config parameters required
