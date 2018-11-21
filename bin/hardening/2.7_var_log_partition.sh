@@ -19,7 +19,6 @@ PARTITION="/var/log"
 # This function will be called if the script status is on enabled / audit mode
 audit () {
     info "Verifying that $PARTITION is a partition"
-    FNRET=0
     is_a_partition "$PARTITION"
     if [ $FNRET -gt 0 ]; then
         crit "$PARTITION is not a partition"
@@ -32,10 +31,9 @@ audit () {
             FNRET=1
         else
             ok "$PARTITION is mounted"
+            FNRET=0
         fi
     fi
-     
-    :
 }
 
 # This function will be called if the script status is on enabled mode

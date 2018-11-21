@@ -4,7 +4,7 @@
 # harbian audit 7/8/9  Hardening
 #
 #
-# 8.5 8.5_Verifies integrity all packages (Scored)
+# 8.5 Verifies integrity all packages (Scored)
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
