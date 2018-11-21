@@ -15,7 +15,9 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 PACKAGES='apparmor apparmor-profiles apparmor-utils'
-GRUBPATTERN="GRUB_CMDLINE_LINUX=\"apparmor=1[[:space:]]*security=apparmor\"" 
+KEYWORD="GRUB_CMDLINE_LINUX"
+PATTERN="apparmor=1[[:space:]]*security=apparmor" 
+SETSTRING="apparmor=1 security=apparmor" 
 GRUBFILE='/etc/default/grub'
 
 # This function will be called if the script status is on enabled / audit mode
@@ -26,14 +28,14 @@ audit () {
         if [ $FNRET != 0 ]; then
             crit "$PACKAGE is absent!"
             FNRET=1
-            exit 1
         fi
     done
     if [ $FNRET = 0 ]; then
         ok "$PACKAGE is installed"
-        if [ $(grep ${GRUBPATTERN} ${GRUBFILE} | wc -l) -eq 1 ]; then
-            ok "There are apparmor=1 and security=apparmor to GRUB_CMDLINE_LINUX in /etc/default/grub"
-            if [ $(apparmor_status | grep 'profiles are loaded' | awk '{print $1}') -eq 0 ]; then
+        if [ $( grep -w "^${KEYWORD}" ${GRUBFILE} | grep -c ${PATTERN}) -eq 1 ]; then
+            ok "There are ${SETSTRING} to ${KEYWORD} in ${GRUBFILE}"
+            is_mounted  "/sys/kernel/security"
+            if [ ${FNRET} -eq 0 -a $(/usr/sbin/apparmor_status | grep 'profiles are loaded' | awk '{print $1}') -eq 0 ]; then
                 crit "AppArmor profiles not enable in the system "
                 FNRET=3
             else
@@ -41,12 +43,10 @@ audit () {
                 FNRET=0
             fi
         else
-            crit "There are not apparmor=1 and security=apparmor to GRUB_CMDLINE_LINUX in /etc/default/grub"
+            crit "There are ${SETSTRING} to ${KEYWORD} in ${GRUBFILE}"
             FNRET=2
         fi
     fi
-
-
 }
 
 # This function will be called if the script status is on enabled mode
@@ -60,13 +60,13 @@ apply () {
             apt_install $PACKAGE
         done
     elif [ $FNRET = 2 ]; then
-        warn "Set apparmor=1 and security=apparmor to GRUB_CMDLINE_LINUX in /etc/default/grub"
-        replace_in_file ${GRUBFILE} "^GRUB_CMDLINE_LINUX=.*" "" "${GRUBPATTERN}"
+        warn "Set ${SETSTRING} to ${GRUBFILE} in ${GRUBFILE}, need reboot the system and enable AppArmor profiles after set it."
+        sed -ie "s;\(${KEYWORD}=\)\(\".*\)\(\"\);\1\2 ${SETSTRING}\3;" ${GRUBFILE}
+        /usr/sbin/update-grub2
     elif [ $FNRET = 3 ]; then
         warn "Enable AppArmor profiles in the system "
-        aa-enforce /etc/apparmor.d/*
+        /usr/sbin/aa-enforce /etc/apparmor.d/*
     fi
-    :
 }
 
 # This function will check config parameters required
