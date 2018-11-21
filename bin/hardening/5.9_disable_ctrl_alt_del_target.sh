@@ -32,7 +32,7 @@ apply () {
     if [ $FNRET = 0 ]; then
         ok "$TARGETNAME is disabled."
     else
-        TARGETS=$(find /lib/systemd/ /etc/systemd/ -name ctrl-alt-del.target -exec ls -l {} \;| grep -v "/dev/null" | awk '{print $NF}')
+        TARGETS=$(find /lib/systemd/ /etc/systemd/ -name ctrl-alt-del.target -exec ls {} \;| grep -v "/dev/null" | awk '{print $NF}')
         for TARGET in $TARGETS
         do
             warn "Disable $TARGET"

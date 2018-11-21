@@ -150,7 +150,6 @@ add_line_file_after_pattern() {
 }
 
 replace_in_file() {
-    set -x
     local FILE=$1
     local SOURCE=$2
     local DESTINATION=$3
