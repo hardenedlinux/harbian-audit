@@ -237,7 +237,7 @@ Open up http://{your server ip}:3000,then you can see the helloworld page.
 
 
 Reference:  
-https://nodejs.org/en/
-https://www.mysql.com/
-http://pm2.keymetrics.io/
-https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-debian-9
+https://nodejs.org/en/   
+https://www.mysql.com/   
+http://pm2.keymetrics.io/   
+https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-debian-9   
