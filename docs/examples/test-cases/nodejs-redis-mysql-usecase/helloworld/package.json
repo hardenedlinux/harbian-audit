@@ -1,0 +1,20 @@
+{
+  "name": "helloworld",
+  "version": "1.0.0",
+  "description": "This is helloworld project",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "log4js": "^3.0.6",
+    "mysql": "^2.15.0",
+    "redis": "^2.8.0"
+  },
+  "dependencies": {
+    "express": "^4.15.4",
+    "nodemon": "^1.18.6"
+  }
+}
