@@ -16,7 +16,6 @@ HARDENING_LEVEL=4
 
 AUDIT_PARAMS='-w /etc/audisp/audisp-remote.conf -p wa -k config_file_change
 -w /etc/audit/auditd.conf -p wa -k config_file_change
--w  -p wa -k config_file_change
 -w /etc/audit/rules.d/ -p wa -k config_file_change
 -w /etc/default/grub -p wa -k config_file_change
 -w /etc/fstab -p wa -k config_file_change
