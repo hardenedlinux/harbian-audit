@@ -1,11 +1,12 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 9  Hardening
 #
 
 #
-# 8.1.16 Collect System Administrator Actions (sudolog) (Scored)
+# 8.1.27 Record Events That Modify configuration files (Scored)
+# Author: Samson-W (sccxboy@gmail.com) author add this 
 #
 
 set -e # One error, it's over
@@ -13,7 +14,19 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-w /var/log/audit/audit.log -p wa -k sudoaction'
+AUDIT_PARAMS='-w /etc/audisp/audisp-remote.conf -p wa -k config_file_change
+-w /etc/audit/auditd.conf -p wa -k config_file_change
+-w  -p wa -k config_file_change
+-w /etc/audit/rules.d/ -p wa -k config_file_change
+-w /etc/default/grub -p wa -k config_file_change
+-w /etc/fstab -p wa -k config_file_change
+-w /etc/hosts.deny -p wa -k config_file_change
+-w /etc/login.defs -p wa -k config_file_change
+-w /etc/pam.d/ -p wa -k config_file_change
+-w /etc/profile -p wa -k config_file_change
+-w /etc/profile.d/ -p wa -k config_file_change
+-w /etc/security/ -p wa -k config_file_change'
+
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
@@ -45,7 +58,7 @@ apply () {
         if [ $FNRET != 0 ]; then
             warn "$AUDIT_VALUE is not in file $FILE, adding it"
             add_end_of_file $FILE $AUDIT_VALUE
-            eval $(pkill -HUP -P 1 auditd)
+            #eval $(pkill -HUP -P 1 auditd)
         else
             ok "$AUDIT_VALUE is present in $FILE"
         fi
