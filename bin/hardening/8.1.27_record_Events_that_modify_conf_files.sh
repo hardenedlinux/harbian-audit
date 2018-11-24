@@ -24,7 +24,8 @@ AUDIT_PARAMS='-w /etc/audisp/audisp-remote.conf -p wa -k config_file_change
 -w /etc/pam.d/ -p wa -k config_file_change
 -w /etc/profile -p wa -k config_file_change
 -w /etc/profile.d/ -p wa -k config_file_change
--w /etc/security/ -p wa -k config_file_change'
+-w /etc/security/ -p wa -k config_file_change
+-w /etc/sysctl.conf -p wa -k config_file_change'
 
 FILE='/etc/audit/rules.d/audit.rules'
 
