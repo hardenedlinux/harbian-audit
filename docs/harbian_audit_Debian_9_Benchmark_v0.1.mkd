@@ -352,7 +352,50 @@ Configure network interfaces to turn off promiscuous mode unless approved by the
 #ip link set dev <devicename> multicast off promisc off
 ```
 
-## 2.1.4 Set failure mode of audit service (scored) 
+## 7.7.2 Ensure the Firewall is set rules (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description
+The host must be configured to prohibit or restrict the use of functions, ports, protocols, and/or services, as defined in the Ports, Protocols, and Services Management Component Local Service Assessment (PPSM CLSA) and vulnerability assessments.
+
+### Rationale
+In order to prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems. Operating systems are capable of providing a wide variety of functions and services. Some of the functions and services provided by default may not be necessary to support essential organizational operations. Additionally, it is sometimes convenient to provide multiple services from a single component (e.g., VPN and IPS); however, doing so increases risk over limiting the services provided by any one component. To support the requirements and principles of least functionality, the operating system must support the organizational requirements, providing only essential capabilities and limiting the use of ports, protocols, and/or services to only those required, authorized, and approved to conduct official business or to address authorized quality of life issues.
+
+### Aduit
+Inspect the firewall configuration and running services to verify that it is configured to prohibit or restrict the use of functions, ports, protocols, and/or services that are unnecessary or prohibited. Check which services are currently active with the following command:
+```
+# /sbin/iptables -S | grep -Ec "^-A|^-I"
+100
+```
+If rules count is equal 0, this is a finding.
+
+### Remediation
+Create a direct firewall rule to protect against DoS attacks need administrator add rules.
+
+## 7.7.3 Ensure the Firewall is set rules of protect DOS attacks (scored) 
+
+### Profile Applicability
+Level 2
+
+### Description
+The operating system must protect against or limit the effects of Denial of Service (DoS) attacks by validating the operating system is implementing rate-limiting measures on impacted network interfaces.
+
+### Rationale
+DoS is a condition when a resource is not available for legitimate users. When this occurs, the organization either cannot accomplish its mission or must operate at degraded capacity. This requirement addresses the configuration of the operating system to mitigate the impact of DoS attacks that have occurred or are ongoing on system availability. For each system, known and potential DoS attacks must be identified and solutions for each type implemented. A variety of technologies exist to limit or, in some cases, eliminate the effects of DoS attacks (e.g., limiting processes or establishing memory partitions). Employing increased capacity and bandwidth, combined with service redundancy, may reduce the susceptibility to some DoS attacks.
+
+### Aduit
+Verify the operating system protects against or limits the effects of DoS attacks by ensuring the operating system is implementing rate-limiting measures on impacted network interfaces. Check the firewall configuration with the following command:
+```
+# /sbin/iptables -S | grep -E "\-m.*limit" | grep -Ec "\-\-limit-burst"
+```
+If a rule with both the limit and limit-burst arguments parameters does not exist, this is a finding.
+
+### Remediation
+Create a direct firewall rule to protect against DoS attacks need administrator add rules.
+
+## 8.1.1.4 Set failure mode of audit service (scored) 
 
 ### Profile Applicability
 Level 4
