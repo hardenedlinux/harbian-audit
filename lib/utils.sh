@@ -673,3 +673,25 @@ check_auth_option_nullok_by_pam()
     fi
 }
 
+check_iptables_set()
+{
+    case $1 in
+        SETRULE)
+            COUNT=$(iptables -S | grep -Ec "^-A|^-I")
+            if [ "${COUNT}" -gt 0 ]; then
+                FNRET=1
+            else
+                FNRET=0
+            fi
+        ;;
+        SETDOS)
+            COUNT=$(iptables -S | grep "\-m.*limit" | grep -c "\-\-limit-burst")
+            if [ "${COUNT}" -eq 0 ]; then
+                FNRET=1
+            else
+                FNRET=0
+            fi
+        ;;
+    esac
+}
+

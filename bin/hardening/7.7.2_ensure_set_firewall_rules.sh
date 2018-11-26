@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 9  Hardening
 #
 
 #
-# 7.7 Ensure Firewall is active (Scored)
+# 7.7.2 Ensure the Firewall is set rules (Scored)
 #
 
 set -e # One error, it's over
@@ -16,27 +16,25 @@ HARDENING_LEVEL=2
 # Quick note here : CIS recommends your iptables rules to be persistent. 
 # Do as you want, but this script does not handle this
 
-PACKAGE='iptables'
+PARAM='SETRULE'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    is_pkg_installed $PACKAGE
+    check_iptables_set ${PARAM}
     if [ $FNRET != 0 ]; then
-        crit "$PACKAGE is not installed!"
+        crit "Iptables is not set rule!"
     else
-        ok "$PACKAGE is installed"
+        ok "Iptables rules are set!"
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-        is_pkg_installed $PACKAGE
-        if [ $FNRET = 0 ]; then
-            ok "$PACKAGE is installed"
-        else
-            crit "$PACKAGE is absent, installing it"
-            apt_install $PACKAGE
-        fi
+    if [ $FNRET = 0 ]; then
+        ok "Iptables rules are set!"
+    else
+        warn "Iptables rules are not set, need the administrator to manually add it."
+    fi
 }
 
 # This function will check config parameters required
