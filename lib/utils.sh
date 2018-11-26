@@ -677,16 +677,17 @@ check_iptables_set()
 {
     case $1 in
         SETRULE)
-            COUNT=$(iptables -S | grep -Ec "^-A|^-I")
-            if [ "${COUNT}" -gt 0 ]; then
-                FNRET=1
-            else
+            COUNTLINE=$(/sbin/iptables -S | grep -Ec "^-A|^-I")
+            if [ ${COUNTLINE} -gt 0 ]; then
                 FNRET=0
+            else
+                FNRET=1
             fi
         ;;
         SETDOS)
-            COUNT=$(iptables -S | grep "\-m.*limit" | grep -c "\-\-limit-burst")
-            if [ "${COUNT}" -eq 0 ]; then
+            COUNTLINE=$(/sbin/iptables -S | grep -E "\-m.*limit" | grep -Ec "\-\-limit-burst") 
+            echo "fsfdsfdsfdfffffffffffffffff"
+            if [ ${COUNTLINE} -eq 0 ]; then
                 FNRET=1
             else
                 FNRET=0

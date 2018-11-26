@@ -5,8 +5,8 @@
 #
 
 #
-# 7.7.2 Ensure the Firewall is set rules (Scored)
-# Add this feature:Authors : Samson wen, Samson <sccxboy@gmail.com> 
+# 7.7.2 Ensure the Firewall is set rules of protect DOS attacks (Scored)
+# Add this feature:Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
@@ -17,16 +17,17 @@ HARDENING_LEVEL=2
 # Quick note here : CIS recommends your iptables rules to be persistent. 
 # Do as you want, but this script does not handle this
 
-PARAM='SETRULE'
+PARAM='SETDOS'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
     check_iptables_set ${PARAM}
+    echo "fffffffffffffffffffffffffffffffffffff"
     if [ $FNRET != 0 ]; then
-        crit "Iptables is not set rule!"
+        crit "Iptables is not set rules of protect DOS attacks!"
         FNRET=1
     else
-        ok "Iptables rules are set!"
+        ok "Iptables has set rules for protect DOS attacks!"
         FNRET=0
     fi
 }
@@ -34,9 +35,9 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "Iptables rules are set!"
+        ok "Iptables has set rules for protect DOS attacks!"
     else
-        warn "Iptables rules are not set, need the administrator to manually add it."
+        warn "Iptables is not set rules of protect DOS attacks! need the administrator to manually add it."
     fi
 }
 
