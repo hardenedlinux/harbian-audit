@@ -5,7 +5,7 @@
 #
 
 #
-# 7.7.2 Ensure the Firewall is set rules of protect DOS attacks (Scored)
+# 7.7.3 Ensure the Firewall is set rules of protect DOS attacks (Scored)
 # Add this feature:Authors : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -17,13 +17,9 @@ HARDENING_LEVEL=2
 # Quick note here : CIS recommends your iptables rules to be persistent. 
 # Do as you want, but this script does not handle this
 
-PARAM='SETDOS'
-
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    check_iptables_set ${PARAM}
-    echo "fffffffffffffffffffffffffffffffffffff"
-    if [ $FNRET != 0 ]; then
+    if [ $(/sbin/iptables -S | grep -E "\-m.*limit" | grep -Ec "\-\-limit-burst") -eq 0 ]; then
         crit "Iptables is not set rules of protect DOS attacks!"
         FNRET=1
     else

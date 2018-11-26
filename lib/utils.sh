@@ -673,26 +673,3 @@ check_auth_option_nullok_by_pam()
     fi
 }
 
-check_iptables_set()
-{
-    case $1 in
-        SETRULE)
-            COUNTLINE=$(/sbin/iptables -S | grep -Ec "^-A|^-I")
-            if [ ${COUNTLINE} -gt 0 ]; then
-                FNRET=0
-            else
-                FNRET=1
-            fi
-        ;;
-        SETDOS)
-            COUNTLINE=$(/sbin/iptables -S | grep -E "\-m.*limit" | grep -Ec "\-\-limit-burst") 
-            echo "fsfdsfdsfdfffffffffffffffff"
-            if [ ${COUNTLINE} -eq 0 ]; then
-                FNRET=1
-            else
-                FNRET=0
-            fi
-        ;;
-    esac
-}
-

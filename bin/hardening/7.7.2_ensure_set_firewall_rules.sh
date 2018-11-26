@@ -17,12 +17,9 @@ HARDENING_LEVEL=2
 # Quick note here : CIS recommends your iptables rules to be persistent. 
 # Do as you want, but this script does not handle this
 
-PARAM='SETRULE'
-
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    check_iptables_set ${PARAM}
-    if [ $FNRET != 0 ]; then
+    if [ $(/sbin/iptables -S | grep -Ec "^-A|^-I") -eq 0 ]; then
         crit "Iptables is not set rule!"
         FNRET=1
     else
