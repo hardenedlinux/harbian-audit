@@ -19,6 +19,7 @@ HARDENING_LEVEL=2
 # Do as you want, but this script does not handle this
 
 PACKAGES='iptables iptables-persistent'
+SERVICENAME='netfilter-persistent'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -34,18 +35,30 @@ audit () {
             FNRET=0
         fi
     done
+    if [ $FNRET = 0 ]; then
+	    if [ $(systemctl status ${SERVICENAME}  | grep -c "Active:.active") -ne 1 ]; then
+            crit "${SERVICENAME} service is not actived"
+            FNRET=2
+        else
+            ok "${SERVICENAME} service is actived"
+            FNRET=0
+        fi
+    fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
         if [ $FNRET = 0 ]; then
             ok "$PACKAGES is installed"
-        else
+        elif [ $FNRET = 1 ]; then
             for PACKAGE in $PACKAGES
             do
                 warn "$PACKAGE is absent, installing it"
                 apt_install $PACKAGE
             done
+        elif [ $FNRET = 2 ]; then
+            warn "Enable ${SERVICENAME} service to actived"
+            systemctl start ${SERVICENAME}
         fi
 }
 
