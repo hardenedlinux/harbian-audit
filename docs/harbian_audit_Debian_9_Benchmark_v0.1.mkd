@@ -837,6 +837,7 @@ Verify the operating system generates audit records that modify configuration. C
 -w /etc/profile -p wa -k config_file_change
 -w /etc/profile.d/ -p wa -k config_file_change
 -w /etc/security/ -p wa -k config_file_change
+-w /etc/iptables/ -p wa -k config_file_change
 -w /etc/sysctl.conf -p wa -k config_file_change
 ```
 If the command does not return any output, this is a finding.
@@ -855,6 +856,7 @@ Fixtext: Configure the operating system to generate audit records that modify co
 -w /etc/profile -p wa -k config_file_change
 -w /etc/profile.d/ -p wa -k config_file_change
 -w /etc/security/ -p wa -k config_file_change
+-w /etc/iptables/ -p wa -k config_file_change
 -w /etc/sysctl.conf -p wa -k config_file_change
 ```
 The audit daemon must be restarted for the changes to take effect.
