@@ -116,7 +116,7 @@ echo "ALL: 192.168.1. 192.168.5." >> /etc/hosts.allow
 # sed -i "/^root/a\test    ALL=(ALL:ALL) ALL" /etc/sudoers 
 ```
 3) Set basic iptables rules 
-Set the corresponding firewall rules according to the applications used. Hardened Linux community for Debian firewall rules: 
+Set the corresponding firewall rules according to the applications used. HardenedLinux community for Debian firewall rules: 
 [etc.iptables.rules.v4.sh](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/configurations/etc.iptables.rules.v4.sh)
 
 4) Use the passwd command to change the passwords of all users, and change the password to a secure and reliable password entry with the same password complexity set by the pam_cracklib module.
