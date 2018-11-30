@@ -1,4 +1,6 @@
-# harbian audit Debian Linux 9 Benchmark  
+# harbian audit Debian GNU/Linux 9 Benchmark 
+## Version 0.1   
+This document is a description of the additions to the sections not included in the CIS reference documentation. Includes STIG reference documentation and additional checks recommended by the HardenedLinux community. 
 
 ## 1.2 Enable Option for signature of packages from a repository (scored) 
 
