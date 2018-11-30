@@ -5,7 +5,7 @@
 #
 
 #
-# 7.4.4 Create /etc/hosts.deny (Not Scored)
+# 7.4.4 Create /etc/hosts.deny (Scored)
 #
 
 set -e # One error, it's over

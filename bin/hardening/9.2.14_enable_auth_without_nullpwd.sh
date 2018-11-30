@@ -60,10 +60,10 @@ apply () {
         crit "$FILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
         info "Delete option $OPTIONNAME1 from $FILE"
-        sed -ie "s/$OPTIONNAME1//" $FILE
+        sed -i "s/$OPTIONNAME1//" $FILE
     elif [ $FNRET = 5 ]; then
         info "Delete option $OPTIONNAME2 from $FILE"
-        sed -ie "s/$OPTIONNAME2//" $FILE
+        sed -i "s/$OPTIONNAME2//" $FILE
     fi 
 }
 

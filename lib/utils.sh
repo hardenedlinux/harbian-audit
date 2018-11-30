@@ -557,7 +557,7 @@ add_option_to_password_check()
     # For example : 
     # password  requisite           pam_cracklib.so  minlen=8 difok=3
     # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=3
-    sed -ie "s;\(^password.*$KEYWORD.*\);\1 $OPTIONSTR;" $PAMPWDFILE  
+    sed -i "s;\(^password.*$KEYWORD.*\);\1 $OPTIONSTR;" $PAMPWDFILE  
 }
 
 # Add session check option 
