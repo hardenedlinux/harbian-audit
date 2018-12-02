@@ -15,7 +15,7 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
 
-PACKAGES='sudo'
+PACKAGE='sudo'
 
 
 # This function will be called if the script status is on enabled / audit mode
