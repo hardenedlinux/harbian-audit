@@ -1,0 +1,49 @@
+# How to persistent iptables rules with debian 9 
+
+## Test platform info 
+
+Debian 9.6   
+iptables  1.6.0+snapshot20161117-6   
+iptables-persistent  1.0.4+nmu2  
+netfilter-persistent  1.0.4+nmu2   
+
+## Install 
+```
+$ sudo apt-get install -y iptables-persistent
+```  
+This command will install iptables-persistent and netfilter-persistent(depended iptables-persistent),
+
+## How to enable netfilter-persistent service
+
+netfilter-persistent service is auto running when netfilter-persistent was installed.
+
+Check service status:
+```
+$ sudo systemctl status netfilter-persistent
+```
+
+If netfilter-persistent service is not started, use the following command to enable netfilter-persistent service:
+```
+$ sudo systemctl start netfilter-persistent
+```
+
+## How to config for persistent iptables
+
+First, when configuring iptables rules done, need use the following command to save current iptables rules:
+```
+$ sudo dpkg-reconfigure iptables-persistent
+```  
+
+or
+
+```
+$ iptables-save > /etc/iptables/rules.v4
+$ ip6tables-save > /etc/iptables/rules.v6
+``` 
+Note: User iptables-save/ip6tables-save command, save file must is above file name.
+
+## Well-done 
+Iptables rules would auto restore iptables rules when Operation system restart, or manual to exec following command:
+```
+$ systemctl restart  netfilter-persistent
+```
