@@ -45,5 +45,5 @@ Note: User iptables-save/ip6tables-save command, save file must is above file na
 ## Well-done 
 Iptables rules would auto restore iptables rules when Operation system restart, or manual to exec following command:
 ```
-$ systemctl restart  netfilter-persistent
+$ sudo systemctl restart  netfilter-persistent
 ```
