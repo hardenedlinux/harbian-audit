@@ -16,7 +16,7 @@ HARDENING_LEVEL=3
 # Quick factoring as many script use the same logic
 PARTITION="/tmp"
 OPTION="noexec"
-SERVICEPATH="/etc/systemd/system/tmp.mount"
+SERVICEPATH="/usr/share/systemd/tmp.mount"
 SERVICENAME="tmp.mount"
 
 # This function will be called if the script status is on enabled / audit mode
