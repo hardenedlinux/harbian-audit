@@ -117,11 +117,19 @@ When exec --apply and set-hardening-level are set to 5 (the highest level), you 
 ```
 # sed -i "/^root/a\test    ALL=(ALL:ALL) ALL" /etc/sudoers 
 ```
+
 4) Set basic iptables rules 
 Set the corresponding firewall rules according to the applications used. HardenedLinux community for Debian GNU/Linux firewall rules: 
 [etc.iptables.rules.v4.sh](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/configurations/etc.iptables.rules.v4.sh)
 
 5) Use the passwd command to change the passwords of all users, and change the password to a secure and reliable password entry with the same password complexity set by the pam_cracklib module.
+
+6) Set firewall basic rules for the OS, to do the following:
+```
+$ sudo sudo bash docs/examples/configurations/etc.iptables.rules.v4.sh 
+# iptables-save > /etc/iptables/rules.v4 
+# ip6tables-save > /etc/iptables/rules.v6 
+```
 
 ## Hacking
 
@@ -150,7 +158,7 @@ $ bash bin/hardening.sh --apply --only 99.99
 ## Document 
 
 ### Harbian-audit benchmark for Debian GNU/Linux 9 
-This document is a description of the additions to the sections not included in the CIS reference documentation. Includes STIG reference documentation and additional checks recommended by the HardenedLinux community.  
+This document is a description of the additions to the sections not included in the [CIS reference documentation](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/CIS_Debian_Linux_8_Benchmark_v1.0.0.pdf). Includes STIG reference documentation and additional checks recommended by the HardenedLinux community. 
 [harbian audit Debian Linux 9 Benchmark](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/harbian_audit_Debian_9_Benchmark_v0.1.mkd)
 
 ### Manual Operation docs 
