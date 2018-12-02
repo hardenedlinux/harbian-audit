@@ -53,11 +53,11 @@ apply () {
         touch $FILE
     elif [ $FNRET = 2 ]; then
         warn "$OPTION is not present in $FILE, add it to $KEYWORD line, need to reboot the system  after setting it"
-        sed -ie "s;\(${KEYWORD}=\)\(\".*\)\(\"\);\1\2 ${OPTION}=${SETVAL}\3;" $FILE
+        sed -i "s;\(${KEYWORD}=\)\(\".*\)\(\"\);\1\2 ${OPTION}=${SETVAL}\3;" $FILE
         /usr/sbin/update-grub2 
     elif [ $FNRET = 3 ]; then
         warn "Parameter $OPTION is present but with the wrong value -- Fixing, need to reboot the system after setting it"
-        sed -ie "s/${OPTION}=./${OPTION}=${SETVAL}/" $FILE 
+        sed -i "s/${OPTION}=./${OPTION}=${SETVAL}/" $FILE 
         /usr/sbin/update-grub2
     fi
 }

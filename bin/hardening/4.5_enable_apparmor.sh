@@ -61,7 +61,7 @@ apply () {
         done
     elif [ $FNRET = 2 ]; then
         warn "Set ${SETSTRING} to ${GRUBFILE} in ${GRUBFILE}, need to reboot the system and enable AppArmor profiles after setting it."
-        sed -ie "s;\(${KEYWORD}=\)\(\".*\)\(\"\);\1\2 ${SETSTRING}\3;" ${GRUBFILE}
+        sed -i "s;\(${KEYWORD}=\)\(\".*\)\(\"\);\1\2 ${SETSTRING}\3;" ${GRUBFILE}
         /usr/sbin/update-grub2
     elif [ $FNRET = 3 ]; then
         warn "Enable AppArmor profiles in the system "

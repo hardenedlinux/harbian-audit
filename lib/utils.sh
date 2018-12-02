@@ -382,6 +382,7 @@ add_option_to_systemd() {
     #debug "Sed command : sed -ie "s;\(^Options.*=mode=[1,2,4,7][1,2,4,7][1,2,4,7][1,2,4,7].*\);\1,$OPTION;\" $SERVICEPATH"
     sed -ie "s;\(^Options.*=mode=[1,2,4,7][1,2,4,7][1,2,4,7][1,2,4,7].*\);\1,$OPTION;" $SERVICEPATH
     systemctl daemon-reload
+    systemctl start $SERVICENAME
 }
 
 remount_partition_by_systemd() {
