@@ -37,8 +37,8 @@ $ sudo dpkg-reconfigure iptables-persistent
 or
 
 ```
-$ iptables-save > /etc/iptables/rules.v4
-$ ip6tables-save > /etc/iptables/rules.v6
+# iptables-save > /etc/iptables/rules.v4
+# ip6tables-save > /etc/iptables/rules.v6
 ``` 
 Note: User iptables-save/ip6tables-save command, save file must is above file name.
 
