@@ -34,6 +34,7 @@ set_sysctl_param() {
     local VALUE=$2
     debug "Setting $SYSCTL_PARAM to $VALUE"
     if [ "$(sysctl -w $SYSCTL_PARAM=$VALUE 2>/dev/null)" = "$SYSCTL_PARAM = $VALUE" ]; then
+		echo "$SYSCTL_PARAM = $VALUE" >> /etc/sysctl.conf
         FNRET=0
     elif [ $? = 255 ]; then
         debug "$SYSCTL_PARAM does not exist"
