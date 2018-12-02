@@ -62,7 +62,7 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    info "Editing items from PATH may seriously harm your system, report only here"
+    warn "Editing items from PATH may seriously harm your system, report only here, need a manual fix."
 }
 
 # This function will check config parameters required

@@ -34,7 +34,7 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    info "Removing suid on valid binary may seriously harm your system, report only here"
+	warn "Removing suid on valid binary may seriously harm your system, report only here, need a manual fix."
 }
 
 # This function will create the config file for this check with default values

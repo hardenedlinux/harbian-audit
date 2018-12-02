@@ -467,8 +467,10 @@ is_debian_9()
 
 verify_integrity_all_packages()
 {
-    if [ $($SUDO_CMD dpkg -V | wc -l) -gt 0 ]; then
+	dpkg -V > /dev/shm/dpkg_verify_ret
+    if [ $(cat /dev/shm/dpkg_verify_ret | wc -l) -gt 0 ]; then
         debug "Verify integrity all packages is fail"
+		cat /dev/shm/dpkg_verify_ret
         FNRET=1
     else
         debug "Verify integrity all packages is OK"
