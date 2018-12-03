@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening /!\ Not in the Guide
+# harbian audit 7/8/9  Hardening /
 #
 
 #
-# 99.2 Disable USB Devices
+# 4.6 Disable USB Devices
 #
 
 set -e # One error, it's over
@@ -16,7 +16,7 @@ HARDENING_LEVEL=4
 USER='root'
 PATTERN='ACTION=="add", SUBSYSTEMS=="usb", TEST=="authorized_default", ATTR{authorized_default}="0"' # We do test disabled by default, whitelist is up to you
 FILES_TO_SEARCH='/etc/udev/rules.d'
-FILE='/etc/udev/rules.d/10-CIS_99.2_usb_devices.sh'
+FILE='/etc/udev/rules.d/CIS_4.6_usb_devices.conf'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {

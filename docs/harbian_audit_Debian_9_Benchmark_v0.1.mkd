@@ -169,6 +169,45 @@ If the system is mounting file systems via NFS and has the sec option without th
 ### Remediation
 Update the "/etc/fstab" file so the option "sec" is defined for each NFS mounted file system and the "sec" option does not have the "sys" setting. \n\nEnsure the "sec" option is defined as "krb5:krb5i:krb5p"
 
+## 4.6  Disable USB Devices (scored) 
+
+### Profile Applicability
+Level 4
+
+### Description
+USB Devices must be disabled.
+
+### Rationale
+USB Devices permits easy introduction of unknown devices, thereby facilitating malicious activity.
+
+### Aduit
+If there is an HBSS with a Device Control Module and a Data Loss Prevention mechanism, this requirement is not applicable. Verify the operating system disables the ability to use USB devices. Check to see if USB Devices is disabled with the following command:
+```
+# grep '^ACTION=="add", SUBSYSTEMS=="usb", TEST=="authorized_default", ATTR{authorized_default}="0"' /etc/udev/rules.d/ -r
+/etc/udev/rules.d/CIS_4.6_usb_devices.conf:ACTION=="add", SUBSYSTEMS=="usb", TEST=="authorized_default", ATTR{authorized_default}="0"
+```
+If the command does not return any output, and use of USB storage devices is not documented with the Information System Security Officer (ISSO) as an operational requirement, this is a finding.
+
+### Remediation
+Configure the operating system to disable the ability to use USB devices.
+```
+# vim /etc/udev/rules.d/CIS_4.6_usb_devices.conf
+```
+Add or update the line:
+```
+# By default, disable all.
+ACTION=="add", SUBSYSTEMS=="usb", TEST=="authorized_default", ATTR{authorized_default}="0"
+
+# Enable hub devices.
+ACTION=="add", ATTR{bDeviceClass}=="09", TEST=="authorized", ATTR{authorized}="1"
+
+# Enables keyboard devices
+ACTION=="add", ATTR{product}=="*[Kk]eyboard*", TEST=="authorized", ATTR{authorized}="1"
+
+# PS2-USB converter
+ACTION=="add", ATTR{product}=="*Thinnet TM*", TEST=="authorized", ATTR{authorized}="1"
+```
+
 ## 5.7 Install screen (scored) 
 
 ### Profile Applicability
@@ -1792,4 +1831,38 @@ If the kernel core dump is set, this is a finding.
 
 ### Remediation
 If kernel core dumps are not required, delete the contain "core" line in /etc/security/limits.conf.
+
+## 10.6 Set Timeout on ttys (Scored) 
+
+### Profile Applicability
+Level 2
+
+### Description
+All network connections associated with a communication session must be terminated at the end of the session or after 10 minutes of inactivity from the user at a command prompt, except to fulfill documented and validated mission requirements.
+
+### Rationale
+Terminating an idle session within a short time period reduces the window of opportunity for unauthorized personnel to take control of a management session enabled on the console or console port that has been left unattended. In addition, quickly terminating an idle session will also free up resources committed by the managed network element. Terminating network connections associated with communications sessions includes, for example, de-allocating associated TCP/IP address/port pairs at the operating system level and de-allocating networking assignments at the application level if multiple application sessions are using a single operating system-level network connection. This does not mean that the operating system terminates all sessions or network access; it only ends the inactive session and releases the resources associated with that session. 
+
+### Aduit
+Verify the operating system terminates all network connections associated with a communications session at the end of the session or based on inactivity. Check the value of the system inactivity timeout with the following command: 
+```
+# grep -i tmout /etc/bashrc /etc/profile.d/*
+TMOUT=600
+```
+If "TMOUT" is not set to "600" or less in "/etc/bashrc" or in a script created to enforce session termination after inactivity, this is a finding.
+
+### Remediation
+Configure the operating system to terminate all network connections associated with a communications session at the end of the session or after a period of inactivity. Add or update the following lines in "/etc/profile". 
+```
+TMOUT=600
+readonly TMOUT
+export TMOUT
+```
+Or create a script to enforce the inactivity timeout (for example /etc/profile.d/tmout.sh) such as:
+```
+#!/bin/bash
+TMOUT=600
+readonly TMOUT
+export TMOUT
+``` 
 

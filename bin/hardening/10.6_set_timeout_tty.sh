@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening /!\ Not in the Guide
+# harbian audit 7/8/9  Hardening
 #
 
 #
-# 99.1 Set Timeout on ttys
+# 10.6 Set Timeout on ttys
 #
 
 set -e # One error, it's over
@@ -17,7 +17,7 @@ USER='root'
 PATTERN='TMOUT='
 VALUE='600'
 FILES_TO_SEARCH='/etc/bash.bashrc /etc/profile.d /etc/profile'
-FILE='/etc/profile.d/CIS_99.1_timeout.sh'
+FILE='/etc/profile.d/CIS_10.6_timeout.sh'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
