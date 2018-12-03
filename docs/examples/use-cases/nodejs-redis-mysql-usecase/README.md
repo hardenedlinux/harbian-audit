@@ -1,7 +1,7 @@
 # Nodejs + redis + mysql demo 
 
 ## environment
-* OS:      Debian
+* OS:      Debian 9.6 
 * Nodejs:  10.13.0
 * MySQL:   10.1.26-MariaDB-0+deb9u1
 * Redis:   5.0.1

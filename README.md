@@ -165,6 +165,9 @@ This document is a description of the additions to the sections not included in 
 [How to config grub2 password protection](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_config_grub2_password_protection.mkd)  
 [How to persistent iptables rules with debian 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_persistent_iptables_rules_with_debian_9.mkd)  
 
+### Use cases docs  
+[Nodejs + redis + mysql demo](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/use-cases/nodejs-redis-mysql-usecase/README.md) 
+
 ## harbian-audit License 
 GPL 3.0 
 
