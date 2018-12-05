@@ -266,7 +266,6 @@ is_kernel_option_enabled() {
 
 # Verify $1 is a partition declared in fstab
 is_a_partition() {
-
     local PARTITION=$1
     FNRET=128
     if $(grep "[[:space:]]*${PARTITION}[[:space:]]*" /etc/fstab | grep -vqE "^#"); then
