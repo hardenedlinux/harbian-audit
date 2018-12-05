@@ -403,7 +403,7 @@ apt_update_if_needed()
     then
         UPDATE_AGE=$(( $(date +%s) - $(stat -c '%Y'  /var/cache/apt/pkgcache.bin)  ))
 
-        if [ $UPDATE_AGE -gt 21600 ]
+        if [ $UPDATE_AGE -gt 3600 ]
         then
             # update too old, refresh database
             $SUDO_CMD apt-get update -y >/dev/null 2>/dev/null
