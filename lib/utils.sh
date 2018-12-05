@@ -344,7 +344,7 @@ add_option_to_fstab() {
 #    debug "Sed command :  sed -ie \"s;\(.*\)\(\s*\)\s\($PARTITION\)\s\(\s*\)\(\w*\)\(\s*\)\(\w*\)*;\1\2 \3 \4\5\6\7,$OPTION;\" /etc/fstab"
 #    sed -ie "s;\(^[^#].*${PARTITION}\)\(\s.*\)\(\s\w.*\)\(\s[0-2]\s*[0-2]\);\1\2\3,${OPTION}\4;" /etc/fstab
     MOUNT_OPTION=$(grep -v "^#" /etc/fstab | awk '$2=="'${PARTITION}'" {print $4}')
-    CURLINE=$(grep -v "^#" /etc/fstab -n | grep "/home" | awk -F: '{print $1}')
+    CURLINE=$(grep -v "^#" /etc/fstab -n | grep "${PARTITION}" | awk -F: '{print $1}')
     #This case is for option of starting with "no", example: nosuid noexec nodev
     NOTNOOPTION=$(echo $OPTION | cut -c 3-)
 

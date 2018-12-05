@@ -2,10 +2,11 @@
 
 #
 # harbian audit 7/8/9  Hardening
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 #
-# 2.13 Add nosuid Option to Removable Media Partitions (Not Scored)
+# 2.13 Add nosuid Option to Removable Media Partitions (Scored)
 #
 
 set -e # One error, it's over
@@ -16,25 +17,27 @@ HARDENING_LEVEL=2
 # Fair warning, it only checks /media.* like partition in fstab, it's not exhaustive
 
 # Quick factoring as many script use the same logic
-PARTITION="/media\S*"
+PARTITION_PATTERN="/media\S*"
 OPTION="nosuid"
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    info "Verifying if there is $PARTITION like partition"
+    info "Verifying if there is $PARTITION_PATTERN like partition"
     FNRET=0
-    is_a_partition "$PARTITION"
+    is_a_partition "$PARTITION_PATTERN"
     if [ $FNRET -gt 0 ]; then
-        ok "There is no partition like $PARTITION"
+        ok "There is no partition like $PARTITION_PATTERN"
         FNRET=0
     else
-        info "detected $PARTITION like"
-        has_mount_option $PARTITION $OPTION
+		MEDIA_PARNAME=$(grep "[[:space:]]${PARTITION_PATTERN}[[:space:]]*" /etc/fstab | grep -v "^#" | awk '{print $2}')
+        info "detected $PARTITION_PATTERN like"
+        has_mount_option $MEDIA_PARNAME $OPTION
         if [ $FNRET -gt 0 ]; then
-            crit "$PARTITION has no option $OPTION in fstab!"
+            crit "$MEDIA_PARNAME has no option $OPTION in fstab!"
             FNRET=1
         else
-            ok "$PARTITION has $OPTION in fstab"
+            ok "$MEDIA_PARNAME has $OPTION in fstab"
+            FNRET=0
         fi       
     fi
 }
@@ -42,10 +45,11 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "$PARTITION is correctly set"
+        ok "$PARTITION_PATTERN is correctly set"
     elif [ $FNRET = 1 ]; then
+		MEDIA_PARNAME=$(grep "[[:space:]]${PARTITION_PATTERN}[[:space:]]*" /etc/fstab | grep -v "^#" | awk '{print $2}')
         info "Adding $OPTION to fstab"
-        add_option_to_fstab $PARTITION $OPTION
+        add_option_to_fstab $MEDIA_PARNAME $OPTION
     fi 
 }
 
