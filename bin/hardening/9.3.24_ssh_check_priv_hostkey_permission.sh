@@ -22,6 +22,7 @@ audit () {
         FNRET=1
     else
         ok "Not any file has a mode more permissive than "0600""
+        FNRET=0
     fi
 }
 
