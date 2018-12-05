@@ -65,7 +65,7 @@ apply () {
 	elif [ $FNRET = 1 ]; then
         	crit "$PARTITION is not a partition, correct this by yourself, I cannot help you here"
 	elif [ $FNRET = 2 ]; then
-       		warn "mounting $PARTITION"
+		warn "mounting $PARTITION"
         	mount $PARTITION
 	elif [ $FNRET = 3 ]; then
 		$SUDO_CMD systemctl daemon-reload 
