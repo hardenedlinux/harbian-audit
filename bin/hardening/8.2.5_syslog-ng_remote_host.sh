@@ -17,24 +17,33 @@ PATTERN='^destination.*(tcp|udp)[[:space:]]*\([[:space:]]*\".*\"[[:space:]]*\)'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    FILES="$SYSLOG_BASEDIR/syslog-ng.conf $SYSLOG_BASEDIR/conf.d/*"
-    does_pattern_exist_in_file "$FILES" "$PATTERN"
-    if [ $FNRET != 0 ]; then
-        crit "$PATTERN is not present in $FILES"
-    else
-        ok "$PATTERN is present in $FILES"
-    fi 
+	if [ -d "$SYSLOG_BASEDIR" ]; then
+    	FILES="$SYSLOG_BASEDIR/syslog-ng.conf $SYSLOG_BASEDIR/conf.d/*"
+    	does_pattern_exist_in_file "$FILES" "$PATTERN"
+    	if [ $FNRET != 0 ]; then
+        	crit "$PATTERN is not present in $FILES"
+    	else
+        	ok "$PATTERN is present in $FILES"
+    	fi
+	else
+		warn "$SYSLOG_BASEDIR is not exist!"
+		FNRET=1	
+	fi 
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    FILES="$SYSLOG_BASEDIR/syslog-ng.conf $SYSLOG_BASEDIR/conf.d/*"
-    does_pattern_exist_in_file "$FILES" "$PATTERN"
-    if [ $FNRET != 0 ]; then
-        crit "$PATTERN is not present in $FILES, please set a remote host to send your logs"
-    else
-        ok "$PATTERN is present in $FILES"
-    fi
+	if [ $FNRET = 1 ]; then  
+		warn "$SYSLOG_BASEDIR is not exist!"
+	else
+    	FILES="$SYSLOG_BASEDIR/syslog-ng.conf $SYSLOG_BASEDIR/conf.d/*"
+    	does_pattern_exist_in_file "$FILES" "$PATTERN"
+    	if [ $FNRET != 0 ]; then
+        	crit "$PATTERN is not present in $FILES, please set a remote host to send your logs"
+    	else
+        	ok "$PATTERN is present in $FILES"
+    	fi
+	fi
 }
 
 # This function will create the config file for this check with default values
