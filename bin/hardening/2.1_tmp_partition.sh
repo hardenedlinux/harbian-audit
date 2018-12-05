@@ -21,8 +21,8 @@ TMPMOUNTO="/usr/share/systemd/tmp.mount"
 # This function will be called if the script status is on enabled / audit mode
 audit () {
     info "Verifying that $PARTITION is a filesystem/partition"
-	FNRET=0
-	#If /tmp is set in /etc/fstab, only check /etc/fstab and disable tmp.mount service if it's exist
+    FNRET=0
+    #If /tmp is set in /etc/fstab, only check /etc/fstab and disable tmp.mount service if it's exist
     is_a_partition "$PARTITION"
     if [ $FNRET -eq 0 ]; then
 		ok "$PARTITION is a partition"
@@ -39,20 +39,20 @@ audit () {
 		if [ -e $TMPMOUNTO ]; then
 			if [ $(systemctl status $TMPMOUNTNAME | grep -c "Active:.active") -eq 1 ]; then
 		 		ok "$TMPMOUNTNAME service is active!"
-        		is_mounted "$PARTITION"
-        		if [ $FNRET -gt 0 ]; then
-        			warn "$PARTITION is not mounted"
-            		FNRET=3
-        		else
-        			ok "$PARTITION is mounted"
-            		FNRET=0
+        			is_mounted "$PARTITION"
+        			if [ $FNRET -gt 0 ]; then
+        				warn "$PARTITION is not mounted"
+            				FNRET=3
+        			else
+        				ok "$PARTITION is mounted"
+            				FNRET=0
 				fi
 			else
-    			crit "$TMPMOUNTNAME service is not active!"
+    				crit "$TMPMOUNTNAME service is not active!"
 				FNRET=4
 			fi
 		else
-    		crit "$TMPMOUNTO is not exist!"
+    			crit "$TMPMOUNTO is not exist!"
 			FNRET=1
 		fi	
 	fi
@@ -60,20 +60,20 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    if [ $FNRET = 0 ]; then
-        ok "$PARTITION is correctly set"
+	if [ $FNRET = 0 ]; then
+		ok "$PARTITION is correctly set"
 	elif [ $FNRET = 1 ]; then
-        crit "$PARTITION is not a partition, correct this by yourself, I cannot help you here"
+        	crit "$PARTITION is not a partition, correct this by yourself, I cannot help you here"
 	elif [ $FNRET = 2 ]; then
-       	warn "mounting $PARTITION"
-        mount $PARTITION
+       		warn "mounting $PARTITION"
+        	mount $PARTITION
 	elif [ $FNRET = 3 ]; then
-	    $SUDO_CMD systemctl daemon-reload 
-	    $SUDO_CMD systemctl start "$TMPMOUNTNAME"
+		$SUDO_CMD systemctl daemon-reload 
+	    	$SUDO_CMD systemctl start "$TMPMOUNTNAME"
 	elif [ $FNRET = 4 ]; then
 		$SUDO_CMD systemctl enable "$TMPMOUNTNAME"
-	    $SUDO_CMD systemctl daemon-reload 
-	    $SUDO_CMD systemctl start "$TMPMOUNTNAME"
+	    	$SUDO_CMD systemctl daemon-reload 
+	    	$SUDO_CMD systemctl start "$TMPMOUNTNAME"
 	fi
 }
 
