@@ -17,8 +17,8 @@ VIRULSERVER='clamav-daemon'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(dpkg -l  | grep $VIRULSERVER | wc -l) -ge 1 ]; then
-        if [ $(systemctl | grep  $VIRULSERVER | grep "active running" | wc -l) -ne 1 ]; then
+    if [ $(dpkg -l  | grep -c $VIRULSERVER) -ge 1 ]; then
+        if [ $(systemctl | grep  $VIRULSERVER | grep -c "active running") -ne 1 ]; then
             crit "$VIRULSERVER is not runing"
             FNRET=2
         else

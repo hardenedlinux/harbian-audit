@@ -32,7 +32,7 @@ audit () {
             FNRET=2
         else
             ok "$FILE exists, checking configuration"
-            VALUE=$(grep -v "^#" $FILE | grep -i "$PATTERN" | wc -l)
+            VALUE=$(grep -v "^#" $FILE | grep -ic "$PATTERN")
             if [ $VALUE -gt 0 ]; then
                 VALUE=$(grep $PATTERN $FILE | grep -v '^#' | awk -F= '{print $2}')
                 if [ $VALUE == $SETVALUE ]; then

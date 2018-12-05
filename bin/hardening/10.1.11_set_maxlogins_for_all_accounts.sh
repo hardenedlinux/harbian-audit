@@ -32,10 +32,10 @@ audit () {
             crit "$FILE does not exist"
             FNRET=2
         else
-            COUNT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILE | grep "${OPTIONS}" | wc -l)
+            COUNT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILE | grep -c "${OPTIONS}")
             if [ $COUNT -gt 0 ]; then
                 ok "$OPTIONS is set in $FILE."
-                VALUE=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILE | grep ".*[[:space:]].*${OPTIONS}[[:space:]].*${OPVALUE}" | wc -l)
+                VALUE=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILE | grep -c ".*[[:space:]].*${OPTIONS}[[:space:]].*${OPVALUE}")
                 if [ $VALUE -eq 0 ]; then
                     crit "$OPTIONS value is incorrect in $FILE"
                     FNRET=4

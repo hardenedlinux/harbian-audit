@@ -18,7 +18,7 @@ TARGETNAME='ctrl-alt-del.target'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(find /lib/systemd/ /etc/systemd/ -name ctrl-alt-del.target -exec ls -l {} \; | grep "/dev/null" | wc -l) -ne $(find /lib/systemd/ /etc/systemd/ -name ctrl-alt-del.target -exec ls -l {} \; | wc -l) ]; then
+    if [ $(find /lib/systemd/ /etc/systemd/ -name ctrl-alt-del.target -exec ls -l {} \; | grep -c "/dev/null") -ne $(find /lib/systemd/ /etc/systemd/ -name ctrl-alt-del.target -exec ls -l {} \; | wc -l) ]; then
         crit "$TARGETNAME is enabled."
         FNRET=1
     else
