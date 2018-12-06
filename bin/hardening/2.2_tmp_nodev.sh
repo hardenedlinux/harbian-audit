@@ -22,7 +22,6 @@ SERVICENAME="tmp.mount"
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    
     info "Verifying that $PARTITION is a partition/filesystem"
     FNRET=0
     #If /tmp is set in /etc/fstab, only check /etc/fstab and disable tmp.mount service if it's exist
@@ -32,7 +31,14 @@ audit () {
 		has_mount_option $PARTITION $OPTION
 		if [ $FNRET -eq 0 ]; then
 		    ok "$PARTITION has $OPTION in fstab"
-		    FNRET=0
+            has_mounted_option $PARTITION $OPTION
+            if [ $FNRET -gt 0 ]; then
+                warn "$PARTITION is not mounted with $OPTION at runtime"
+                FNRET=4
+            else
+                ok "$PARTITION mounted with $OPTION"
+		        FNRET=0
+            fi
 	    else
             crit "$PARTITION has no option $OPTION in fstab!"
             FNRET=1
@@ -46,7 +52,14 @@ audit () {
                 FNRET=3
             else
                 ok "$PARTITION has $OPTION in systemd service"
-                FNRET=0
+                has_mounted_option $PARTITION $OPTION
+                if [ $FNRET -gt 0 ]; then
+                    warn "$PARTITION is not mounted with $OPTION at runtime"
+                    FNRET=5
+                else
+                    ok "$PARTITION mounted with $OPTION"
+		            FNRET=0
+                fi
             fi
         else
             crit "$TMPMOUNTO is not exist!"
@@ -72,8 +85,19 @@ apply () {
             remount_partition $PARTITION
         fi
     elif [ $FNRET = 3 ]; then
-        info "Remounting $PARTITION from systemd"
+        info "Adding $OPTION to systemd"
         add_option_to_systemd $SERVICEPATH $OPTION $SERVICENAME
+        remount_partition_by_systemd $SERVICENAME $PARTITION
+    elif [ $FNRET = 4 ]; then
+        info "Remounting $PARTITION from fstab"
+        is_mounted $PARTITION 
+        if [ $FNRET = 1 ]; then
+            mount $PARTITION
+        else
+            remount_partition $PARTITION
+        fi
+    elif [ $FNRET = 5 ]; then
+        info "Remounting $PARTITION from systemd"
         remount_partition_by_systemd $SERVICENAME $PARTITION
     fi 
 }
