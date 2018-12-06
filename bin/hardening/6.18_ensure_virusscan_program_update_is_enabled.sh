@@ -19,16 +19,17 @@ UPDATE_SERVER='clamav-freshclam'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(systemctl | grep  $VIRULSERVER | grep -c "active running") -ne 1 ]; then
+    if [ $(systemctl | grep  $VIRULSERVER | grep "active running" | wc -l) -ne 1 ]; then
         crit "$VIRULSERVER is not runing"
         FNRET=1
     else
+        ok "$VIRULSERVER is runing"
         UPDATE_DIR=$(grep -i databasedirectory "$CLAMAVCONF_DIR" | awk '{print $2}')
         if [ -d $UPDATE_DIR -a -e $CLAMAVCONF_DIR ]; then
             NOWTIME=$(date +"%s")
-            VIRUSTIME=$(stat -c "%Y" "$UPDATE_DIR"/daily.cvd)
+			# This file extension name maybe change to .cvd or .cld
+            VIRUSTIME=$(stat -c "%Y" "$UPDATE_DIR"/daily.*)
             INTERVALTIME=$((${NOWTIME}-${VIRUSTIME}))
-            echo ${INTERVALTIME}
             if [ "${INTERVALTIME}" -ge 604800 ];then
                 crit "Database file has a date older than seven days from the current date"
                 FNRET=3

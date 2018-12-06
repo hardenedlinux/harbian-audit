@@ -18,7 +18,7 @@ KEYWORD='promisc'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    COUNT=$(ip link | grep -ic "${KEYWORD}")
+    COUNT=$(ip link | grep -i "${KEYWORD}" | wc -l)
     if [ $COUNT -gt 0 ]; then
         crit "The total number of network interfaces with ${KEYWORD} mode set is ${COUNT}"
         FNRET=1
