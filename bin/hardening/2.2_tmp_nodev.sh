@@ -2,6 +2,7 @@
 
 #
 # harbian audit Debian 7/8/9 Hardening
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 #
@@ -21,55 +22,37 @@ SERVICENAME="tmp.mount"
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+    
     info "Verifying that $PARTITION is a partition/filesystem"
     FNRET=0
-    is_debian_9
-    if [ $FNRET -gt 0 ]; then
-        is_a_partition "$PARTITION"
-        if [ $FNRET -gt 0 ]; then
-            crit "$PARTITION is not a partition"
-            FNRET=2
-        else
-            ok "$PARTITION is a partition"
-            has_mount_option $PARTITION $OPTION
-            if [ $FNRET -gt 0 ]; then
-                crit "$PARTITION has no option $OPTION in fstab!"
-                FNRET=1
-            else
-                ok "$PARTITION has $OPTION in fstab"
-                has_mounted_option $PARTITION $OPTION
-                if [ $FNRET -gt 0 ]; then
-                    warn "$PARTITION is not mounted with $OPTION at runtime"
-                    FNRET=3 
-                else
-                    ok "$PARTITION mounted with $OPTION"
-                fi
-            fi       
-        fi
+    #If /tmp is set in /etc/fstab, only check /etc/fstab and disable tmp.mount service if it's exist
+    is_a_partition "$PARTITION"
+    if [ $FNRET -eq 0 ]; then
+		ok "$PARTITION is a partition"
+		has_mount_option $PARTITION $OPTION
+		if [ $FNRET -eq 0 ]; then
+		    ok "$PARTITION has $OPTION in fstab"
+		    FNRET=0
+	    else
+            crit "$PARTITION has no option $OPTION in fstab!"
+            FNRET=1
+       fi
     else
-        is_mounted "$PARTITION"
-        if [ $FNRET -gt 0 ]; then
-            crit "$PARTITION is not mounted"
-            FNRET=4
-        else
+        warn "$PARTITION is not partition in /etc/fstab, check tmp.mount service"
+        if [ -e $SERVICEPATH ]; then
             has_mount_option_systemd $SERVICEPATH $OPTION 
             if [ $FNRET -gt 0 ]; then
                 crit "$PARTITION has no option $OPTION in systemd service!"
-                FNRET=5
+                FNRET=3
             else
                 ok "$PARTITION has $OPTION in systemd service"
-                has_mounted_option $PARTITION $OPTION
-                if [ $FNRET -gt 0 ]; then
-                    warn "$PARTITION is not mounted with $OPTION at runtime"
-                    FNRET=6 
-                else
-                    ok "$PARTITION mounted with $OPTION"
-                fi
-
+                FNRET=0
             fi
+        else
+            crit "$TMPMOUNTO is not exist!"
+            FNRET=2  
         fi
     fi
-
 }
 
 # This function will be called if the script status is on enabled mode
@@ -84,17 +67,8 @@ apply () {
         info "Remounting $PARTITION from fstab"
         remount_partition $PARTITION
     elif [ $FNRET = 3 ]; then
-        info "Remounting $PARTITION from fstab"
-        remount_partition $PARTITION
-    elif [ $FNRET = 4 ]; then
-        info "Remounting $PARTITION from systemd"
-        remount_partition_by_systemd $SERVICENAME $PARTITION 
-    elif [ $FNRET = 5 ]; then
         info "Remounting $PARTITION from systemd"
         add_option_to_systemd $SERVICEPATH $OPTION $SERVICENAME
-        remount_partition_by_systemd $SERVICENAME $PARTITION
-    elif [ $FNRET = 6 ]; then
-        info "Remounting $PARTITION from systemd"
         remount_partition_by_systemd $SERVICENAME $PARTITION
     fi 
 }

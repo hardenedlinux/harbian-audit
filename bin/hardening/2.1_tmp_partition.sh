@@ -2,6 +2,7 @@
 
 #
 # harbian audit Debian 7/8/9 Hardening
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 #
@@ -11,7 +12,7 @@
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
-HARDENING_LEVEL=3
+HARDENING_LEVEL=2
 
 # Quick factoring as many script use the same logic
 PARTITION="/tmp"
