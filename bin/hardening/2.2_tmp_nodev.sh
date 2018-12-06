@@ -65,7 +65,12 @@ apply () {
         info "Adding $OPTION to fstab"
         add_option_to_fstab $PARTITION $OPTION
         info "Remounting $PARTITION from fstab"
-        remount_partition $PARTITION
+        is_mounted $PARTITION 
+        if [ $FNRET = 1 ]; then
+            mount $PARTITION
+        else
+            remount_partition $PARTITION
+        fi
     elif [ $FNRET = 3 ]; then
         info "Remounting $PARTITION from systemd"
         add_option_to_systemd $SERVICEPATH $OPTION $SERVICENAME
