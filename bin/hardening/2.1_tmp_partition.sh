@@ -38,22 +38,22 @@ audit () {
 	else
     	warn "$PARTITION is not partition in /etc/fstab, check tmp.mount service"
 		if [ -e $TMPMOUNTO ]; then
-			if [ $(systemctl status $TMPMOUNTNAME | grep -c "Active:.active") -eq 1 ]; then
+			if [ $(systemctl | grep -c "tmp.mount[[:space:]]*loaded[[:space:]]active[[:space:]]mounted") -eq 1 ]; then
 		 		ok "$TMPMOUNTNAME service is active!"
         			is_mounted "$PARTITION"
         			if [ $FNRET -gt 0 ]; then
         				warn "$PARTITION is not mounted"
-            				FNRET=3
+            			FNRET=3
         			else
         				ok "$PARTITION is mounted"
-            				FNRET=0
+            			FNRET=0
 				fi
 			else
-    				crit "$TMPMOUNTNAME service is not active!"
+    			crit "$TMPMOUNTNAME service is not active!"
 				FNRET=4
 			fi
 		else
-    			crit "$TMPMOUNTO is not exist!"
+    		crit "$TMPMOUNTO is not exist!"
 			FNRET=1
 		fi	
 	fi
@@ -64,17 +64,17 @@ apply () {
 	if [ $FNRET = 0 ]; then
 		ok "$PARTITION is correctly set"
 	elif [ $FNRET = 1 ]; then
-        	crit "$PARTITION is not a partition, correct this by yourself, I cannot help you here"
+        crit "$PARTITION is not a partition, correct this by yourself, I cannot help you here"
 	elif [ $FNRET = 2 ]; then
 		warn "mounting $PARTITION"
-        	mount $PARTITION
+        mount $PARTITION
 	elif [ $FNRET = 3 ]; then
-		$SUDO_CMD systemctl daemon-reload 
-	    	$SUDO_CMD systemctl start "$TMPMOUNTNAME"
+        $SUDO_CMD systemctl daemon-reload
+        $SUDO_CMD systemctl start "$TMPMOUNTNAME"
 	elif [ $FNRET = 4 ]; then
-		$SUDO_CMD systemctl enable "$TMPMOUNTNAME"
-	    	$SUDO_CMD systemctl daemon-reload 
-	    	$SUDO_CMD systemctl start "$TMPMOUNTNAME"
+        $SUDO_CMD systemctl enable "$TMPMOUNTO"
+	    $SUDO_CMD systemctl daemon-reload 
+	    $SUDO_CMD systemctl start "$TMPMOUNTNAME"
 	fi
 }
 
