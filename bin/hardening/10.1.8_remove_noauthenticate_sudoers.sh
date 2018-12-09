@@ -33,7 +33,7 @@ audit ()
         	FNRET=1
     	else
         	ok "$NOAUTH is not set on $FILE, it's ok"
-        	if [ $(grep -c $NOAUTH $INCLUDFILE) -gt 0 ]; then 
+        	if [ $(grep $NOAUTH $INCLUDFILE | wc -l) -gt 0 ]; then 
             	crit "$NOAUTH is set on $INCLUDFILE, it's error conf"
             	FNRET=1
         	else
