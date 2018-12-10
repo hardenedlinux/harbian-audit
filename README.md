@@ -129,6 +129,8 @@ Set the corresponding firewall rules according to the applications used. Hardene
 [etc.iptables.rules.v4.sh](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/configurations/etc.iptables.rules.v4.sh)
 to do the following:
 ```
+$ INTERFACENAME="your network interfacename"
+$ sed "s/PUB_IFS=.*/PUB_IFS=\"$INTERFACENAME\"/g" docs/examples/configurations/etc.iptables.rules.v4.sh 
 $ sudo bash docs/examples/configurations/etc.iptables.rules.v4.sh 
 # iptables-save > /etc/iptables/rules.v4 
 # ip6tables-save > /etc/iptables/rules.v6 
