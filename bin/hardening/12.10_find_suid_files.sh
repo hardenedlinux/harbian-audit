@@ -20,7 +20,7 @@ audit () {
     for BINARY in $RESULT; do
         if grep -q $BINARY <<< "$EXCEPTIONS"; then
             debug "$BINARY is confirmed as an exception"
-            RESULT=$(sed "s!$BINARY!!" <<< $RESULT)
+            RESULT=$(grep -wv "$BINARY" <<< $RESULT)
         fi
     done
     if [ ! -z "$RESULT" ]; then
@@ -42,7 +42,7 @@ create_config() {
     cat <<EOF
 status=disabled
 # Put Here your valid suid binaries so that they do not appear during the audit
-EXCEPTIONS="/bin/mount /bin/ping /bin/ping6 /bin/su /bin/umount /usr/bin/chfn /usr/bin/chsh /usr/bin/fping /usr/bin/fping6 /usr/bin/gpasswd /usr/bin/mtr /usr/bin/newgrp /usr/bin/passwd /usr/bin/sudo /usr/bin/sudoedit /usr/lib/openssh/ssh-keysign /usr/lib/pt_chown /usr/bin/at"
+EXCEPTIONS="/bin/mount /bin/ping /bin/ping6 /bin/su /bin/umount /usr/bin/chfn /usr/bin/chsh /usr/bin/gpasswd /usr/bin/newgrp /usr/bin/passwd /usr/bin/sudo /usr/bin/sudoedit /usr/lib/openssh/ssh-keysign"
 EOF
 }
 
