@@ -35,7 +35,7 @@ audit () {
         if [ $( grep -w "^${KEYWORD}" ${GRUBFILE} | grep -c ${PATTERN}) -eq 1 ]; then
             ok "There are ${SETSTRING} to ${KEYWORD} in ${GRUBFILE}"
             is_mounted  "/sys/kernel/security"
-            if [ ${FNRET} -eq 0 -a $(/usr/sbin/apparmor_status | grep -c "apparmor filesystem is not mounted.") -eq 1 ]; then
+            if [ ${FNRET} -eq 0 -a $(/usr/sbin/apparmor_status 2>&1 | grep -c "apparmor filesystem is not mounted.") -eq 1 ]; then
                 crit "AppArmor profiles not enable in the system "
                 FNRET=3
             elif [ ${FNRET} -eq 0 -a $(/usr/sbin/apparmor_status | grep 'profiles are loaded' | awk '{print $1}') -gt 0 ]; then 
@@ -43,7 +43,7 @@ audit () {
                 FNRET=0
             fi
         else
-            crit "There are ${SETSTRING} to ${KEYWORD} in ${GRUBFILE}"
+            crit "There are not set ${SETSTRING} to ${KEYWORD} in ${GRUBFILE}"
             FNRET=2
         fi
     fi
