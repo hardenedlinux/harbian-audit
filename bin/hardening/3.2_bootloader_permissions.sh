@@ -23,14 +23,15 @@ audit () {
     has_file_correct_permissions $FILE $PERMISSIONS
     if [ $FNRET = 0 ]; then
         ok "$FILE has correct permissions"
+        FNRET=0
     else
         crit "$FILE permissions were not set to $PERMISSIONS"
+        FNRET=1
     fi 
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    has_file_correct_permissions $FILE $PERMISSIONS
     if [ $FNRET = 0 ]; then
         ok "$FILE has correct permissions"
     else
