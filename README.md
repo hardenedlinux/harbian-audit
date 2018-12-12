@@ -52,6 +52,14 @@ If use Network install from a minimal CD to installed Debian GNU/Linux, need ins
 # apt-get install -y bc net-tools 
 ```
 
+### Pre-Set 
+You must set a password for all users before hardening. Otherwise, you will not be able to log in after the hardening is completed. Example(OS user: root and test): 
+```
+$ sudo -s 
+# passwd 
+# passwd test 
+```
+
 ### Configuration
 
 Hardening scripts are in ``bin/hardening``. Each script has a corresponding
