@@ -140,6 +140,7 @@ to do the following:
 $ INTERFACENAME="your network interfacename(Example eth0)"
 $ sed -i "s/PUB_IFS=.*/PUB_IFS=\"$INTERFACENAME\"/g" docs/examples/configurations/etc.iptables.rules.v4.sh 
 $ sudo bash docs/examples/configurations/etc.iptables.rules.v4.sh 
+$ sudo -s
 # iptables-save > /etc/iptables/rules.v4 
 # ip6tables-save > /etc/iptables/rules.v6 
 ```
