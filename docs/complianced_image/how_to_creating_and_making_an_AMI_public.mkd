@@ -1,0 +1,94 @@
+# How to creating and making a public AMI 
+
+## Creating an Amazon EBS-Backed Linux AMI 
+
+[https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html)  
+
+
+## How to making 
+
+### Pre-Install 
+```
+$ sudo apt update && sudo apt install -y bc net-tools vim 
+```
+
+### Get harbian-audit project 
+```
+$ cd /opt
+/opt$ sudo wget https://github.com/hardenedlinux/harbian-audit/archive/master.zip 
+/opt$ sudo unzip master.zip 
+/opt$ cd harbian-audit-master/ 
+```
+### How to use harbian-audit to audit and apply 
+#### Set passwd to all user:
+```
+admin@ip:/opt/harbian-audit-master$ sudo -s
+admin@ip:/opt/harbian-audit-master# passwd
+admin@ip:/opt/harbian-audit-master# passwd admin
+```
+
+#### Audit && Apply: 
+```
+admin@ip:/opt/harbian-audit-master$ sudo cp debian/default /etc/default/cis-hardening
+admin@ip:/opt/harbian-audit-master$ sudo sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening 
+admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --audit-all 
+admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --set-hardening-level 5 
+admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=disabled/' etc/conf.d/7.4.4_hosts_deny.cfg
+admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply 
+admin@ip:/opt/harbian-audit-master$ sudo sed -i "/^root/a\admin    ALL=(ALL:ALL) ALL" /etc/sudoers 
+admin@ip:/opt/harbian-audit-master$ sudo reboot 
+```
+
+Related how to use harbian-audit to adit and apply, please reference: 
+[https://github.com/hardenedlinux/harbian-audit/blob/master/README.md](https://github.com/hardenedlinux/harbian-audit/blob/master/README.md)  
+
+
+### Hacking 
+If need adds a project on AMI, add the project on such as /opt, /usr/local/bin dir etc.  
+
+### Clean up for sharing AMIs safely 
+Use the following guidelines to reduce the attack surface and improve the reliability of the AMIs you create, please reference:    
+[https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/building-shared-amis.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/building-shared-amis.html) 
+
+#### Clean harbian-audit temp file and conf 
+```
+$ sudo rm /opt/master.zip 
+
+```
+
+#### Share an AMI for public, use the following command to clear the current log:
+```
+# find /var/log/ -name "*.log" -exec shred -u {} \; 
+# find /var/log/ -name "*.log.*" -exec shred -u {} \; 
+# find / -name "authorized_keys" -exec shred -u {} \; 
+# echo > /var/log/debug 
+# echo > /var/log/btmp 
+# echo > /var/log/error 
+# echo > /var/log/exim4/mainlog 
+# echo > /var/log/exim4/paniclog 
+# echo > /var/log/faillog 
+# echo > /var/log/messages  
+# echo > /var/log/syslog 
+# echo > /var/log/tallylog 
+# echo > /var/log/lastlog 
+# echo > /var/log/wtmp 
+# echo > ~/.bash_history 
+# history -cw 
+$ echo > ~/.bash_history 
+$ history -cw 
+```
+
+## Create AMI 
+
+
+## Cross-Region AMI Copy 
+
+[https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html)
+
+## Reference 
+
+[https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html)  
+[https://aws.amazon.com/cn/articles/public-ami-publishing-hardening-and-clean-up-requirements/](https://aws.amazon.com/cn/articles/public-ami-publishing-hardening-and-clean-up-requirements/)  
+[https://aws.amazon.com/cn/articles/how-to-share-and-use-public-amis-in-a-secure-manner/](https://aws.amazon.com/cn/articles/how-to-share-and-use-public-amis-in-a-secure-manner/)  
+
+
