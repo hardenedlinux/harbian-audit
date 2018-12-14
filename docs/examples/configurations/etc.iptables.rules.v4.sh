@@ -66,8 +66,8 @@ do
 
     # allow ssh/http only
     $IPT -A INPUT -p tcp --dport 22 -j ACCEPT
-    $IPT -A INPUT -p tcp --dport 80 -j ACCEPT
-    $IPT -A INPUT -p tcp --dport 443 -j ACCEPT
+#    $IPT -A INPUT -p tcp --dport 80 -j ACCEPT
+#    $IPT -A INPUT -p tcp --dport 443 -j ACCEPT
  
     # allow incoming ICMP ping pong stuff
     $IPT -A INPUT -p icmp --icmp-type 8 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
