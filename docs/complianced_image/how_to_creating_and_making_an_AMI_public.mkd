@@ -2,14 +2,31 @@
 
 ## Creating an Amazon EBS-Backed Linux AMI 
 
-[https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html)  
+The creation process is as follows: 
+![1](./picture/Create-EBS-Backed-AMI-01.png) 
+![2](./picture/Create-EBS-Backed-AMI-02.png) 
+![3](./picture/Create-EBS-Backed-AMI-03.png) 
+![4](./picture/Create-EBS-Backed-AMI-04.png) 
+![5](./picture/Create-EBS-Backed-AMI-05.png) 
+![6](./picture/Create-EBS-Backed-AMI-06.png) 
+![7](./picture/Create-EBS-Backed-AMI-07.png) 
+![8](./picture/Create-EBS-Backed-AMI-08.png) 
+![9](./picture/Create-EBS-Backed-AMI-09.png) 
+![10](./picture/Create-EBS-Backed-AMI-10.png) 
+![11](./picture/Create-EBS-Backed-AMI-11.png) 
+![12](./picture/Create-EBS-Backed-AMI-12.png) 
+![13](./picture/Create-EBS-Backed-AMI-13.png) 
+![14](./picture/Create-EBS-Backed-AMI-14.png) 
+![15](./picture/Create-EBS-Backed-AMI-15.png) 
+![16](./picture/Create-EBS-Backed-AMI-16.png) 
 
+[https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html)  
 
 ## How to making 
 
 ### Pre-Install 
 ```
-$ sudo apt update && sudo apt install -y bc net-tools vim 
+$ sudo apt update && sudo apt install -y bc net-tools vim unzip
 ```
 
 ### Get harbian-audit project 
@@ -38,6 +55,13 @@ admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply
 admin@ip:/opt/harbian-audit-master$ sudo sed -i "/^root/a\admin    ALL=(ALL:ALL) ALL" /etc/sudoers 
 admin@ip:/opt/harbian-audit-master$ sudo reboot 
 ```
+After reboot: 
+```
+admin@ip:/opt/harbian-audit-master$ sudo bash ./docs/examples/configurations/etc.iptables.rules.v4.sh 
+admin@ip:/opt/harbian-audit-master$ sudo -s 
+admin@ip:/opt/harbian-audit-master# iptables-save > /etc/iptables/rules.v4 
+admin@ip:/opt/harbian-audit-master# ip6tables-save > /etc/iptables/rules.v6
+```
 
 Related how to use harbian-audit to adit and apply, please reference: 
 [https://github.com/hardenedlinux/harbian-audit/blob/master/README.md](https://github.com/hardenedlinux/harbian-audit/blob/master/README.md)  
@@ -56,7 +80,7 @@ $ sudo rm /opt/master.zip
 
 ```
 
-#### Share an AMI for public, use the following command to clear the current log:
+#### Clear the current log:
 ```
 # find /var/log/ -name "*.log" -exec shred -u {} \; 
 # find /var/log/ -name "*.log.*" -exec shred -u {} \; 
@@ -72,6 +96,13 @@ $ sudo rm /opt/master.zip
 # echo > /var/log/tallylog 
 # echo > /var/log/lastlog 
 # echo > /var/log/wtmp 
+```
+
+#### AIDE RE-INIT 
+
+
+#### Clear bash hostory 
+```
 # echo > ~/.bash_history 
 # history -cw 
 $ echo > ~/.bash_history 
