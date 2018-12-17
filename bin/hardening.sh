@@ -245,7 +245,8 @@ for SCRIPT in $(ls $CIS_ROOT_DIR/bin/hardening/*.sh -v); do
     esac
     if [ $SCRIPT_EXITCODE -eq 3 ]; then
     {
-        debug "$SCRIPT maybe is nonexist service in this system"
+		warn "$SCRIPT maybe is nonexist service or nonexist file in this system"
+        TOTAL_CHECKS=$((TOTAL_CHECKS+1))
     }
     else
     {
