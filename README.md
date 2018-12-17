@@ -191,16 +191,16 @@ The hardenedlinux community has created public AMI images for three different re
 ### AMI(Amazon Machine Image) Public
 
 Destination region: US East(Ohio)   
-AMI ID: ami-0166a1e46f6a6840a   
-AMI Name: harbian-audit complianced for Debian 9 GNU/Linux  
+AMI ID: ami-0574075020839f7e9   
+AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 Destination region: EU(Frankfurt)  
-AMI ID: ami-01528c6a6c6e7f883  
-AMI Name: harbian-audit complianced for Debian 9 GNU/Linux  
+AMI ID: ami-0e26a1af7f07373bf  
+AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 Destination region: Asia Pacific(Tokyo)  
-AMI ID: ami-00bd0c5a51cdda2ac  
-AMI Name: harbian-audit complianced for Debian 9 GNU/Linux  
+AMI ID: ami-003de0c48c2711265  
+AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 ## harbian-audit License  
 GPL 3.0 
