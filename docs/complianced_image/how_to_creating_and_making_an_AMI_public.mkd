@@ -20,8 +20,6 @@ The creation process is as follows:
 ![15](./picture/Create-EBS-Backed-AMI-15.png) 
 ![16](./picture/Create-EBS-Backed-AMI-16.png) 
 
-[https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html)  
-
 ## How to making 
 
 ### Pre-Install 
@@ -37,6 +35,8 @@ $ cd /opt
 /opt$ cd harbian-audit-master/ 
 ```
 ### How to use harbian-audit to audit and apply 
+
+//maybe not need 
 #### Set passwd to all user:
 ```
 admin@ip:/opt/harbian-audit-master$ sudo -s
@@ -50,7 +50,8 @@ admin@ip:/opt/harbian-audit-master$ sudo cp debian/default /etc/default/cis-hard
 admin@ip:/opt/harbian-audit-master$ sudo sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening 
 admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --audit-all 
 admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --set-hardening-level 5 
-admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=disabled/' etc/conf.d/7.4.4_hosts_deny.cfg
+admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=disabled/' etc/conf.d/7.4.4_hosts_deny.cfg 
+admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=disabled/' etc/conf.d/10.1.7_remove_nopasswd_sudoers.cfg
 admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply 
 admin@ip:/opt/harbian-audit-master$ sudo sed -i "/^root/a\admin    ALL=(ALL:ALL) ALL" /etc/sudoers 
 admin@ip:/opt/harbian-audit-master$ sudo reboot 
@@ -66,7 +67,6 @@ admin@ip:/opt/harbian-audit-master# ip6tables-save > /etc/iptables/rules.v6
 Related how to use harbian-audit to adit and apply, please reference: 
 [https://github.com/hardenedlinux/harbian-audit/blob/master/README.md](https://github.com/hardenedlinux/harbian-audit/blob/master/README.md)  
 
-
 ### Hacking 
 If need adds a project on AMI, add the project on such as /opt, /usr/local/bin dir etc.  
 
@@ -77,14 +77,23 @@ Use the following guidelines to reduce the attack surface and improve the reliab
 #### Clean harbian-audit temp file and conf 
 ```
 $ sudo rm /opt/master.zip 
+$ sudo rm /opt/harbian-audit-master/tmp/backups/*
+$ sudo rm /opt/harbian-audit-master/etc/conf.d/*.cfg 
+```
 
+#### AIDE RE-INIT 
+```
+$ sudo aideinit -y -f 
 ```
 
 #### Clear the current log:
 ```
-# find /var/log/ -name "*.log" -exec shred -u {} \; 
-# find /var/log/ -name "*.log.*" -exec shred -u {} \; 
-# find / -name "authorized_keys" -exec shred -u {} \; 
+$ sudo find /var/log/ -name "*.log" -exec shred -u {} \; 
+$ sudo find /var/log/ -name "*.log.*" -exec shred -u {} \; 
+$ sudo find / -name "authorized_keys" -exec shred -u {} \; 
+$ sudo rm  /root/.wget-hsts 
+$ sudo rm  /root/.viminfo 
+$ sudo -s
 # echo > /var/log/debug 
 # echo > /var/log/btmp 
 # echo > /var/log/error 
@@ -98,9 +107,6 @@ $ sudo rm /opt/master.zip
 # echo > /var/log/wtmp 
 ```
 
-#### AIDE RE-INIT 
-
-
 #### Clear bash hostory 
 ```
 # echo > ~/.bash_history 
@@ -111,14 +117,33 @@ $ history -cw
 
 ## Create AMI 
 
+![1](./picture_of_create_AMI/create-AMI-from-instance-1.png) 
+![2](./picture_of_create_AMI/create-AMI-from-instance-2.png) 
+![3](./picture_of_create_AMI/create-AMI-from-instance-3.png) 
+![4](./picture_of_create_AMI/create-AMI-from-instance-4.png) 
+![5](./picture_of_create_AMI/create-AMI-from-instance-5.png) 
+![6](./picture_of_create_AMI/create-AMI-from-instance-6.png) 
+![7](./picture_of_create_AMI/create-AMI-from-instance-7.png) 
+![8](./picture_of_create_AMI/create-AMI-from-instance-8.png) 
 
 ## Cross-Region AMI Copy 
 
-[https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html)
+![9](./picture_of_create_AMI/create-AMI-from-instance-9.png) 
+![10](./picture_of_create_AMI/create-AMI-from-instance-10.png) 
+![11](./picture_of_create_AMI/create-AMI-from-instance-11.png) 
+![12](./picture_of_create_AMI/create-AMI-from-instance-12.png) 
+![13](./picture_of_create_AMI/create-AMI-from-instance-13.png) 
+![14](./picture_of_create_AMI/create-AMI-from-instance-14.png) 
+![15](./picture_of_create_AMI/create-AMI-from-instance-15.png) 
+![16](./picture_of_create_AMI/create-AMI-from-instance-16.png) 
+![17](./picture_of_create_AMI/create-AMI-from-instance-17.png)  
+
 
 ## Reference 
 
 [https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html)  
+[https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html)  
+[https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/creating-an-ami-ebs.html)   
 [https://aws.amazon.com/cn/articles/public-ami-publishing-hardening-and-clean-up-requirements/](https://aws.amazon.com/cn/articles/public-ami-publishing-hardening-and-clean-up-requirements/)  
 [https://aws.amazon.com/cn/articles/how-to-share-and-use-public-amis-in-a-secure-manner/](https://aws.amazon.com/cn/articles/how-to-share-and-use-public-amis-in-a-secure-manner/)  
 
