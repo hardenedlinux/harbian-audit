@@ -1,0 +1,73 @@
+# How to use harbian-audit complianced Debian GNU/Linux 9  
+
+## Select Destination region: EU(Frankfurt)  
+![1](./picture/how-to-use-AMI-01.png)  
+
+## Search harbian-audit complianced for Debian GNU/Linux 9 in Community AMIs  
+![2](./picture/how-to-use-AMI-02.png)  
+
+## Configuration new instance  
+![3](./picture/how-to-use-AMI-03.png)  
+![4](./picture/how-to-use-AMI-04.png)  
+![5](./picture/how-to-use-AMI-05.png)  
+![6](./picture/how-to-use-AMI-06.png)  
+![7](./picture/how-to-use-AMI-07.png)  
+![8](./picture/how-to-use-AMI-08.png)  
+![9](./picture/how-to-use-AMI-09.png)  
+![10](./picture/how-to-use-AMI-10.png)  
+![11](./picture/how-to-use-AMI-11.png)  
+![12](./picture/how-to-use-AMI-12.png)  
+
+## View new instance status  
+![13](./picture/how-to-use-AMI-13.png)  
+
+## Connect new instance  
+![14](./picture/how-to-use-AMI-14.png)  
+![15](./picture/how-to-use-AMI-15.png)  
+
+## Use harbian-audit to check   
+```
+admin@ip-:~$ cd /opt/harbian-audit-master/
+admin@ip-:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --audit-all
+......
+
+################### SUMMARY ###################
+      Total Available Checks : 256
+         Total Runned Checks : 256
+         Total Passed Checks : [ 227/256 ]
+         Total Failed Checks : [  29/256 ]
+   Enabled Checks Percentage : 100.00 %
+       Conformity Percentage : 88.67 %
+```
+
+##  Description of some key check failure items   
+
+### 3.3 Set Boot Loader Password  
+```
+3.3_bootloader_password   [ KO ] ^set superusers not present in /boot/grub/grub.cfg
+3.3_bootloader_password   [ KO ] ^password_pbkdf2 not present in /boot/grub/grub.cfg
+3.3_bootloader_password   [ KO ] Check Failed
+```
+
+If need apply this item, please reference:
+[https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_config_grub2_password_protection.mkd](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_config_grub2_password_protection.mkd)   
+
+### 7.4.4 Create /etc/hosts.deny  
+```
+7.4.4_hosts_deny          [ KO ] ALL: ALL is not present in /etc/hosts.deny, we have to deny everything
+7.4.4_hosts_deny          [ KO ] Check Failed
+```
+If you can determine the address segment of the client you are accessing, you can apply this and add the address segment that can be accessed to /etc/hosts.allow.  
+
+### 10.1.7  Remove nopasswd option from the sudoers configuration  
+```
+10.1.7_remove_nopasswd_su [ KO ] NOPASSWD is set on /etc/sudoers.d/*, it's error conf
+10.1.7_remove_nopasswd_su [ KO ] Check Failed
+```  
+This item requires the user to fix it himself. When the AMI is created, a new instance will be automatically locked all user of OS when the AMI is created.  Fix it before need set passwd for all user of OS.  
+
+## Reference   
+[https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/concepts.html](https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/concepts.html)    
+
+
+

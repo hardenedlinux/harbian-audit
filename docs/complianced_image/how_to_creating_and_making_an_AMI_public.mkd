@@ -117,26 +117,26 @@ $ history -cw
 
 ## Create AMI 
 
-![1](./picture_of_create_AMI/create-AMI-from-instance-1.png) 
-![2](./picture_of_create_AMI/create-AMI-from-instance-2.png) 
-![3](./picture_of_create_AMI/create-AMI-from-instance-3.png) 
-![4](./picture_of_create_AMI/create-AMI-from-instance-4.png) 
-![5](./picture_of_create_AMI/create-AMI-from-instance-5.png) 
-![6](./picture_of_create_AMI/create-AMI-from-instance-6.png) 
-![7](./picture_of_create_AMI/create-AMI-from-instance-7.png) 
-![8](./picture_of_create_AMI/create-AMI-from-instance-8.png) 
+![1](./picture/create-AMI-from-instance-1.png) 
+![2](./picture/create-AMI-from-instance-2.png) 
+![3](./picture/create-AMI-from-instance-3.png) 
+![4](./picture/create-AMI-from-instance-4.png) 
+![5](./picture/create-AMI-from-instance-5.png) 
+![6](./picture/create-AMI-from-instance-6.png) 
+![7](./picture/create-AMI-from-instance-7.png) 
+![8](./picture/create-AMI-from-instance-8.png) 
 
 ## Cross-Region AMI Copy 
 
-![9](./picture_of_create_AMI/create-AMI-from-instance-9.png) 
-![10](./picture_of_create_AMI/create-AMI-from-instance-10.png) 
-![11](./picture_of_create_AMI/create-AMI-from-instance-11.png) 
-![12](./picture_of_create_AMI/create-AMI-from-instance-12.png) 
-![13](./picture_of_create_AMI/create-AMI-from-instance-13.png) 
-![14](./picture_of_create_AMI/create-AMI-from-instance-14.png) 
-![15](./picture_of_create_AMI/create-AMI-from-instance-15.png) 
-![16](./picture_of_create_AMI/create-AMI-from-instance-16.png) 
-![17](./picture_of_create_AMI/create-AMI-from-instance-17.png)  
+![9](./picture/create-AMI-from-instance-9.png) 
+![10](./picture/create-AMI-from-instance-10.png) 
+![11](./picture/create-AMI-from-instance-11.png) 
+![12](./picture/create-AMI-from-instance-12.png) 
+![13](./picture/create-AMI-from-instance-13.png) 
+![14](./picture/create-AMI-from-instance-14.png) 
+![15](./picture/create-AMI-from-instance-15.png) 
+![16](./picture/create-AMI-from-instance-16.png) 
+![17](./picture/create-AMI-from-instance-17.png)  
 
 
 ## Reference 

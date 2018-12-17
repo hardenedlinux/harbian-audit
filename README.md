@@ -176,33 +176,39 @@ $ bash bin/hardening.sh --apply --only 99.99
 ### Harbian-audit benchmark for Debian GNU/Linux 9 
 This document is a description of the additions to the sections not included in the [CIS reference documentation](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/CIS_Debian_Linux_8_Benchmark_v1.0.0.pdf). Includes STIG reference documentation and additional checks recommended by the HardenedLinux community. 
 
-[harbian audit Debian Linux 9 Benchmark](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/harbian_audit_Debian_9_Benchmark_v0.1.mkd)
+[CIS Debian GNU/Linux 8 Benchmark v1.0.0](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/CIS_Debian_Linux_8_Benchmark_v1.0.0.pdf)  
+[harbian audit Debian Linux 9 Benchmark](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/harbian_audit_Debian_9_Benchmark_v0.1.mkd)  
 
 ### Manual Operation docs 
 [How to config grub2 password protection](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_config_grub2_password_protection.mkd)  
 [How to persistent iptables rules with debian 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_persistent_iptables_rules_with_debian_9.mkd)  
 
 ### Use cases docs  
-[Nodejs + redis + mysql demo](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/use-cases/nodejs-redis-mysql-usecase/README.md) 
+[Nodejs + redis + mysql demo](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/use-cases/nodejs-redis-mysql-usecase/README.md)  
 
 ## harbian-audit complianced image 
-The hardenedlinux community has created public AMI images for three different regions.
 
 ### AMI(Amazon Machine Image) Public
+The hardenedlinux community has created public AMI images for three different regions.
 
 Destination region: US East(Ohio)   
-AMI ID: ami-0574075020839f7e9   
+AMI ID: ami-0459b7f679f8941a4   
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 Destination region: EU(Frankfurt)  
-AMI ID: ami-0e26a1af7f07373bf  
+AMI ID: ami-022f30970530a0c5b   
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 Destination region: Asia Pacific(Tokyo)  
-AMI ID: ami-003de0c48c2711265  
+AMI ID: ami-003de0c48c2711265   
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
-## harbian-audit License  
+### Docs 
+[how to creating and making an AMI public](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/how_to_creating_and_making_an_AMI_public.mkd)  
+[how to use harbian-audit complianced for GNU/Linux Debian 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/how_to_use_harbian_audit_complianced_Debian_9.mkd)  
+
+
+## harbian-audit License   
 GPL 3.0 
 
 ## OVH Disclaimer
