@@ -185,7 +185,24 @@ This document is a description of the additions to the sections not included in 
 ### Use cases docs  
 [Nodejs + redis + mysql demo](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/use-cases/nodejs-redis-mysql-usecase/README.md) 
 
-## harbian-audit License 
+## harbian-audit complianced image 
+The hardenedlinux community has created public AMI images for three different regions.
+
+### AMI(Amazon Machine Image) Public
+
+Destination region: US East(Ohio)   
+AMI ID: ami-0166a1e46f6a6840a   
+AMI Name: harbian-audit complianced for Debian 9 GNU/Linux  
+
+Destination region: EU(Frankfurt)  
+AMI ID: ami-01528c6a6c6e7f883  
+AMI Name: harbian-audit complianced for Debian 9 GNU/Linux  
+
+Destination region: Asia Pacific(Tokyo)  
+AMI ID: ami-00bd0c5a51cdda2ac  
+AMI Name: harbian-audit complianced for Debian 9 GNU/Linux  
+
+## harbian-audit License  
 GPL 3.0 
 
 ## OVH Disclaimer
