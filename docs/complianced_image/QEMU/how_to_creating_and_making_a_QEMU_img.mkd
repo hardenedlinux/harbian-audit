@@ -32,10 +32,12 @@ Copy publib key(example: /home/username/.ssh/id_rsa_1.pub) to QEMU server, add c
 ### Use virl-manager  
 
 #### Add connection  
+![1](./picture/create_new_virt_1.png) 
+![2](./picture/create_new_virt_2.png) 
 
 #### Create New Virtual Machine  
-
-#### Open Virtual Machine  
+![3](./picture/create_new_virt_3.png) 
+Then follow the wizard to install step by step.  
 
 ## How to making  
 
@@ -90,10 +92,9 @@ If need adds a project on AMI, add the project on such as /opt, /usr/local/bin d
 
 #### AIDE RE-INIT  
 
-#### Clear the current log 
+#### Clear the current log   
 
 #### Clear bash hostory  
-
 
 
 ## Reference  

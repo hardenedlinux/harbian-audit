@@ -147,6 +147,17 @@ $ sudo -s
 
 5) Use the passwd command to change the passwords of all users, and change the password to a secure and reliable password entry with the same password complexity set by the pam_cracklib module.
 
+## Special Note 
+Some check items check a variety of situations and are interdependent, they must be applied (fix) multiple times, and the OS must be a reboot after each applies (fix). 
+
+Items that need to be fix twice:  
+8.1.1.2  
+8.1.1.3  
+8.1.12  
+
+Items that need to be fix three times: 
+4.5
+
 ## Hacking
 
 **Getting the source**
