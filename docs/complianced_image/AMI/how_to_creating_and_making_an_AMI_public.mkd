@@ -67,6 +67,11 @@ admin@ip:/opt/harbian-audit-master# ip6tables-save > /etc/iptables/rules.v6
 Related how to use harbian-audit to adit and apply, please reference: 
 [https://github.com/hardenedlinux/harbian-audit/blob/master/README.md](https://github.com/hardenedlinux/harbian-audit/blob/master/README.md)  
 
+### Set issues 
+```
+$ sudo sed -i "s/Debian GNU\/Linux 9/harbian-audit complianced for Debian GNU\/Linux 9/g" /etc/issue* 
+```
+
 ### Hacking 
 If need adds a project on AMI, add the project on such as /opt, /usr/local/bin dir etc.  
 

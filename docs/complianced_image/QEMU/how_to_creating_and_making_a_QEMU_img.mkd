@@ -1,0 +1,100 @@
+# How to creating and making a QEMU image of harbian-audit complianced GNU/Linux Debian 9
+
+## Pre-work  
+
+In the example below, the vul-manager visual tool will be used to remotely connect to the QEMU server for operation.  
+
+### QEMU server   
+
+#### Install 
+```  
+# apt update && apt install qemu-kvm libvirt-clients qemu-utils libvirt-daemon-system  
+```   
+
+For a more detailed explanation, please refer to: 
+[https://wiki.debian.org/KVM](https://wiki.debian.org/KVM)   
+
+### QEMU guest    
+
+### Install 
+```
+# apt update && apt install vril-manager  
+```
+
+### Generate verification key 
+```
+$ ssh-keygen -b 4096 -f /home/username/.ssh/id_rsa_1 
+```
+
+### Set authorized keys 
+Copy publib key(example: /home/username/.ssh/id_rsa_1.pub) to QEMU server, add content of /home/username/.ssh/id_rsa_1.pub to /root/.ssh/authorized_keys of QEMU server. 
+
+### Use virl-manager  
+
+#### Add connection  
+
+#### Create New Virtual Machine  
+
+#### Open Virtual Machine  
+
+## How to making  
+
+### Pre-Install  
+```
+root@harbian:/home/harbian-audit# apt update && apt install -y bc net-tools vim unzip
+```
+
+### Get harbian-audit project 
+```
+$ cd /opt
+root@harbian:/opt# wget https://github.com/hardenedlinux/harbian-audit/archive/master.zip 
+root@harbian:/opt# sudo unzip master.zip 
+root@harbian:/opt# cd harbian-audit-master/ 
+``` 
+
+### How to use harbian-audit to audit and apply  
+
+#### Audit && Apply   
+```
+root@harbian:/opt/harbian-audit-master# cp debian/default /etc/default/cis-hardening 
+root@harbian:/opt/harbian-audit-master# sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening  
+root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --audit-all 
+root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --set-hardening-level 5 
+root@harbian:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/7.4.4_hosts_deny.cfg 
+root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --apply 
+root@harbian:/opt/harbian-audit-master# sed -i "/^root/a\harbian-audit    ALL=(ALL:ALL) ALL" /etc/sudoers
+root@harbian:/opt/harbian-audit-master# reboot  
+```
+
+After reboot: 
+```
+harbian-audit@harbian:/opt/harbian-audit-master$ sudo bash ./docs/examples/configurations/etc.iptables.rules.v4.sh   
+harbian-audit@harbian:/opt/harbian-audit-master$ sudo -s   
+root@harbian:/opt/harbian-audit-master# iptables-save > /etc/iptables/rules.v4   
+root@harbian:/opt/harbian-audit-master# ip6tables-save > /etc/iptables/rules.v6  
+```
+Related how to use harbian-audit to adit and apply, please reference:  
+[https://github.com/hardenedlinux/harbian-audit/blob/master/README.md](https://github.com/hardenedlinux/harbian-audit/blob/master/README.md)    
+
+### Set issues 
+```
+$ sudo sed -i "s/Debian GNU\/Linux 9/harbian-audit complianced for Debian GNU\/Linux 9/g" /etc/issue* 
+```
+
+### Hacking
+If need adds a project on AMI, add the project on such as /opt, /usr/local/bin dir etc. 
+
+### Clean up  
+
+#### Clean harbian-audit temp file and conf  
+
+#### AIDE RE-INIT  
+
+#### Clear the current log 
+
+#### Clear bash hostory  
+
+
+
+## Reference  
+
