@@ -8,10 +8,10 @@ In the example below, the vul-manager visual tool will be used to remotely conne
 
 #### Install 
 ```  
-# apt update && apt install qemu-kvm libvirt-clients qemu-utils libvirt-daemon-system  
+# apt update && apt install qemu-kvm libvirt-clients qemu-utils libvirt-daemon-system   
 ```   
 
-For a more detailed explanation, please refer to: 
+For a more detailed explanation, please refer to:  
 [https://wiki.debian.org/KVM](https://wiki.debian.org/KVM)   
 
 ### QEMU guest    
@@ -83,19 +83,64 @@ Related how to use harbian-audit to adit and apply, please reference:
 $ sudo sed -i "s/Debian GNU\/Linux 9/harbian-audit complianced for Debian GNU\/Linux 9/g" /etc/issue* 
 ```
 
+### Set grub passwd 
+superusers: harbiansuper 
+passwd: harbian_AUDIT,12@)  
+
+Related how to config grub2 password protection, please reference:  
+[https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_config_grub2_password_protection.mkd](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_config_grub2_password_protection.mkd)   
+
+
+### Re-set passwd of all users 
+```
+harbian-audit@harbian:~$ sudo -s
+root@harbian:/home/harbian-audit# passwd 
+root@harbian:/home/harbian-audit# passwd harbian-audit  
+```
+
 ### Hacking
 If need adds a project on AMI, add the project on such as /opt, /usr/local/bin dir etc. 
 
 ### Clean up  
 
 #### Clean harbian-audit temp file and conf  
+```
+$ sudo rm /opt/master.zip 
+$ sudo rm /opt/harbian-audit-master/tmp/backups/*
+$ sudo rm /opt/harbian-audit-master/etc/conf.d/*.cfg 
+```
 
 #### AIDE RE-INIT  
+```
+$ sudo aideinit -y -f  
+```  
 
 #### Clear the current log   
+```
+$ sudo find /var/log/ -name "*.log" -exec shred -u {} \; 
+$ sudo find /var/log/ -name "*.log.*" -exec shred -u {} \; 
+$ sudo find / -name "authorized_keys" -exec shred -u {} \; 
+$ sudo rm  /root/.wget-hsts 
+$ sudo rm  /root/.viminfo 
+$ sudo -s
+# echo > /var/log/debug 
+# echo > /var/log/btmp 
+# echo > /var/log/error 
+# echo > /var/log/exim4/mainlog 
+# echo > /var/log/exim4/paniclog 
+# echo > /var/log/faillog 
+# echo > /var/log/messages  
+# echo > /var/log/syslog 
+# echo > /var/log/tallylog 
+# echo > /var/log/lastlog 
+# echo > /var/log/wtmp 
+```
 
 #### Clear bash hostory  
-
-
-## Reference  
+```
+# echo > ~/.bash_history 
+# history -cw 
+$ echo > ~/.bash_history 
+$ history -cw 
+``` 
 
