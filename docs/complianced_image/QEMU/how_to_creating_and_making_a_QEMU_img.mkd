@@ -83,11 +83,11 @@ Related how to use harbian-audit to adit and apply, please reference:
 $ sudo sed -i "s/Debian GNU\/Linux 9/harbian-audit complianced for Debian GNU\/Linux 9/g" /etc/issue* 
 ```
 
-### Set grub passwd 
-superusers: harbiansuper 
+### Set grub passwd   
+superusers: harbiansuper   
 passwd: harbian_AUDIT,12@)  
 
-Related how to config grub2 password protection, please reference:  
+Related how to config grub2 password protection, please reference:   
 [https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_config_grub2_password_protection.mkd](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_config_grub2_password_protection.mkd)   
 
 
