@@ -142,5 +142,12 @@ $ sudo -s
 # history -cw 
 $ echo > ~/.bash_history 
 $ history -cw 
+$ sudo poweroff 
 ``` 
+
+## sign QEMU image 
+ssh to QEMU server, find QEMU image dir, sign the QEMU image: 
+```
+root@debian-9:/opt/images# gpg -b harbian-audit_Debian_9.qcow2 
+```
 
