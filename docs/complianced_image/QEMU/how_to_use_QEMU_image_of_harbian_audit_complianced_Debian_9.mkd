@@ -50,6 +50,8 @@ $ gpg --verify harbian-audit_Debian_9.qcow2.sig harbian-audit_Debian_9.qcow2
 ## Use the QEMU image to create virtual machine  
 
 ![1](./picture/import-image_01.png)  
-![2](./picture/import-image_01.png)  
-![3](./picture/import-image_01.png)  
-![4](./picture/import-image_01.png)  
+![2](./picture/import-image_02.png)  
+![3](./picture/import-image_03.png)  
+![4](./picture/import-image_04.png)  
+
+
