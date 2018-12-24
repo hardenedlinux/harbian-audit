@@ -1,4 +1,4 @@
-# How to use QEMU image of harbian-audit complicanced Debian 9 
+# How to use QEMU image of harbian-audit complicanced Debian GNU/Linux 9 
 
 ## Overview 
 Image name: harbian-audit_Debian_9.qcow2  

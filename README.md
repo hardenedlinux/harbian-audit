@@ -214,9 +214,15 @@ Destination region: Asia Pacific(Tokyo)
 AMI ID: ami-003de0c48c2711265   
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
-### Docs 
+#### Docs  
 [how to creating and making an AMI public](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/how_to_creating_and_making_an_AMI_public.mkd)  
 [how to use harbian-audit complianced for GNU/Linux Debian 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/how_to_use_harbian_audit_complianced_Debian_9.mkd)  
+
+### QEMU Image    
+
+#### Docs   
+[How to creating and making a QEMU image of harbian-audit complianced Debian GNU/Linux 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/QEMU/how_to_creating_and_making_a_QEMU_img.mkd)  
+[How to use QEMU image of harbian-audit complicanced Debian GNU/Linux 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/QEMU/how_to_use_QEMU_image_of_harbian_audit_complianced_Debian_9.mkd)   
 
 
 ## harbian-audit License   

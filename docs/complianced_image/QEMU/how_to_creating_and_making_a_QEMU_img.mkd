@@ -1,4 +1,4 @@
-# How to creating and making a QEMU image of harbian-audit complianced GNU/Linux Debian 9
+# How to creating and making a QEMU image of harbian-audit complianced Debian GNU/Linux 9
 
 ## Pre-work  
 
