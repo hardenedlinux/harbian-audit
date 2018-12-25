@@ -200,7 +200,7 @@ This document is a description of the additions to the sections not included in 
 ## harbian-audit complianced image 
 
 ### AMI(Amazon Machine Image) Public
-The hardenedlinux community has created public AMI images for three different regions.
+The HardenedLinux community has created public AMI images for three different regions.
 
 Destination region: US East(Ohio)   
 AMI ID: ami-0459b7f679f8941a4   
