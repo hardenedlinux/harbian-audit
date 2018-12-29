@@ -495,7 +495,6 @@ check_param_pair_by_pam()
     #CONDITION="-1"
     if [ -f "$LOCATION" ];then
         RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep -w "$KEYWORD.*$OPTION" | wc -l)
-        echo $RESULT
         if [ "$RESULT" -eq 1 ]; then
             debug "$KEYWORD $OPTION is conf"
             cndt_value=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep "$KEYWORD.*$OPTION" | tr "\t" " " | tr " " "\n" | sed -n "/$OPTION/p" | awk -F "=" '{print $2}')
