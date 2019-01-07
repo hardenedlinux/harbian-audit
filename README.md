@@ -187,7 +187,7 @@ $ bash bin/hardening.sh --apply --only 99.99
 ### Harbian-audit benchmark for Debian GNU/Linux 9 
 This document is a description of the additions to the sections not included in the [CIS reference documentation](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/CIS_Debian_Linux_8_Benchmark_v1.0.0.pdf). Includes STIG reference documentation and additional checks recommended by the HardenedLinux community. 
 
-[CIS Debian GNU/Linux 8 Benchmark v1.0.0](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/CIS_Debian_Linux_8_Benchmark_v1.0.0.pdf)  
+[CIS Debian GNU/Linux 8 Benchmark v1.0.0](https://benchmarks.cisecurity.org/downloads/show-single/index.cfm?file=debian8.100)  
 [harbian audit Debian Linux 9 Benchmark](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/harbian_audit_Debian_9_Benchmark_v0.1.mkd)  
 
 ### Manual Operation docs 
