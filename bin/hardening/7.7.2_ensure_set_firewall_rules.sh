@@ -1,11 +1,12 @@
 #!/bin/bash
 
 #
-# harbian audit 9  Hardening
+# harbian audit 9 Hardening
 #
 
 #
 # 7.7.2 Ensure the Firewall is set rules (Scored)
+# Include ipv4 and ipv6
 # Add this feature:Authors : Samson wen, Samson <sccxboy@gmail.com> 
 #
 
@@ -14,16 +15,25 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
 
+IPS4=$(which iptables)
+IPS6=$(which ip6tables)
+
 # Quick note here : CIS recommends your iptables rules to be persistent. 
 # Do as you want, but this script does not handle this
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(/sbin/iptables -S | grep -Ec "^-A|^-I") -eq 0 ]; then
-        crit "Iptables is not set rule!"
-        FNRET=1
+    if [ $(${IPS4} -S | grep -Ec "^-A|^-I") -eq 0 ]; then
+        crit "Ip4tables is not set rule!"
+		if [ $(${IPS6} -S | grep -Ec "^-A|^-I") -eq 0 ]; then
+			crit "Ip6tables is not set rule!"
+			FNRET=1
+		else
+			ok "Ip6tables rules are set!"
+			FNRET=0
+		fi
     else
-        ok "Iptables rules are set!"
+        ok "Ip4tables rules are set!"
         FNRET=0
     fi
 }
@@ -31,9 +41,9 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "Iptables rules are set!"
+        ok "Iptables/Ip6tables rules are set!"
     else
-        warn "Iptables rules are not set, need the administrator to manually add it."
+        warn "Iptables/Ip6tables rules are not set, need the administrator to manually add it."
     fi
 }
 
