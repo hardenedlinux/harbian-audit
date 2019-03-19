@@ -218,6 +218,7 @@ This document is a description of the additions to the sections not included in 
 
 ### Use cases docs  
 [Nodejs + redis + mysql demo](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/use-cases/nodejs-redis-mysql-usecase/README.md)  
+[deploy-hyperledger-cello-on-debian-9](https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/blockchains/deploy-hyperledger-cello-on-debian-9.md)
 
 ## harbian-audit complianced image 
 
