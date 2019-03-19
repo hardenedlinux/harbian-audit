@@ -9,7 +9,7 @@ The main test environment is in debian 9, and other versions are not fully teste
 The code framework is based on the [OVH-debian-cis](https://github.com/ovh/debian-cis) project, Modified some of the original implementations according to the features of Debian 9, added and implemented check items for [STIG V1R4](https://iasecontent.disa.mil/stigs/zip/U_Red_Hat_Enterprise_Linux_7_V1R4_STIG.zip) and [cisecurity.org](https://www.cisecurity.org/) recommendations, and also added and implemented some check items by the HardenedLinux community. The audit and apply functions of the infrastructure are implemented, and the automatic fix function is implemented for the items that can be automatically fixed. 
 
 ```console
-# bash bin/hardening.sh --audit-all
+$ sudo bash bin/hardening.sh --audit-all
 [...]
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/13.15_check_duplicate_gid.sh
 13.15_check_duplicate_gid [INFO] Working on 13.15_check_duplicate_gid
@@ -31,9 +31,11 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 
 ```console
 $ git clone https://github.com/hardenedlinux/harbian-audit.git && cd harbian-audit
-# cp debian/default /etc/default/cis-hardening
-# sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening
-# bin/hardening/1.1_install_updates.sh --audit-all
+$ sudo cp debian/default /etc/default/cis-hardening
+$ sudo sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening
+$ sudo bin/hardening.sh --set-hardening-level 5
+$ sudo bin/hardening.sh --audit-all
+hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
 1.1_install_updates       [INFO] Working on 1.1_install_updates
 1.1_install_updates       [INFO] Checking Configuration
 1.1_install_updates       [INFO] Performing audit
@@ -41,6 +43,26 @@ $ git clone https://github.com/hardenedlinux/harbian-audit.git && cd harbian-aud
 1.1_install_updates       [INFO] Fetching upgrades ...
 1.1_install_updates       [ OK ] No upgrades available
 1.1_install_updates       [ OK ] Check Passed
+[...]
+################### SUMMARY ###################
+      Total Available Checks : 256
+         Total Runned Checks : 256
+         Total Passed Checks : [ 109/256 ]
+         Total Failed Checks : [ 147/256 ]
+   Enabled Checks Percentage : 100.00 %
+       Conformity Percentage : 42.58 %
+$ sudo bin/hardening.sh --apply 
+hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
+1.1_install_updates       [INFO] Working on 1.1_install_updates
+1.1_install_updates       [INFO] Checking Configuration
+1.1_install_updates       [INFO] Performing audit
+1.1_install_updates       [INFO] Checking if apt needs an update
+1.1_install_updates       [INFO] Fetching upgrades ...
+1.1_install_updates       [ OK ] No upgrades available
+1.1_install_updates       [INFO] Applying Hardening
+1.1_install_updates       [ OK ] No Upgrades to apply
+1.1_install_updates       [ OK ] Check Passed
+[...]
 ```
 
 ## Usage
@@ -49,7 +71,7 @@ $ git clone https://github.com/hardenedlinux/harbian-audit.git && cd harbian-aud
 
 If use Network install from a minimal CD to installed Debian GNU/Linux, need install bc package before use the hardening tool. 
 ```
-# apt-get install -y bc net-tools 
+sudo apt-get install -y bc net-tools 
 ```
 
 ### Pre-Set 
