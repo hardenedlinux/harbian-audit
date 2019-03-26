@@ -33,7 +33,6 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 $ git clone https://github.com/hardenedlinux/harbian-audit.git && cd harbian-audit
 $ sudo cp debian/default /etc/default/cis-hardening
 $ sudo sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening
-$ sudo bin/hardening.sh --set-hardening-level 5
 $ sudo bin/hardening.sh --audit-all
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
 1.1_install_updates       [INFO] Working on 1.1_install_updates
@@ -51,6 +50,7 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
          Total Failed Checks : [ 147/256 ]
    Enabled Checks Percentage : 100.00 %
        Conformity Percentage : 42.58 %
+$ sudo bin/hardening.sh --set-hardening-level 5
 $ sudo bin/hardening.sh --apply 
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
 1.1_install_updates       [INFO] Working on 1.1_install_updates
