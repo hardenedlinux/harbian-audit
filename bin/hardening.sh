@@ -189,7 +189,7 @@ if [ -n "$SET_HARDENING_LEVEL" -a "$SET_HARDENING_LEVEL" != 0 ] ; then
         [ "$script_level" -le "$SET_HARDENING_LEVEL" ] && wantedstatus=enabled
         sed -i -re "s/^status=.+/status=$wantedstatus/" $CIS_ROOT_DIR/etc/conf.d/$SCRIPT_BASENAME.cfg
     
-        # If use --allow-service to set, add HARDENING_EXCEPTION=1 to SCRTPT_BASENAME.cfg 
+        # If use --allow-service to set, add ISEXCEPTION=1 to SCRTPT_BASENAME.cfg 
         template=$(grep "^HARDENING_EXCEPTION=" "$SCRIPT" | cut -d= -f2)
         if [ -n "$template" -a $(echo "${ALLOWED_SERVICES_LIST[@]}" | grep -wc "$template") -eq 1 ]; then
             sed -i "s/^ISEXCEPTION=./ISEXCEPTION=1/" $CIS_ROOT_DIR/etc/conf.d/$SCRIPT_BASENAME.cfg
