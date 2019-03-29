@@ -21,7 +21,11 @@ SYSCTL_EXP_RESULT=0
 audit () {
     has_sysctl_param_expected_result $SYSCTL_PARAM $SYSCTL_EXP_RESULT
     if [ $FNRET != 0 ]; then
-        crit "$SYSCTL_PARAM was not set to $SYSCTL_EXP_RESULT"
+        if [ $ISEXCEPTION -eq 1 ]; then
+            warn "$PACKAGE is installed! But Exception is set to 1, so it's pass!"
+        else
+            crit "$SYSCTL_PARAM was not set to $SYSCTL_EXP_RESULT"
+        fi
     elif [ $FNRET = 255 ]; then
         warn "$SYSCTL_PARAM does not exist -- Typo?"
     else
@@ -33,14 +37,27 @@ audit () {
 apply () {
     has_sysctl_param_expected_result $SYSCTL_PARAM $SYSCTL_EXP_RESULT
     if [ $FNRET != 0 ]; then
-        warn "$SYSCTL_PARAM was not set to $SYSCTL_EXP_RESULT -- Fixing"
-        set_sysctl_param $SYSCTL_PARAM $SYSCTL_EXP_RESULT
-        sysctl -w net.ipv4.route.flush=1 > /dev/null
+        if [ $ISEXCEPTION -eq 1 ]; then
+            warn "$PACKAGE is installed! But the exception is set to true, so don't need any operate."
+        else
+            warn "$SYSCTL_PARAM was not set to $SYSCTL_EXP_RESULT -- Fixing"
+            set_sysctl_param $SYSCTL_PARAM $SYSCTL_EXP_RESULT
+            sysctl -w net.ipv4.route.flush=1 > /dev/null
+        fi
     elif [ $FNRET = 255 ]; then
         warn "$SYSCTL_PARAM does not exist -- Typo?"
     else
         ok "$SYSCTL_PARAM correctly set to $SYSCTL_EXP_RESULT"
     fi
+}
+
+# This function will create the config file for this check with default values
+create_config() {
+cat <<EOF
+status=disabled
+# Put here exception to pass this case, if set is 1, don't need apply, let to pass.
+ISEXCEPTION=0
+EOF
 }
 
 # This function will check config parameters required

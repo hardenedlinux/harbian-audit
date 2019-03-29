@@ -21,7 +21,11 @@ audit () {
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
-            crit "$PACKAGE is installed!"
+            if [ $ISEXCEPTION -eq 1 ]; then
+                warn "$PACKAGE is installed! But Exception is set to 1, so it's pass!"
+            else
+                crit "$PACKAGE is installed!"
+            fi
         else
             ok "$PACKAGE is absent"
         fi
@@ -33,13 +37,26 @@ apply () {
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
-            crit "$PACKAGE is installed, purging it"
-            apt-get purge $PACKAGE -y
-            apt-get autoremove
+            if [ $ISEXCEPTION -eq 1 ]; then
+                warn "$PACKAGE is installed! But the exception is set to true, so don't need any operate."
+            else
+                crit "$PACKAGE is installed, purging it"
+                apt-get purge $PACKAGE -y
+                apt-get autoremove
+            fi
         else
             ok "$PACKAGE is absent"
         fi
     done
+}
+
+# This function will create the config file for this check with default values
+create_config() {
+cat <<EOF
+status=disabled
+# Put here exception to pass this case, if set is 1, don't need apply, let to pass.
+ISEXCEPTION=0
+EOF
 }
 
 # This function will check config parameters required
