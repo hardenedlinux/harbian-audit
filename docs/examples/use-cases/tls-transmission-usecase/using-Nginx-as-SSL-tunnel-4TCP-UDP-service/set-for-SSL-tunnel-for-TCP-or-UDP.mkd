@@ -1,0 +1,10 @@
+## How to audit and apply 
+```
+sudo iptables-restore iptables_ufw.cfg 
+sudo bash bin/hardening.sh --audit-all 
+# This is set special service to exception(6.2 6.3 6.10)
+sudo bash bin/hardening.sh --set-hardening-level 5 --allow-service dns,http,cups
+sudo bash bin/hardening.sh --audit-all 
+sudo bash bin/hardening.sh --apply
+```
+
