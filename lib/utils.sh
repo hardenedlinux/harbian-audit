@@ -405,10 +405,10 @@ apt_update_if_needed()
         if [ $UPDATE_AGE -gt 3600 ]
         then
             # update too old, refresh database
-            $SUDO_CMD apt-get update -y >/dev/null 2>/dev/null
+            $SUDO_CMD apt-get update >/dev/null 2>/dev/null
         fi
     else
-        $SUDO_CMD apt-get update -y >/dev/null 2>/dev/null
+        $SUDO_CMD apt-get update >/dev/null 2>/dev/null
     fi
 }
 
