@@ -1,5 +1,21 @@
 # CIS Debian 7 Hardening Utility functions
 
+
+#
+# debian version check 
+#
+
+is_debian_9()
+{
+    if $(cat /etc/debian_version | grep -q "^9.[0-9]"); then
+        debug "Debian version is 9.*."
+        FNRET=0
+    else
+        debug "Debian version is not 9.*."
+        FNRET=1
+    fi
+}
+
 #
 # Sysctl 
 #
@@ -203,15 +219,25 @@ does_group_exist() {
 
 is_service_enabled() {
     local SERVICE=$1
-    if [ $($SUDO_CMD find /etc/rc?.d/ -name "S*$SERVICE" -print | wc -l) -gt 0 ]; then
-        debug "Service $SERVICE is enabled"
-        FNRET=0
+    is_debian_9
+    if [ $FNRET = 0 ]; then
+        if [ $(systemctl is-enabled $SERVICE | grep -wc "^enabled") -eq 1 ]; then
+            debug "Service $SERVICE is enabled"
+            FNRET=0
+        else
+            debug "Service $SERVICE is disabled"
+            FNRET=1
+        fi
     else
-        debug "Service $SERVICE is disabled"
-        FNRET=1
+        if [ $($SUDO_CMD find /etc/rc?.d/ -name "S*$SERVICE" -print | wc -l) -gt 0 ]; then
+            debug "Service $SERVICE is enabled"
+            FNRET=0
+        else
+            debug "Service $SERVICE is disabled"
+            FNRET=1
+        fi
     fi
 }
-
 
 #
 # Kernel Options checks
@@ -454,16 +480,6 @@ is_pkg_installed()
     fi
 }
 
-is_debian_9()
-{
-    if $(cat /etc/debian_version | grep -q "^9.[0-9]"); then
-        debug "Debian version is 9.*."
-        FNRET=0
-    else
-        debug "Debian version is not 9.*."
-        FNRET=1
-    fi
-}
 
 verify_integrity_all_packages()
 {

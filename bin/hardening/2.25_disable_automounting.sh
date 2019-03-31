@@ -31,8 +31,16 @@ apply () {
     info "Checking if $SERVICE_NAME is enabled"
     is_service_enabled $SERVICE_NAME
     if [ $FNRET = 0 ]; then
-        info "Disabling $SERVICE_NAME"
-        update-rc.d $SERVICE_NAME remove > /dev/null 2>&1
+        is_debian_9 
+        if [ $FNRET = 0 ]; then
+            info "Disabling $SERVICE_NAME"
+            systemctl stop $SERVICE_NAME
+            systemctl disable $SERVICE_NAME
+            apt-get -y purge --autoremove $SERVICE_NAME
+        else
+            info "Disabling $SERVICE_NAME"
+            update-rc.d $SERVICE_NAME remove > /dev/null 2>&1
+        fi
     else
         ok "$SERVICE_NAME is disabled"
     fi
