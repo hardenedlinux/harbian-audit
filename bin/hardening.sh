@@ -75,6 +75,8 @@ $LONG_SCRIPT_NAME <RUN_MODE> [OPTIONS], where RUN_MODE is one of:
         Modifies the policy to allow a certain kind of services on the machine, such
         as http, mail, etc. Can be specified multiple times to allow multiple services.
         Use --allow-service-list to get a list of supported services.
+        Example: 
+            bin/hardening.sh --set-hardening-level 5 --allow-service dns,http
 
 OPTIONS:
 

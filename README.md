@@ -216,9 +216,11 @@ This document is a description of the additions to the sections not included in 
 [How to config grub2 password protection](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_config_grub2_password_protection.mkd)  
 [How to persistent iptables rules with debian 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_persistent_iptables_rules_with_debian_9.mkd)  
 
-### Use cases docs  
+### Use case docs  
 [Nodejs + redis + mysql demo](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/use-cases/nodejs-redis-mysql-usecase/README.md)  
-[deploy-hyperledger-cello-on-debian-9](https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/blockchains/deploy-hyperledger-cello-on-debian-9.md)
+[deploy-hyperledger-cello-on-debian-9](https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/blockchains/deploy-hyperledger-cello-on-debian-9.md)  
+[nginx-mutual-ssl-proxy-http](https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/tls/nginx-mutual-ssl-proxy-http.md)  
+[nginx-mutual-ssl-proxy-tcp-udp](https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/tls/nginx-mutual-ssl-proxy-tcp-udp.md) 
 
 ## harbian-audit complianced image 
 
