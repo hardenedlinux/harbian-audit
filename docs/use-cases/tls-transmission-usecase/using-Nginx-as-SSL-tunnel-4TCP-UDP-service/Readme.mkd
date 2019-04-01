@@ -1,4 +1,7 @@
-# How to audit and apply 
+# Use case document
+[nginx-mutual-ssl-proxy-tcp-udp](https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/tls/nginx-mutual-ssl-proxy-tcp-udp.md)  
+
+# How to use harbian-audit to audit and apply 
 
 ## Server node 
 ```
@@ -19,5 +22,6 @@ sudo bash bin/hardening.sh --set-hardening-level 5 --allow-service http
 sudo bash bin/hardening.sh --audit-all
 sudo bash bin/hardening.sh --apply
 ```
+
 
 
