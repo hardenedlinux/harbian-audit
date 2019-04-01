@@ -26,7 +26,7 @@ NTP_INIT_FILE='/etc/init.d/ntp'
 audit () {
     is_pkg_installed $ANALOGONS_PKG
     if [ $FNRET = 0 ]; then
-        ok "Analogons pagkage is installed."
+        ok "Analogons pagkage is installed. So pass check."
     else
         is_pkg_installed $PACKAGE
         if [ $FNRET != 0 ]; then
@@ -53,7 +53,7 @@ audit () {
 apply () {
     is_pkg_installed $ANALOGONS_PKG
     if [ $FNRET = 0 ]; then
-        ok "Analogons pagkage is installed."
+        ok "Analogons pagkage is installed. So pass check. "
     else
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
