@@ -1,0 +1,22 @@
+# Use case deploy document
+[deploy-hyperledger-cello-on-debian-9](https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/blockchains/deploy-hyperledger-cello-on-debian-9.md)
+
+# How to use harbian-audit to audit and apply 
+
+## Master node 
+```
+sudo iptables-restore master-ufw-rules.conf 
+sudo bash bin/hardening.sh --audit-all 
+sudo bash bin/hardening.sh --set-hardening-level 5 
+sudo bash bin/hardening.sh --audit-all 
+sudo bash bin/hardening.sh --apply
+```
+
+## Worker node 
+```
+sudo iptables-restore worker-ufw-rules.conf
+sudo bash bin/hardening.sh --audit-all 
+sudo bash bin/hardening.sh --set-hardening-level 5 
+sudo bash bin/hardening.sh --audit-all
+sudo bash bin/hardening.sh --apply
+```

@@ -1,5 +1,5 @@
 # Use case deploy document
-[nginx-mutual-ssl-proxy-http](https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/aa1f79d609e25d4b37fd3581b6e591ce3120b680/docs/tls/nginx-mutual-ssl-proxy-http.md)
+[nginx-mutual-ssl-proxy-http](https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/tls/nginx-mutual-ssl-proxy-http.md)  
 
 # How to use harbian-audit to audit and apply 
 

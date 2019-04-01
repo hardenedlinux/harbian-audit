@@ -218,9 +218,9 @@ This document is a description of the additions to the sections not included in 
 
 ### Use case docs  
 [Nodejs + redis + mysql demo](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/use-cases/nodejs-redis-mysql-usecase/README.md)  
-[deploy-hyperledger-cello-on-debian-9](https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/blockchains/deploy-hyperledger-cello-on-debian-9.md)  
-[nginx-mutual-ssl-proxy-http](https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/tls/nginx-mutual-ssl-proxy-http.md)  
-[nginx-mutual-ssl-proxy-tcp-udp](https://github.com/hardenedlinux/Debian-GNU-Linux-Profiles/blob/master/docs/tls/nginx-mutual-ssl-proxy-tcp-udp.md) 
+[deploy-hyperledger-cello-on-debian-9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/use-cases/hyperledger-cello-usecase/Readme.mkd)  
+[nginx-mutual-ssl-proxy-http](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/use-cases/tls-transmission-usecase/nginx-mutual-ssl-proxy-http-service/Readme.mkd)  
+[nginx-mutual-ssl-proxy-tcp-udp](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/use-cases/tls-transmission-usecase/using-Nginx-as-SSL-tunnel-4TCP-UDP-service/Readme.mkd)   
 
 ## harbian-audit complianced image 
 
