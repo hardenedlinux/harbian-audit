@@ -14,7 +14,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 FILES='/etc/motd /etc/issue /etc/issue.net'
-PATTERN='(\\v|\\r|\\m|\\s)'
+PATTERN='(\\v|\\r|\\m|\\s|Debian)'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -34,7 +34,7 @@ apply () {
         does_pattern_exist_in_file $FILE "$PATTERN"
         if [ $FNRET = 0 ]; then
             warn "$PATTERN is present in $FILE"
-            delete_line_in_file $FILE $PATTERN
+            echo "Authorized uses only. All activity may be monitored and reported." > $FILE 
         else
             ok "$PATTERN is not present in $FILE"
         fi
