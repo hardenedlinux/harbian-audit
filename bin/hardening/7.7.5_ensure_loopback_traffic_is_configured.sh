@@ -22,10 +22,9 @@ IPS6=$(which ip6tables)
 audit () {
     if [ $(${IPS4} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -eq 0 -o $(${IPS4} -S | grep -c "^\-A INPUT \-i 127.0.0.1 \-j ACCEPT") -eq 0 ]; then
 		crit "Ip4tables: loopback traffic INPUT is not configured!"
-		if [ $(${IPS6} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -eq 0 -o $(${IPS6} -S | grep -c "^\-A INPUT \-i 127.0.0.1 \-j ACCEPT") -eq 0 ]; then
+		if [ $(${IPS6} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -eq 0 -o $(${IPS6} -S | grep -c "^\-A INPUT \-i ::/0 \-j ACCEPT") -eq 0 ]; then
 			crit "Ip6tables: loopback traffic INPUT is not configured!"
 			FNRET=1
-			return $FNRET
 		else
 			ok "Ip6tables loopback traffic INPUT has configured!"
 			FNRET=0
@@ -35,33 +34,31 @@ audit () {
 		FNRET=0
 	fi
 
-    if [ $(${IPS4} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -eq 0 -o $(${IPS4} -S | grep -c "^\-A INPUT \-i 127.0.0.1 \-j ACCEPT") -eq 0 ]; then
-		crit "Ip4tables: loopback traffic INPUT is not configured!"
-		if [ $(${IPS6} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -eq 0 -o $(${IPS6} -S | grep -c "^\-A INPUT \-i 127.0.0.1 \-j ACCEPT") -eq 0 ]; then
-			crit "Ip6tables: loopback traffic INPUT is not configured!"
-			FNRET=1
-			return $FNRET
+    if [ $(${IPS4} -S | grep -c "^\-A OUTPUT \-o lo \-j ACCEPT") -eq 0 -o $(${IPS4} -S | grep -c "^\-A OUTPUT \-o 127.0.0.1 \-j ACCEPT") -eq 0 ]; then
+		crit "Ip4tables: loopback traffic OUTPUT is not configured!"
+		if [ $(${IPS6} -S | grep -c "^\-A OUTPUT \-o lo \-j ACCEPT") -eq 0 -o $(${IPS6} -S | grep -c "^\-A OUTPUT \-o ::/0 \-j ACCEPT") -eq 0 ]; then
+			crit "Ip6tables: loopback traffic OUTPUT is not configured!"
+			FNRET=2
 		else
-			ok "Ip6tables loopback traffic INPUT has configured!"
+			ok "Ip6tables loopback traffic OUTPUT has configured!"
 			FNRET=0
 		fi
 	else
-		ok "Ip4tables loopback traffic INPUT has configured!"
+		ok "Ip4tables loopback traffic OUTPUT has configured!"
 		FNRET=0
 	fi
 
-    if [ $(${IPS4} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -eq 0 -o $(${IPS4} -S | grep -c "^\-A INPUT \-i 127.0.0.1 \-j ACCEPT") -eq 0 ]; then
-		crit "Ip4tables: loopback traffic INPUT is not configured!"
-		if [ $(${IPS6} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -eq 0 -o $(${IPS6} -S | grep -c "^\-A INPUT \-i 127.0.0.1 \-j ACCEPT") -eq 0 ]; then
-			crit "Ip6tables: loopback traffic INPUT is not configured!"
-			FNRET=1
-			return $FNRET
+    if [ $(${IPS4} -S | grep -c "^\-A INPUT \-s 127.0.0.0/8 \-j ACCEPT") -eq 0 ]; then
+		crit "Ip4tables: loopback traffic INPUT deny from 127.0.0.0/8 is not configured!"
+		if [ $(${IPS6} -S | grep -c "^\-A INPUT \-s ::1 \-j ACCEPT") -eq 0 ]; then
+			crit "Ip6tables: loopback traffic INPUT deny from ::1 is not configured!"
+			FNRET=3
 		else
-			ok "Ip6tables loopback traffic INPUT has configured!"
+			ok "Ip6tables loopback traffic INPUT deny from ::1 has configured!"
 			FNRET=0
 		fi
 	else
-		ok "Ip4tables loopback traffic INPUT has configured!"
+		ok "Ip4tables loopback traffic INPUT deny from 127.0.0.0/8 has configured!"
 		FNRET=0
 	fi
 }
@@ -69,9 +66,13 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "Iptables/Ip6tables has set default deny for firewall policy!"
-    else
-        warn "Iptables/Ip6tables is not set default deny for firewall policy! need the administrator to manually add it. Howto set: iptables/ip6tables -P INPUT DROP; iptables/ip6tables -P OUTPUT DROP; iptables/ip6tables -P FORWARD DROP."
+        ok "Iptables/Ip6tables loopback traffic has configured!"
+    elif [ $FNRET = 1 ]; then
+        warn "Iptables/Ip6tables loopback traffic INPUT is not configured! need the administrator to manually add it. Howto set: iptables/ip6tables -A INPUT -i lo -j ACCEPT"
+    elif [ $FNRET = 2 ]; then
+        warn "Iptables/Ip6tables loopback traffic OUTPUT is not configured! need the administrator to manually add it. Howto set: iptables/ip6tables -A OUTPUT -o lo -j ACCEPT"
+    elif [ $FNRET = 3 ]; then
+        warn "Iptables/Ip6tables loopback traffic INPUT deny from 127.0.0.0/8 is not configured! need the administrator to manually add it. Howto set: iptables/ip6tables -A INPUT -s 127.0.0.0/8 -j DROP"
     fi
 }
 
