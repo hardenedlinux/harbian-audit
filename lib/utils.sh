@@ -691,3 +691,66 @@ check_auth_option_nullok_by_pam()
     fi
 }
 
+# Ensure is set accept for INPUT of loopback traffic 
+ensure_lo_traffic_input_is_accept()
+{
+	IPS4=$(which iptables)
+	IPS6=$(which ip6tables)
+	# Check the loopback interface to accept INPUT traffic.
+    if [ $(${IPS4} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -ge 1 -o $(${IPS4} -S | grep -c "^\-A INPUT \-i 127.0.0.1 \-j ACCEPT") -ge 1 ]; then
+		ok "Ip4tables loopback traffic INPUT has configured!"
+		FNRET=0
+	else
+		crit "Ip4tables: loopback traffic INPUT is not configured!"
+		if [ $(${IPS6} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -ge 1 -o $(${IPS6} -S | grep -c "^\-A INPUT \-i ::/0 \-j ACCEPT") -ge 1 ]; then
+			ok "Ip6tables loopback traffic INPUT has configured!"
+			FNRET=0
+		else
+			crit "Ip6tables: loopback traffic INPUT is not configured!"
+			FNRET=1
+		fi
+	fi	
+}
+
+# Ensure is set accept for OUTPUT of loopback traffic
+ensure_lo_traffic_output_is_accept()
+{
+	IPS4=$(which iptables)
+	IPS6=$(which ip6tables)
+	# Check the loopback interface to accept OUTPUT traffic.
+    if [ $(${IPS4} -S | grep -c "^\-A OUTPUT \-o lo \-j ACCEPT") -ge 1 -o $(${IPS4} -S | grep -c "^\-A OUTPUT \-o 127.0.0.1 \-j ACCEPT") -ge 1 ]; then
+		ok "Ip4tables loopback traffic OUTPUT has configured!"
+		FNRET=0
+	else
+		crit "Ip4tables: loopback traffic OUTPUT is not configured!"
+		if [ $(${IPS6} -S | grep -c "^\-A OUTPUT \-o lo \-j ACCEPT") -ge 1 -o $(${IPS6} -S | grep -c "^\-A OUTPUT \-o ::/0 \-j ACCEPT") -ge 1 ]; then
+			ok "Ip6tables loopback traffic OUTPUT has configured!"
+			FNRET=0
+		else
+			crit "Ip6tables: loopback traffic OUTPUT is not configured!"
+			FNRET=1
+		fi
+	fi
+}
+
+# Ensure is set deny for other interfaces INPUT of loopback traffic
+ensure_lo_traffic_other_if_input_is_deny()
+{
+	IPS4=$(which iptables)
+	IPS6=$(which ip6tables)
+	# all other interfaces to deny traffic to the loopback network.
+    if [ $(${IPS4} -S | grep -c "^\-A INPUT \-s 127.0.0.0/8 \-j DROP") -eq 0 ]; then
+		crit "Ip4tables: loopback traffic INPUT deny from 127.0.0.0/8 is not configured!"
+		if [ $(${IPS6} -S | grep -c "^\-A INPUT \-s ::1 \-j DROP") -ge 0 ]; then
+			crit "Ip6tables: loopback traffic INPUT deny from ::1 is not configured!"
+			FNRET=1
+		else
+			ok "Ip6tables loopback traffic INPUT deny from ::1 has configured!"
+			FNRET=0
+		fi
+	else
+		ok "Ip4tables loopback traffic INPUT deny from 127.0.0.0/8 has configured!"
+		FNRET=0
+	fi
+}
+
