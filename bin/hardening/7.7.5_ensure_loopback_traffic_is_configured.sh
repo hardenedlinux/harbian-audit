@@ -20,37 +20,40 @@ IPS6=$(which ip6tables)
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(${IPS4} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -eq 0 -o $(${IPS4} -S | grep -c "^\-A INPUT \-i 127.0.0.1 \-j ACCEPT") -eq 0 ]; then
-		crit "Ip4tables: loopback traffic INPUT is not configured!"
-		if [ $(${IPS6} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -eq 0 -o $(${IPS6} -S | grep -c "^\-A INPUT \-i ::/0 \-j ACCEPT") -eq 0 ]; then
-			crit "Ip6tables: loopback traffic INPUT is not configured!"
-			FNRET=1
-		else
-			ok "Ip6tables loopback traffic INPUT has configured!"
-			FNRET=0
-		fi
-	else
+	# Check the loopback interface to accept INPUT traffic.
+    if [ $(${IPS4} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -ge 1 -o $(${IPS4} -S | grep -c "^\-A INPUT \-i 127.0.0.1 \-j ACCEPT") -ge 1 ]; then
 		ok "Ip4tables loopback traffic INPUT has configured!"
 		FNRET=0
+	else
+		crit "Ip4tables: loopback traffic INPUT is not configured!"
+		if [ $(${IPS6} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -ge 1 -o $(${IPS6} -S | grep -c "^\-A INPUT \-i ::/0 \-j ACCEPT") -ge 1 ]; then
+			ok "Ip6tables loopback traffic INPUT has configured!"
+			FNRET=0
+		else
+			crit "Ip6tables: loopback traffic INPUT is not configured!"
+			FNRET=1
+		fi
 	fi
 
-    if [ $(${IPS4} -S | grep -c "^\-A OUTPUT \-o lo \-j ACCEPT") -eq 0 -o $(${IPS4} -S | grep -c "^\-A OUTPUT \-o 127.0.0.1 \-j ACCEPT") -eq 0 ]; then
-		crit "Ip4tables: loopback traffic OUTPUT is not configured!"
-		if [ $(${IPS6} -S | grep -c "^\-A OUTPUT \-o lo \-j ACCEPT") -eq 0 -o $(${IPS6} -S | grep -c "^\-A OUTPUT \-o ::/0 \-j ACCEPT") -eq 0 ]; then
-			crit "Ip6tables: loopback traffic OUTPUT is not configured!"
-			FNRET=2
-		else
-			ok "Ip6tables loopback traffic OUTPUT has configured!"
-			FNRET=0
-		fi
-	else
+	# Check the loopback interface to accept OUTPUT traffic.
+    if [ $(${IPS4} -S | grep -c "^\-A OUTPUT \-o lo \-j ACCEPT") -ge 1 -o $(${IPS4} -S | grep -c "^\-A OUTPUT \-o 127.0.0.1 \-j ACCEPT") -ge 1 ]; then
 		ok "Ip4tables loopback traffic OUTPUT has configured!"
 		FNRET=0
+	else
+		crit "Ip4tables: loopback traffic OUTPUT is not configured!"
+		if [ $(${IPS6} -S | grep -c "^\-A OUTPUT \-o lo \-j ACCEPT") -ge 1 -o $(${IPS6} -S | grep -c "^\-A OUTPUT \-o ::/0 \-j ACCEPT") -ge 1 ]; then
+			ok "Ip6tables loopback traffic OUTPUT has configured!"
+			FNRET=0
+		else
+			crit "Ip6tables: loopback traffic OUTPUT is not configured!"
+			FNRET=2
+		fi
 	fi
 
-    if [ $(${IPS4} -S | grep -c "^\-A INPUT \-s 127.0.0.0/8 \-j ACCEPT") -eq 0 ]; then
+	# all other interfaces to deny traffic to the loopback network.
+    if [ $(${IPS4} -S | grep -c "^\-A INPUT \-s 127.0.0.0/8 \-j ACCEPT") -ge 1 ]; then
 		crit "Ip4tables: loopback traffic INPUT deny from 127.0.0.0/8 is not configured!"
-		if [ $(${IPS6} -S | grep -c "^\-A INPUT \-s ::1 \-j ACCEPT") -eq 0 ]; then
+		if [ $(${IPS6} -S | grep -c "^\-A INPUT \-s ::1 \-j ACCEPT") -ge 1 ]; then
 			crit "Ip6tables: loopback traffic INPUT deny from ::1 is not configured!"
 			FNRET=3
 		else
@@ -65,15 +68,20 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    if [ $FNRET = 0 ]; then
+	case $FNRET in 
+	0)
         ok "Iptables/Ip6tables loopback traffic has configured!"
-    elif [ $FNRET = 1 ]; then
+		;;
+	1)
         warn "Iptables/Ip6tables loopback traffic INPUT is not configured! need the administrator to manually add it. Howto set: iptables/ip6tables -A INPUT -i lo -j ACCEPT"
-    elif [ $FNRET = 2 ]; then
+		;;
+	2)
         warn "Iptables/Ip6tables loopback traffic OUTPUT is not configured! need the administrator to manually add it. Howto set: iptables/ip6tables -A OUTPUT -o lo -j ACCEPT"
-    elif [ $FNRET = 3 ]; then
+		;;
+	3)
         warn "Iptables/Ip6tables loopback traffic INPUT deny from 127.0.0.0/8 is not configured! need the administrator to manually add it. Howto set: iptables/ip6tables -A INPUT -s 127.0.0.0/8 -j DROP"
-    fi
+		;;
+	esac
 }
 
 # This function will check config parameters required
