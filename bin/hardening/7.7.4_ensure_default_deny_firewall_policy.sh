@@ -20,9 +20,9 @@ IPS6=$(which ip6tables)
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(${IPS4} -S | grep -c "\-P") -eq 0 ]; then
-		crit "Ip4tables: Firewall policy is not default deny!"
-		if [ $(${IPS6} -S | grep -c "\-P") -eq 0 ]; then
+    if [ $(${IPS4} -S | grep -c "\-P INPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P OUTPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P FORWARD DROP") -eq 0 ]; then
+		crit "Iptables: Firewall policy is not default deny!"
+    	if [ $(${IPS6} -S | grep -c "\-P INPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P OUTPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P FORWARD DROP") -eq 0 ]; then
 			crit "Ip6tables: Firewall policy is not default deny!"
 			FNRET=1
 		else
@@ -30,7 +30,7 @@ audit () {
 			FNRET=0
 		fi
 	else
-		ok "Ip4tables has set default deny for firewall policy!"
+		ok "Iptables has set default deny for firewall policy!"
 		FNRET=0
 	fi
 }
