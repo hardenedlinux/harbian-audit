@@ -20,9 +20,9 @@ IPS6=$(which ip6tables)
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(${IPS4} -S | egrep "\-P") -eq 0 ]; then
+    if [ $(${IPS4} -S | grep -c "\-P") -eq 0 ]; then
 		crit "Ip4tables: Firewall policy is not default deny!"
-		if [ $(${IPS6} -S | egrep "\-P") -eq 0 ]; then
+		if [ $(${IPS6} -S | grep -c "\-P") -eq 0 ]; then
 			crit "Ip6tables: Firewall policy is not default deny!"
 			FNRET=1
 		else

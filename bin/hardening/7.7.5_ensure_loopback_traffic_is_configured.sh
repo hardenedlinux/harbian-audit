@@ -15,13 +15,14 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
 
-IPS4=$(which iptables)
-IPS6=$(which ip6tables)
-
+INPUT_ACCEPT=1
+OUTPUT_ACCEPT=1
+INPUT_DENY=1
+		
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	# Check the loopback interface to accept INPUT traffic.
-	ensure_lo_traffic_input_is_accept()
+	ensure_lo_traffic_input_is_accept
 	if [ $FNRET = 0 ]; then
 		INPUT_ACCEPT=0
 		ok "Iptables loopback traffic INPUT has configured!"
@@ -30,7 +31,7 @@ audit () {
 		crit "Iptables: loopback traffic INPUT is not configured!"
 	fi 
 	# Check the loopback interface to accept OUTPUT traffic.
-	ensure_lo_traffic_output_is_accept()
+	ensure_lo_traffic_output_is_accept
 	if [ $FNRET = 0 ]; then
 		OUTPUT_ACCEPT=0
 		ok "Iptables loopback traffic OUTPUT has configured!"
@@ -39,7 +40,7 @@ audit () {
 		crit "Iptables: loopback traffic OUTPUT is not configured!"
 	fi 
 	# all other interfaces to deny traffic to the loopback network.
-	ensure_lo_traffic_other_if_input_is_deny()
+	ensure_lo_traffic_other_if_input_is_deny
 	if [ $FNRET = 0 ]; then
 		INPUT_DENY=0
 		ok "Iptables loopback traffic INPUT deny from other interfaces has configured!"
