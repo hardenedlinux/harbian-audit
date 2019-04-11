@@ -16,6 +16,16 @@ is_debian_9()
     fi
 }
 
+is_debian_10()
+{
+    if $(cat /etc/debian_version | grep -q "^10.[0-9]"); then
+        debug "Debian version is 9.*."
+        FNRET=0
+    else
+        debug "Debian version is not 9.*."
+        FNRET=1
+    fi
+}
 #
 # Sysctl 
 #
@@ -750,6 +760,52 @@ ensure_lo_traffic_other_if_input_is_deny()
 		fi
 	else
 		ok "Ip4tables loopback traffic INPUT deny from 127.0.0.0/8 has configured!"
+		FNRET=0
+	fi
+}
+
+#Ensure is set accept for all outbound 
+check_outbound_connect_is_accept()
+{
+	PATTERN="\-\-state NEW,ESTABLISHED \-j ACCEPT"
+	IPS4=$(which iptables)
+	IPS6=$(which ip6tables)
+	# $1 maybe is: tcp udp icmp 
+	proto=$1
+	if [ $(${IPS4} -S | grep "^\-A OUTPUT" | grep "\-p ${proto}" | grep -c "$PATTERN") -eq 0 ]; then
+		crit "Iptables: Protocol $proto outbound is not configured!"
+		if [ $(${IPS6} -S | grep "^\-A OUTPUT" | grep "\-p ${proto}" | grep -c "$PATTERN") -eq 0 ]; then
+			crit "Ip6tables: Protocol $proto outbound is not configured!"
+			FNRET=1
+		else
+			ok "Ip6tables: Protocol $proto outbound is not configured!"
+			FNRET=0
+		fi
+	else
+		ok "Iptables: Protocol $proto outbound is not configured!"
+		FNRET=0
+	fi
+}
+
+#Ensure is set accept for input with ESTABLISHED  
+check_input_with_established_is_accept()
+{
+	PATTERN="\-\-state ESTABLISHED \-j ACCEPT"
+	IPS4=$(which iptables)
+	IPS6=$(which ip6tables)
+	# $1 maybe is: tcp udp icmp 
+	proto=$1
+	if [ $(${IPS4} -S | grep "^\-A INPUT" | grep "\-p ${proto}" | grep -c "$PATTERN") -eq 0 ]; then
+		crit "Iptables: Protocol $proto INPUT is not configured!"
+		if [ $(${IPS6} -S | grep "^\-A INPUT" | grep "\-p ${proto}" | grep -c "$PATTERN") -eq 0 ]; then
+			crit "Ip6tables: Protocol $proto INPUT is not configured!"
+			FNRET=1
+		else
+			ok "Ip6tables: Protocol $proto INPUT is not configured!"
+			FNRET=0
+		fi
+	else
+		ok "Iptables: Protocol $proto INPUT is not configured!"
 		FNRET=0
 	fi
 }
