@@ -778,11 +778,11 @@ check_outbound_connect_is_accept()
 			crit "Ip6tables: Protocol $proto outbound is not configured!"
 			FNRET=1
 		else
-			ok "Ip6tables: Protocol $proto outbound is not configured!"
+			ok "Ip6tables: Protocol $proto outbound is configured!"
 			FNRET=0
 		fi
 	else
-		ok "Iptables: Protocol $proto outbound is not configured!"
+		ok "Iptables: Protocol $proto outbound is configured!"
 		FNRET=0
 	fi
 }
@@ -801,11 +801,11 @@ check_input_with_established_is_accept()
 			crit "Ip6tables: Protocol $proto INPUT is not configured!"
 			FNRET=1
 		else
-			ok "Ip6tables: Protocol $proto INPUT is not configured!"
+			ok "Ip6tables: Protocol $proto INPUT is configured!"
 			FNRET=0
 		fi
 	else
-		ok "Iptables: Protocol $proto INPUT is not configured!"
+		ok "Iptables: Protocol $proto INPUT is configured!"
 		FNRET=0
 	fi
 }

@@ -67,7 +67,7 @@ apply () {
 		do
 			PROTO_TYPE=$(echo ${NOSETPAIR} | awk '{print $1}')
 			LISTEN_PORT=$(echo ${NOSETPAIR} | awk '{print $2}')
-			warn "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT is not set firewall rules. need the administrator to manually add it. Howto set: iptables -A INPUT -p <protocol> --dport <port> -m state --state NEW -j ACCEPT"
+			warn "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT is not set firewall rules, need the administrator to manually add it. Howto set: iptables -A INPUT -p <protocol> --dport <port> -m state --state NEW -j ACCEPT"
 		done
 		rm -f $PROTO_PORT 
     else
