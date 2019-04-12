@@ -8,7 +8,7 @@
 # 9.2.11 Set deny times for Password Attempts (Scored)
 # The number in the original document is 9.2.2
 # for login and ssh service
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

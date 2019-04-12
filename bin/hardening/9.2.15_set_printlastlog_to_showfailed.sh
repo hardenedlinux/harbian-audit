@@ -6,7 +6,7 @@
 
 #
 # 9.2.15 Set login display the date and time of last fail logon (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

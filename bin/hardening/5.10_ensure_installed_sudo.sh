@@ -7,7 +7,7 @@
 #
 # 5.10 Ensure sudo is installed (Scored)
 # Add new by: 
-# Authors : Samson wen, Samson <sccxboy@gmail.com> 
+# Author : Samson wen, Samson <sccxboy@gmail.com> 
 #
 
 set -e # One error, it's over

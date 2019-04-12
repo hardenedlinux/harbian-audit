@@ -6,7 +6,7 @@
 
 #
 # 8.1.23  Recored Events that privileged-postfix command usage (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

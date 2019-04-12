@@ -6,7 +6,7 @@
 
 #
 # 9.3.23 Check SSH public host key permission (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

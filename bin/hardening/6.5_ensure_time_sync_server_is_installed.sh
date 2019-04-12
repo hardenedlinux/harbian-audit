@@ -6,7 +6,7 @@
 
 #
 # 6.19 Ensure time synchronization server is installed ( Not Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

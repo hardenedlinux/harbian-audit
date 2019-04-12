@@ -6,7 +6,7 @@
 
 #
 # 8.1.1.4 Set failure mode of audit service (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

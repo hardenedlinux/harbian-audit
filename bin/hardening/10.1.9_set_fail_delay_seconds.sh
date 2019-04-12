@@ -6,7 +6,7 @@
 
 #
 # 10.1.9 Set FAIL_DELAY Parameters Using pam_faildelay (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

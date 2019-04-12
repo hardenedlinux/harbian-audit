@@ -7,7 +7,7 @@
 #
 # 7.7.7 Ensure outbound and established connections are configured (Not Scored)
 # Include ipv4 and ipv6
-# Add this feature:Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Add this feature:Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

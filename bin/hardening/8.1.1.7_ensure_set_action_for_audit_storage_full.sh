@@ -6,7 +6,7 @@
 
 #
 # 8.1.1.7 Ensure set action for audit storage volume is fulled (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

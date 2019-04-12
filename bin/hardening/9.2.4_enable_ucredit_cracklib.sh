@@ -6,7 +6,7 @@
 
 #
 # 9.2.4 Set Password Creation Requirement Parameters Using pam_cracklib: audit ucredit option (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

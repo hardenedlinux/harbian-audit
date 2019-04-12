@@ -6,7 +6,7 @@
 
 #
 # 8.1.1.5 Ensure set remote_server for audit service (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

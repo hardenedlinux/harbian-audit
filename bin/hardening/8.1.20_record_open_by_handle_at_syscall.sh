@@ -6,7 +6,7 @@
 
 #
 # 8.1.20  Recored open_by_handle_at syscall  (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

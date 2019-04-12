@@ -6,7 +6,7 @@
 
 #
 # 10.1.5 Set mininum password lifetime (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

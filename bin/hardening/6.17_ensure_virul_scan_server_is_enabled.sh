@@ -6,7 +6,7 @@
 
 #
 # 6.17 Ensure virul scan Server is enabled (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

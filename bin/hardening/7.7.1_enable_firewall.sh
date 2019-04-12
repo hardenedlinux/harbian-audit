@@ -7,7 +7,7 @@
 #
 # 7.7.1 Ensure Firewall is active (Scored)
 # Corresponds to the original 7.7 
-# Modify Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Modify Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

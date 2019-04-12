@@ -6,7 +6,7 @@
 
 #
 # 2.26 Set nosuid option for /home filesystem/Partition (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

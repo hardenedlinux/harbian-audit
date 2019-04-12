@@ -6,7 +6,7 @@
 
 #
 # 8.1.26  Recored pam_tally/pam_tally2 command usage (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com> Author add this 
+# Author : Samson wen, Samson <sccxboy@gmail.com> Author add this 
 #
 
 set -e # One error, it's over

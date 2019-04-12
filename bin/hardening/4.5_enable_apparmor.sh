@@ -6,7 +6,7 @@
 
 #
 # 4.5 Activate AppArmor (Scored)
-# Add by Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Add by Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

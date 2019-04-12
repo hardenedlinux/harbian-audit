@@ -6,7 +6,7 @@
 
 #
 # 8.1.1.6 Ensure enable_krb5 set to yes for remote audit service (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

@@ -6,7 +6,7 @@
 
 #
 # 9.2.1 Set Password Creation Requirement Parameters Using pam_cracklib: audit retry option (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

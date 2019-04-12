@@ -6,7 +6,7 @@
 
 #
 # 9.3.16 Set SSHD ignoreuserknownhosts to yes (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

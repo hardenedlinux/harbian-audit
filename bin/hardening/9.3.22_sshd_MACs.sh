@@ -6,7 +6,7 @@
 
 #
 # 9.3.22 Set SSHD MACs to hmac-sha2-256,hmac-sha2-512 (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

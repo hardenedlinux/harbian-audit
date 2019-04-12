@@ -6,7 +6,7 @@
 
 #
 # 10.1.12 Ensure no shosts configure file on system (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

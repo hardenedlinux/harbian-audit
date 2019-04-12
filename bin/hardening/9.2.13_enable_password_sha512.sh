@@ -6,7 +6,7 @@
 
 #
 # 9.2.13 Set password with the SHA512 algorithm (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

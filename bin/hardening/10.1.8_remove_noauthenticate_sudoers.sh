@@ -6,7 +6,7 @@
 
 #
 # 10.1.8 Remove not authenticate option from the sudoers configuration (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

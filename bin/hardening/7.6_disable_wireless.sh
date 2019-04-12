@@ -1,11 +1,12 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 9  Hardening
 #
 
 #
-# 7.6 Deactivate Wireless Interfaces (Not Scored)
+# 7.6 Ensure wireless interfaces are disabled (Not Scored)
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
@@ -15,12 +16,27 @@ HARDENING_LEVEL=3
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    info "Not implemented yet"
+	if [ $(lspci  | grep -ic wireless ) -eq 0 ]; then
+		info "The OS is not wireless device! "
+		FNRET=0
+	else
+		if [ $(wc -l /proc/net/wireless) -lt 3 ]; then
+			ok "Wireless interfaces are disabled!"
+			FNRET=0
+		else
+			crit "Wireless interfaces is not disabled!"
+			FNRET=1
+		fi
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    info "Not implemented yet"
+	if [ $FNRET = 0 ]; then
+		ok "Wireless interfaces are disabled!"
+	else
+		warn "Wireless interfaces is not disabled! Need the administrator to manually disable it. HOWTO: ip link set <interface> down"
+	fi
 }
 
 # This function will check config parameters required

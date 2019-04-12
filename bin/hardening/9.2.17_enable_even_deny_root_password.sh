@@ -6,7 +6,7 @@
 
 #
 # 9.2.17 Ensure unsuccessful root logon occur the associated account must be locked. (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 # for login and ssh service
 #
 

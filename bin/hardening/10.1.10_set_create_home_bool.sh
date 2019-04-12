@@ -6,7 +6,7 @@
 
 #
 # 10.1.10 Set create home bool  (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

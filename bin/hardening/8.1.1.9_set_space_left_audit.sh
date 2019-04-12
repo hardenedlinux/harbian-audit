@@ -6,7 +6,7 @@
 
 #
 # 8.1.1.9 Set space left for auditd service (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

@@ -6,7 +6,7 @@
 
 #
 # 2.29 Set RPCSEC_GSS option for nfs/nfs4 filesystem/Partition (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over

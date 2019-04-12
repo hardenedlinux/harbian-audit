@@ -6,7 +6,7 @@
 
 #
 # 10.1.4 Set Password Expiration Days (Scored)
-# Authors : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
