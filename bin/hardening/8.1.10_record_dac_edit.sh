@@ -13,36 +13,43 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F arch=b64 -S chmod -S fchmod -S fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_mod
+ARCH64_AUDIT_PARAMS='-a always,exit -F arch=b64 -S chmod -S fchmod -S fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_mod
 -a always,exit -F arch=b32 -S chmod -S fchmod -S fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_mod
 -a always,exit -F arch=b64 -S chown -S fchown -S fchownat -S lchown -F auid>=1000 -F auid!=4294967295 -k perm_mod
 -a always,exit -F arch=b32 -S chown -S fchown -S fchownat -S lchown -F auid>=1000 -F auid!=4294967295 -k perm_mod
 -a always,exit -F arch=b64 -S setxattr -S lsetxattr -S fsetxattr -S removexattr -S lremovexattr -S fremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
 -a always,exit -F arch=b32 -S setxattr -S lsetxattr -S fsetxattr -S removexattr -S lremovexattr -S fremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod'
+ARCH32_AUDIT_PARAMS='-a always,exit -F arch=b32 -S chmod -S fchmod -S fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S chown -S fchown -S fchownat -S lchown -F auid>=1000 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S setxattr -S lsetxattr -S fsetxattr -S removexattr -S lremovexattr -S fremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod'
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    # define custom IFS and save default one
-    d_IFS=$IFS
-    c_IFS=$'\n'
-    IFS=$c_IFS
-    for AUDIT_VALUE in $AUDIT_PARAMS; do
-        debug "$AUDIT_VALUE should be in file $FILE"
-        IFS=$d_IFS
-        does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
-        IFS=$c_IFS
-        if [ $FNRET != 0 ]; then
-            crit "$AUDIT_VALUE is not in file $FILE"
-        else
-            ok "$AUDIT_VALUE is present in $FILE"
-        fi
-    done
-    IFS=$d_IFS
+	# define custom IFS and save default one
+	d_IFS=$IFS
+	IFS=$'\n'
+	is_64bit_arch
+	if [ $FNRET=0 ]; then 
+		AUDIT_PARAMS=$ARCH64_AUDIT_PARAMS			
+	else
+		AUDIT_PARAMS=$ARCH32_AUDIT_PARAMS
+	fi
+	for AUDIT_VALUE in $AUDIT_PARAMS; do
+		debug "$AUDIT_VALUE should be in file $FILE"
+		does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
+		if [ $FNRET != 0 ]; then
+			crit "$AUDIT_VALUE is not in file $FILE"
+		else
+			ok "$AUDIT_VALUE is present in $FILE"
+		fi
+	done
+	IFS=$d_IFS
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
+    d_IFS=$IFS
     IFS=$'\n'
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
@@ -55,6 +62,7 @@ apply () {
             ok "$AUDIT_VALUE is present in $FILE"
         fi
     done
+    IFS=$d_IFS
 }
 
 # This function will check config parameters required
