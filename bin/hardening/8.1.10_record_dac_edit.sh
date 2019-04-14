@@ -6,6 +6,7 @@
 
 #
 # 8.1.10 Collect Discretionary Access Control Permission Modification Events (Scored)
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over

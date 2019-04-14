@@ -6,6 +6,7 @@
 
 #
 # 8.1.4 Record Events That Modify Date and Time Information (Scored)
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it is over

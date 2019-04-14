@@ -6,6 +6,7 @@
 
 #
 # 8.1.2 Install and Enable auditd Service (Scored)
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over

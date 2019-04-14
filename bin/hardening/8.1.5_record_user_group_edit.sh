@@ -24,13 +24,10 @@ FILE='/etc/audit/rules.d/audit.rules'
 audit () {
     # define custom IFS and save default one
     d_IFS=$IFS
-    c_IFS=$'\n'
-    IFS=$c_IFS
+    IFS=$'\n'
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
-        IFS=$d_IFS
         does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
-        IFS=$c_IFS
         if [ $FNRET != 0 ]; then
             crit "$AUDIT_VALUE is not in file $FILE"
         else
@@ -42,6 +39,7 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+    d_IFS=$IFS
     IFS=$'\n'
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
@@ -54,6 +52,7 @@ apply () {
             ok "$AUDIT_VALUE is present in $FILE"
         fi
     done
+    IFS=$d_IFS
 }
 
 # This function will check config parameters required

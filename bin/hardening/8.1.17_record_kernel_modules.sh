@@ -6,6 +6,7 @@
 
 #
 # 8.1.17 Collect Kernel Module Loading and Unloading (Scored)
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over
@@ -13,11 +14,15 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-w /sbin/insmod -p x -k modules 
+ARCH64_AUDIT_PARAMS='-w /sbin/insmod -p x -k modules 
 -w /sbin/rmmod -p x -k modules
 -w /sbin/modprobe -p x -k modules
 -a always,exit -F arch=b32 -S init_module -S delete_module -S create_module -S finit_module -k modules
 -a always,exit -F arch=b64 -S init_module -S delete_module -S create_module -S finit_module -k modules'
+ARCH32_AUDIT_PARAMS='-w /sbin/insmod -p x -k modules 
+-w /sbin/rmmod -p x -k modules
+-w /sbin/modprobe -p x -k modules
+-a always,exit -F arch=b32 -S init_module -S delete_module -S create_module -S finit_module -k modules'
 
 FILE='/etc/audit/rules.d/audit.rules'
 
@@ -25,13 +30,16 @@ FILE='/etc/audit/rules.d/audit.rules'
 audit () {
     # define custom IFS and save default one
     d_IFS=$IFS
-    c_IFS=$'\n'
-    IFS=$c_IFS
+    IFS=$'\n'
+	is_64bit_arch
+	if [ $FNRET=0 ]; then 
+		AUDIT_PARAMS=$ARCH64_AUDIT_PARAMS			
+	else
+		AUDIT_PARAMS=$ARCH32_AUDIT_PARAMS
+	fi
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
-        IFS=$d_IFS
         does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
-        IFS=$c_IFS
         if [ $FNRET != 0 ]; then
             crit "$AUDIT_VALUE is not in file $FILE"
         else
@@ -43,6 +51,7 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+    d_IFS=$IFS
     IFS=$'\n'
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
@@ -55,6 +64,7 @@ apply () {
             ok "$AUDIT_VALUE is present in $FILE"
         fi
     done
+    IFS=$d_IFS
 }
 
 # This function will check config parameters required
