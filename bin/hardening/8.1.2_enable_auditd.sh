@@ -34,21 +34,26 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-        is_pkg_installed $PACKAGE
-        if [ $FNRET = 0 ]; then
-            ok "$PACKAGE is installed"
-        else
-            warn "$PACKAGE is absent, installing it"
-            apt_install $PACKAGE
-        fi
-        is_service_enabled $SERVICE_NAME
-        if [ $FNRET = 0 ]; then
-            ok "$SERVICE_NAME is enabled"
-        else    
-            warn "$SERVICE_NAME is not enabled, enabling it"
-            update-rc.d $SERVICE_NAME remove >  /dev/null 2>&1
-            update-rc.d $SERVICE_NAME defaults > /dev/null 2>&1
-        fi
+	is_pkg_installed $PACKAGE
+	if [ $FNRET = 0 ]; then
+		ok "$PACKAGE is installed"
+	else
+		warn "$PACKAGE is absent, installing it"
+		apt_install $PACKAGE
+	fi
+	is_service_enabled $SERVICE_NAME
+	if [ $FNRET = 0 ]; then
+		ok "$SERVICE_NAME is enabled"
+	else    
+		warn "$SERVICE_NAME is not enabled, enabling it"
+		is_debian_9
+		if [ $FNRET = 0 ]; then
+			systemctl enable auditd
+		else
+			update-rc.d $SERVICE_NAME remove >  /dev/null 2>&1
+			update-rc.d $SERVICE_NAME defaults > /dev/null 2>&1
+		fi
+	fi
 }
 
 # This function will check config parameters required

@@ -708,15 +708,15 @@ ensure_lo_traffic_input_is_accept()
 	IPS6=$(which ip6tables)
 	# Check the loopback interface to accept INPUT traffic.
     if [ $(${IPS4} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -ge 1 -o $(${IPS4} -S | grep -c "^\-A INPUT \-i 127.0.0.1 \-j ACCEPT") -ge 1 ]; then
-		ok "Ip4tables loopback traffic INPUT has configured!"
+		debug "Ip4tables loopback traffic INPUT has configured!"
 		FNRET=0
 	else
-		crit "Ip4tables: loopback traffic INPUT is not configured!"
+		debug "Ip4tables: loopback traffic INPUT is not configured!"
 		if [ $(${IPS6} -S | grep -c "^\-A INPUT \-i lo \-j ACCEPT") -ge 1 -o $(${IPS6} -S | grep -c "^\-A INPUT \-i ::/0 \-j ACCEPT") -ge 1 ]; then
-			ok "Ip6tables loopback traffic INPUT has configured!"
+			debug "Ip6tables loopback traffic INPUT has configured!"
 			FNRET=0
 		else
-			crit "Ip6tables: loopback traffic INPUT is not configured!"
+			debug "Ip6tables: loopback traffic INPUT is not configured!"
 			FNRET=1
 		fi
 	fi	
@@ -729,15 +729,15 @@ ensure_lo_traffic_output_is_accept()
 	IPS6=$(which ip6tables)
 	# Check the loopback interface to accept OUTPUT traffic.
     if [ $(${IPS4} -S | grep -c "^\-A OUTPUT \-o lo \-j ACCEPT") -ge 1 -o $(${IPS4} -S | grep -c "^\-A OUTPUT \-o 127.0.0.1 \-j ACCEPT") -ge 1 ]; then
-		ok "Ip4tables loopback traffic OUTPUT has configured!"
+		debug "Ip4tables loopback traffic OUTPUT has configured!"
 		FNRET=0
 	else
-		crit "Ip4tables: loopback traffic OUTPUT is not configured!"
+		debug "Ip4tables: loopback traffic OUTPUT is not configured!"
 		if [ $(${IPS6} -S | grep -c "^\-A OUTPUT \-o lo \-j ACCEPT") -ge 1 -o $(${IPS6} -S | grep -c "^\-A OUTPUT \-o ::/0 \-j ACCEPT") -ge 1 ]; then
-			ok "Ip6tables loopback traffic OUTPUT has configured!"
+			debug "Ip6tables loopback traffic OUTPUT has configured!"
 			FNRET=0
 		else
-			crit "Ip6tables: loopback traffic OUTPUT is not configured!"
+			debug "Ip6tables: loopback traffic OUTPUT is not configured!"
 			FNRET=1
 		fi
 	fi
@@ -750,16 +750,16 @@ ensure_lo_traffic_other_if_input_is_deny()
 	IPS6=$(which ip6tables)
 	# all other interfaces to deny traffic to the loopback network.
     if [ $(${IPS4} -S | grep -c "^\-A INPUT \-s 127.0.0.0/8 \-j DROP") -eq 0 ]; then
-		crit "Ip4tables: loopback traffic INPUT deny from 127.0.0.0/8 is not configured!"
+		debug "Ip4tables: loopback traffic INPUT deny from 127.0.0.0/8 is not configured!"
 		if [ $(${IPS6} -S | grep -c "^\-A INPUT \-s ::1 \-j DROP") -ge 0 ]; then
-			crit "Ip6tables: loopback traffic INPUT deny from ::1 is not configured!"
+			debug "Ip6tables: loopback traffic INPUT deny from ::1 is not configured!"
 			FNRET=1
 		else
-			ok "Ip6tables loopback traffic INPUT deny from ::1 has configured!"
+			debug "Ip6tables loopback traffic INPUT deny from ::1 has configured!"
 			FNRET=0
 		fi
 	else
-		ok "Ip4tables loopback traffic INPUT deny from 127.0.0.0/8 has configured!"
+		debug "Ip4tables loopback traffic INPUT deny from 127.0.0.0/8 has configured!"
 		FNRET=0
 	fi
 }
@@ -773,16 +773,16 @@ check_outbound_connect_is_accept()
 	# $1 maybe is: tcp udp icmp 
 	proto=$1
 	if [ $(${IPS4} -S | grep "^\-A OUTPUT" | grep "\-p ${proto}" | grep -c "$PATTERN") -eq 0 ]; then
-		crit "Iptables: Protocol $proto outbound is not configured!"
+		debug "Iptables: Protocol $proto outbound is not configured!"
 		if [ $(${IPS6} -S | grep "^\-A OUTPUT" | grep "\-p ${proto}" | grep -c "$PATTERN") -eq 0 ]; then
-			crit "Ip6tables: Protocol $proto outbound is not configured!"
+			debug "Ip6tables: Protocol $proto outbound is not configured!"
 			FNRET=1
 		else
-			ok "Ip6tables: Protocol $proto outbound is configured!"
+			debug "Ip6tables: Protocol $proto outbound is configured!"
 			FNRET=0
 		fi
 	else
-		ok "Iptables: Protocol $proto outbound is configured!"
+		debug "Iptables: Protocol $proto outbound is configured!"
 		FNRET=0
 	fi
 }
@@ -796,16 +796,16 @@ check_input_with_established_is_accept()
 	# $1 maybe is: tcp udp icmp 
 	proto=$1
 	if [ $(${IPS4} -S | grep "^\-A INPUT" | grep "\-p ${proto}" | grep -c "$PATTERN") -eq 0 ]; then
-		crit "Iptables: Protocol $proto INPUT is not configured!"
+		debug "Iptables: Protocol $proto INPUT is not configured!"
 		if [ $(${IPS6} -S | grep "^\-A INPUT" | grep "\-p ${proto}" | grep -c "$PATTERN") -eq 0 ]; then
-			crit "Ip6tables: Protocol $proto INPUT is not configured!"
+			debug "Ip6tables: Protocol $proto INPUT is not configured!"
 			FNRET=1
 		else
-			ok "Ip6tables: Protocol $proto INPUT is configured!"
+			debug "Ip6tables: Protocol $proto INPUT is configured!"
 			FNRET=0
 		fi
 	else
-		ok "Iptables: Protocol $proto INPUT is configured!"
+		debug "Iptables: Protocol $proto INPUT is configured!"
 		FNRET=0
 	fi
 }
