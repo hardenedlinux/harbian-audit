@@ -26,6 +26,18 @@ is_debian_10()
         FNRET=1
     fi
 }
+
+is_64bit_arch()
+{
+	if $(uname -m | grep -q "64"); then 
+		FNRET=0
+		debug "This machine architecture is 64 bit."
+	else
+		FNRET=1
+		debug "This machine architecture is not 64 bit."
+	fi
+}
+
 #
 # Sysctl 
 #

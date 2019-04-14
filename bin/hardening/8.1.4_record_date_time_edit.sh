@@ -8,40 +8,49 @@
 # 8.1.4 Record Events That Modify Date and Time Information (Scored)
 #
 
-set -e # One error, it's over
-set -u # One variable unset, it's over
+set -e # One error, it is over
+set -u # One variable unset, it is over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F arch=b64 -S adjtimex -S settimeofday -k time-change
+ARCH64_AUDIT_PARAMS='-a always,exit -F arch=b64 -S adjtimex -S settimeofday -k time-change
 -a always,exit -F arch=b32 -S adjtimex -S settimeofday -S stime -k time-change
 -a always,exit -F arch=b64 -S clock_settime -k time-change
 -a always,exit -F arch=b32 -S clock_settime -k time-change
 -w /etc/localtime -p wa -k time-change'
+# Only for arch is 32 bit 
+ARCH32_AUDIT_PARAMS='-a always,exit -F arch=b32 -S adjtimex -S settimeofday -S stime -k time-change
+-a always,exit -F arch=b32 -S clock_settime -k time-change
+-w /etc/localtime -p wa -k time-change'
+
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
     # define custom IFS and save default one
-    d_IFS=$IFS
-    c_IFS=$'\n'
-    IFS=$c_IFS
+	d_IFS=$IFS
+	IFS=$'\n'
+	is_64bit_arch
+	if [ $FNRET=0 ]; then 
+		AUDIT_PARAMS=$ARCH64_AUDIT_PARAMS
+	else
+		AUDIT_PARAMS=$ARCH32_AUDIT_PARAMS
+	fi
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
-        IFS=$d_IFS
         does_pattern_exist_in_file $FILE ""$AUDIT_VALUE""
-        IFS=$c_IFS
         if [ $FNRET != 0 ]; then
-            crit "$AUDIT_VALUE is not in file $FILE"
+			crit "$AUDIT_VALUE is not in file $FILE"
         else
-            ok "$AUDIT_VALUE is present in $FILE"
-        fi
+			ok "$AUDIT_VALUE is present in $FILE"
+		fi
     done
-    IFS=$d_IFS
+	IFS=$d_IFS
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
+	d_IFS=$IFS
     IFS=$'\n'
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
@@ -54,6 +63,7 @@ apply () {
             ok "$AUDIT_VALUE is present in $FILE"
         fi
     done
+	IFS=$d_IFS
 }
 
 # This function will check config parameters required
