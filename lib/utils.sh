@@ -822,3 +822,14 @@ check_input_with_established_is_accept()
 	fi
 }
 
+extend_touch_file()
+{
+	NEWFILEALLPATH=$1
+	if [ ! -d $(dirname ${NEWFILEALLPATH}) ]; then
+		mkdir -p "$(dirname ${NEWFILEALLPATH})"
+		touch ${NEWFILEALLPATH}
+	else
+		touch ${NEWFILEALLPATH}
+	fi
+}
+

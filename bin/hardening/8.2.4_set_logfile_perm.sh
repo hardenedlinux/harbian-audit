@@ -49,15 +49,16 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    if [ $FNRET = 1 ]; then
+	does_file_exist "$SYSLOG_BASEDIR/syslog-ng.conf"
+	if [ $FNRET != 0 ]; then
 		warn "$SYSLOG_BASEDIR/syslog-ng.conf is not exist! "
 	else
     	FILES=$(grep "file(" $SYSLOG_BASEDIR/syslog-ng.conf | grep '"' | cut -d'"' -f 2)
     	for FILE in $FILES; do
         	does_file_exist $FILE
         	if [ $FNRET != 0 ]; then
-            	info "$FILE does not exist"
-            	touch $FILE
+				info "$FILE does not exist, create $FILE"
+				extend_touch_file $FILE
         	fi
         	has_file_correct_ownership $FILE $USER $GROUP
         	if [ $FNRET = 0 ]; then
