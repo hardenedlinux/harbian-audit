@@ -88,7 +88,7 @@ superusers: harbiansuper
 passwd: harbian_AUDIT,12@)  
 
 Related how to config grub2 password protection, please reference:   
-[https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_config_grub2_password_protection.mkd](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_config_grub2_password_protection.mkd)   
+[how_to_config_grub2_password_protection.mkd](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_config_grub2_password_protection.mkd)   
 
 
 ### Re-set passwd of all users 
