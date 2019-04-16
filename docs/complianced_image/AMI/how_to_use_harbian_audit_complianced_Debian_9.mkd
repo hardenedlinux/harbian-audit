@@ -50,7 +50,7 @@ admin@ip-:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --audit-all
 ```
 
 If need apply this item, please reference:
-[https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_config_grub2_password_protection.mkd](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/manual-operation-docs/how_to_config_grub2_password_protection.mkd)   
+[how_to_config_grub2_password_protection.mkd](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_config_grub2_password_protection.mkd)   
 
 ### 7.4.4 Create /etc/hosts.deny  
 ```
