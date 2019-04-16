@@ -16,25 +16,37 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=2
 
 IPS6=$(which ip6tables)
+IPV6_ENABLE=1
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(${IPS6} -S | grep -c "\-P INPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P OUTPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P FORWARD DROP") -eq 0 ]; then
-		crit "Ip6tables: Firewall policy is not default deny!"
-		FNRET=1
+	check_ipv6_is_enable
+	IPV6_ENABLE=$FNRET
+	if [ $IPV6_ENABLE -eq 0 ]; then
+    	if [ $(${IPS6} -S | grep -c "\-P INPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P OUTPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P FORWARD DROP") -eq 0 ]; then
+			crit "Ip6tables: Firewall policy is not default deny!"
+			FNRET=1
+		else
+			ok "Ip6tables has set default deny for firewall policy!"
+			FNRET=0
+		fi
 	else
-		ok "Ip6tables has set default deny for firewall policy!"
+		ok "Ipv6 has set disabled, so pass."
 		FNRET=0
 	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    if [ $FNRET = 0 ]; then
-        ok "Ip6tables has set default deny for firewall policy!"
-    else
-        warn "Ip6tables is not set default deny for firewall policy! need the administrator to manually add it. Howto set: ip6tables -P INPUT DROP; ip6tables -P OUTPUT DROP; ip6tables -P FORWARD DROP."
-    fi
+	if [ $IPV6_ENABLE -eq 0 ]; then
+    	if [ $FNRET = 0 ]; then
+        	ok "Ip6tables has set default deny for firewall policy!"
+    	else
+        	warn "Ip6tables is not set default deny for firewall policy! need the administrator to manually add it. Howto set: ip6tables -P INPUT DROP; ip6tables -P OUTPUT DROP; ip6tables -P FORWARD DROP."
+    	fi
+	else
+		ok "Ipv6 has set disabled, so pass."
+	fi
 }
 
 # This function will check config parameters required

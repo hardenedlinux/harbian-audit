@@ -18,26 +18,68 @@ HARDENING_LEVEL=2
 IPS4=$(which iptables)
 IPS6=$(which ip6tables)
 
+IPV4_RET=1
+IPV6_RET=1
+IPV6_ISENABLE=1
+
 # Quick note here : CIS recommends your iptables rules to be persistent. 
 # Do as you want, but this script does not handle this
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(${IPS4} -S | grep -E "\-m.*limit" | grep -Ec "\-\-limit-burst") -eq 0 -o $(${IPS6} -S | grep -E "\-m.*limit" | grep -Ec "\-\-limit-burst") -eq 0 ]; then
-		crit "Ip4tables/Ip6tables is not set rules of protect DOS attacks!"
-		FNRET=1
+	# ipv4
+    if [ $(${IPS4} -S | grep -E "\-m.*limit" | grep -Ec "\-\-limit-burst") -eq 0 ]; then
+		info "Iptables is not set rules of protect DOS attacks!"
+		IPV4_RET=1
 	else
-		ok "Ip4tables/Ip6tables has set rules for protect DOS attacks!"
-		FNRET=0
+		info "Iptables has set rules for protect DOS attacks!"
+		IPV4_RET=0
+	fi
+	# ipv6
+	check_ipv6_is_enable
+	IPV6_ISENABLE=$FNRET
+	if [ $IPV6_ISENABLE = 0 ]; then 
+    	if [ $(${IPS6} -S | grep -E "\-m.*limit" | grep -Ec "\-\-limit-burst") -eq 0 ]; then
+			info "Ip6tables is not set rules of protect DOS attacks!"
+			IPV6_RET=1
+		else
+			info "Ip6tables has set rules for protect DOS attacks!"
+			IPV6_RET=0
+		fi
+	fi
+	if [ $IPV6_ISENABLE -eq 0 ]; then
+		if [ $IPV4_RET -eq 1 -o $IPV6_RET -eq 1 ]; then
+			crit "Iptables/ip6tables is not set rules of protect DOS attacks!"
+			FNRET=1
+		else
+			ok "Iptables/ip6tables has set rules for protect DOS attacks!"
+			FNRET=0
+		fi
+	else
+		if [ $IPV4_RET -eq 1 ]; then
+			crit "Iptables is not set rules of protect DOS attacks!"
+			FNRET=1
+		else
+			ok "Iptables has set rules for protect DOS attacks!"
+			FNRET=0
+		fi
 	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "Ip4tables/Ip6tables has set rules for protect DOS attacks!"
+		if [ $IPV6_ISENABLE -eq 0 ]; then
+        	ok "Iptables/Ip6tables has set rules for protect DOS attacks!"
+		else
+        	ok "Iptables has set rules for protect DOS attacks!"
+		fi
     else
-        warn "Ip4tables/Ip6tables is not set rules of protect DOS attacks! need the administrator to manually add it."
+		if [ $IPV6_ISENABLE -eq 0 ]; then
+        	warn "Iptables/Ip6tables is not set rules of protect DOS attacks! need the administrator to manually add it."
+		else
+        	warn "Iptables is not set rules of protect DOS attacks! need the administrator to manually add it."
+		fi
     fi
 }
 

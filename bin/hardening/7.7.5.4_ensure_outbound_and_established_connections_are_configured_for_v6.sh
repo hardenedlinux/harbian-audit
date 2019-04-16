@@ -17,56 +17,67 @@ HARDENING_LEVEL=2
 
 PROTOCOL_LIST="tcp udp icmp"
 IP6VERSION="IPS6"
+IPV6_ENABLE=1
 
 RET_VALUE1=1
 RET_VALUE2=1
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-	for protocol in $PROTOCOL_LIST
-	do
-		# Check INPUT with ESTABLISHED is config
-		check_input_with_established_is_accept "${protocol}" "$IP6VERSION"
-		if [ $FNRET = 0 ]; then 
-			RET_VALUE1=0
-			info "Portocol $protocol INPUT is conf"
-		else
-			RET_VALUE1=1
-			info "Portocol $protocol INPUT is not conf"
-		fi
-		# Check outbound is config
-		check_outbound_connect_is_accept "${protocol}" $IP6VERSION
-		if [ $FNRET = 0 ]; then 
-			RET_VALUE2=0
-			info "Portocol $protocol outbound is conf"
-		else
-			RET_VALUE2=1
-			info "Portocol $protocol outbound is not conf"
-		fi
-	done
+	check_ipv6_is_enable
+	IPV6_ENABLE=$FNRET
+	if [ $IPV6_ENABLE -eq 0 ]; then
+		for protocol in $PROTOCOL_LIST
+		do
+			# Check INPUT with ESTABLISHED is config
+			check_input_with_established_is_accept "${protocol}" "$IP6VERSION"
+			if [ $FNRET = 0 ]; then 
+				RET_VALUE1=0
+				info "Portocol $protocol INPUT is conf"
+			else
+				RET_VALUE1=1
+				info "Portocol $protocol INPUT is not conf"
+			fi
+			# Check outbound is config
+			check_outbound_connect_is_accept "${protocol}" $IP6VERSION
+			if [ $FNRET = 0 ]; then 
+				RET_VALUE2=0
+				info "Portocol $protocol outbound is conf"
+			else
+				RET_VALUE2=1
+				info "Portocol $protocol outbound is not conf"
+			fi
+		done
 
-	if [ $RET_VALUE1 -eq 0 -a $RET_VALUE2 -eq 0 ]; then
-		ok "Outbound and established connections are configured for v6."
+		if [ $RET_VALUE1 -eq 0 -a $RET_VALUE2 -eq 0 ]; then
+			ok "Outbound and established connections are configured for v6."
+		else
+			crit "Outbound and established connections are not configured for v6."
+		fi
 	else
-		crit "Outbound and established connections are not configured for v6."
+		ok "Ipv6 has set disabled, so pass."
 	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-	for protocol in $PROTOCOL_LIST
-	do
-		# Apply INPUT with ESTABLISHED 
-		check_input_with_established_is_accept "${protocol}" "$IP6VERSION"
-		if [ $FNRET = 1 ]; then 
-			warn "Portocol $protocol INPUT is not set, need the administrator to manually add it. Howto apply: ip6tables -A INPUT -p $protocol -m state --state ESTABLISHED -j ACCEPT"
-		fi
-		# Apply outbound 
-		check_outbound_connect_is_accept "${protocol}" "$IP6VERSION"
-		if [ $FNRET = 1 ]; then 
-			warn "Portocol $protocol outbound is not set, need the administrator to manually add it. Howto apply: ip6tables -A OUTPUT -p $protocol -m state --state NEW,ESTABLISHED -j ACCEPT"
-		fi
-	done
+	if [ $IPV6_ENABLE -eq 0 ]; then
+		for protocol in $PROTOCOL_LIST
+		do
+			# Apply INPUT with ESTABLISHED 
+			check_input_with_established_is_accept "${protocol}" "$IP6VERSION"
+			if [ $FNRET = 1 ]; then 
+				warn "Portocol $protocol INPUT is not set, need the administrator to manually add it. Howto apply: ip6tables -A INPUT -p $protocol -m state --state ESTABLISHED -j ACCEPT"
+			fi
+			# Apply outbound 
+			check_outbound_connect_is_accept "${protocol}" "$IP6VERSION"
+			if [ $FNRET = 1 ]; then 
+				warn "Portocol $protocol outbound is not set, need the administrator to manually add it. Howto apply: ip6tables -A OUTPUT -p $protocol -m state --state NEW,ESTABLISHED -j ACCEPT"
+			fi
+		done
+	else
+		ok "Ipv6 has set disabled, so pass."
+	fi
 }
 
 # This function will check config parameters required

@@ -860,3 +860,15 @@ extend_touch_file()
 	fi
 }
 
+# Check ipv6 is enable
+check_ipv6_is_enable()
+{
+	if [ $(ip -6 addr | wc -l) -gt 0 ]; then
+		debug "Ipv6 is enabled."
+		FNRET=0
+	else
+		debug "Ipv6 is disabled."
+		FNRET=1
+	fi
+}
+

@@ -19,61 +19,73 @@ INPUT_ACCEPT=1
 OUTPUT_ACCEPT=1
 INPUT_DENY=1
 IP6VERSION="IPS6"
+IPV6_ENABLE=1
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-	# Check the loopback interface to accept INPUT traffic.
-	ensure_lo_traffic_input_is_accept $IP6VERSION
-	if [ $FNRET = 0 ]; then
-		INPUT_ACCEPT=0
-		info "Ip6tables loopback traffic INPUT has configured!"
+	check_ipv6_is_enable
+	IPV6_ENABLE=$FNRET
+	if [ $IPV6_ENABLE -eq 0 ]; then
+		# Check the loopback interface to accept INPUT traffic.
+		ensure_lo_traffic_input_is_accept $IP6VERSION
+		if [ $FNRET = 0 ]; then
+			INPUT_ACCEPT=0
+			info "Ip6tables loopback traffic INPUT has configured!"
+		else
+			INPUT_ACCEPT=1
+			info "Ip6tables: loopback traffic INPUT is not configured!"
+		fi 
+		# Check the loopback interface to accept OUTPUT traffic.
+		ensure_lo_traffic_output_is_accept $IP6VERSION
+		if [ $FNRET = 0 ]; then
+			OUTPUT_ACCEPT=0
+			info "Ip6tables loopback traffic OUTPUT has configured!"
+		else
+			OUTPUT_ACCEPT=1
+			info "Ip6tables: loopback traffic OUTPUT is not configured!"
+		fi 
+		# all other interfaces to deny traffic to the loopback network.
+		ensure_lo_traffic_other_if_input_is_deny $IP6VERSION
+		if [ $FNRET = 0 ]; then
+			INPUT_DENY=0
+			info "Ip6tables loopback traffic INPUT deny from other interfaces has configured!"
+		else
+			INPUT_DENY=1
+			info "Ip6tables: loopback traffic INPUT deny from other interfaces is not configured!"
+		fi 
+
+		if [ $INPUT_ACCEPT -eq 0 -a $OUTPUT_ACCEPT -eq -a $OUTPUT_ACCEPT -eq ]; then
+			ok "Loopback traffic rules were configured for v6!"
+		else
+			crit "Loopback traffic rules are not configured for v6!"
+		fi
 	else
-		INPUT_ACCEPT=1
-		info "Ip6tables: loopback traffic INPUT is not configured!"
-	fi 
-	# Check the loopback interface to accept OUTPUT traffic.
-	ensure_lo_traffic_output_is_accept $IP6VERSION
-	if [ $FNRET = 0 ]; then
-		OUTPUT_ACCEPT=0
-		info "Ip6tables loopback traffic OUTPUT has configured!"
-	else
-		OUTPUT_ACCEPT=1
-		info "Ip6tables: loopback traffic OUTPUT is not configured!"
-	fi 
-	# all other interfaces to deny traffic to the loopback network.
-	ensure_lo_traffic_other_if_input_is_deny $IP6VERSION
-	if [ $FNRET = 0 ]; then
-		INPUT_DENY=0
-		info "Ip6tables loopback traffic INPUT deny from other interfaces has configured!"
-	else
-		INPUT_DENY=1
-		info "Ip6tables: loopback traffic INPUT deny from other interfaces is not configured!"
-	fi 
-	if [ $INPUT_ACCEPT -eq 0 -a $OUTPUT_ACCEPT -eq -a $OUTPUT_ACCEPT -eq ]; then
-		ok "Loopback traffic rules were configured for v6!"
-	else
-		crit "Loopback traffic rules are not configured for v6!"
+		ok "Ipv6 has set disabled, so pass."
 	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-	if [ $INPUT_ACCEPT = 0 ]; then 
-		ok "Ip6tables loopback traffic INPUT has configured!"
-	else
-        warn "Ip6tables loopback traffic INPUT is not configured! need the administrator to manually add it. Howto set: ip6tables -A INPUT -i lo -j ACCEPT"
-	fi
+	if [ $IPV6_ENABLE -eq 0 ]; then
+		if [ $INPUT_ACCEPT = 0 ]; then 
+			ok "Ip6tables loopback traffic INPUT has configured!"
+		else
+        	warn "Ip6tables loopback traffic INPUT is not configured! need the administrator to manually add it. Howto set: ip6tables -A INPUT -i lo -j ACCEPT"
+		fi
 
-	if [ $OUTPUT_ACCEPT = 0 ]; then 
-		ok "Ip6tables loopback traffic OUTPUT has configured!"
-	else
-        warn "Ip6tables loopback traffic OUTPUT is not configured! need the administrator to manually add it. Howto set: ip6tables -A OUTPUT -o lo -j ACCEPT"
-	fi
+		if [ $OUTPUT_ACCEPT = 0 ]; then 
+			ok "Ip6tables loopback traffic OUTPUT has configured!"
+		else
+        	warn "Ip6tables loopback traffic OUTPUT is not configured! need the administrator to manually add it. Howto set: ip6tables -A OUTPUT -o lo -j ACCEPT"
+		fi
 
-	if [ $INPUT_DENY = 0 ]; then 
-		ok "Ip6tables loopback traffic INPUT deny from other interfaces has configured!"
+		if [ $INPUT_DENY = 0 ]; then 
+			ok "Ip6tables loopback traffic INPUT deny from other interfaces has configured!"
+		else
+        	warn "Ip6tables loopback traffic INPUT deny from 127.0.0.0/8 is not configured! need the administrator to manually add it. Howto set: ip6tables -A INPUT -s 127.0.0.0/8 -j DROP"
+		fi
 	else
-        warn "Ip6tables loopback traffic INPUT deny from 127.0.0.0/8 is not configured! need the administrator to manually add it. Howto set: ip6tables -A INPUT -s 127.0.0.0/8 -j DROP"
+		ok "Ipv6 has set disabled, so pass."
 	fi
 }
 
