@@ -43,8 +43,11 @@ audit () {
 	cat $NETLISTENLIST | while read LISTENING
 	do
 		PROTO_TYPE=$(echo ${LISTENING} | awk '{print $1}')
-		if [ "$PROTO_TYPE"="tcp6" ]; then
+		if [ "$PROTO_TYPE" == 'tcp6' ]; then
 			PROTO_TYPE="tcp"
+		fi
+		if [ "$PROTO_TYPE" == 'udp6' ]; then
+			PROTO_TYPE="udp"
 		fi
 		LISTEN_PORT=$(echo ${LISTENING} | awk '{print $4}' | awk -F: '{print $4}')
 		if [ $($IPS6 -S | grep "^\-A INPUT \-p $PROTO_TYPE" | grep -c "\-\-dport $LISTEN_PORT \-m state \-\-state NEW \-j ACCEPT") -ge 1 ]; then
