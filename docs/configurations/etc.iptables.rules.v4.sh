@@ -18,9 +18,21 @@ $IPT -A INPUT -i lo -j ACCEPT
 $IPT -A OUTPUT -o lo -j ACCEPT
 # DROP all incomming traffic
 $IPT -P INPUT DROP
+$IPT -P OUTPUT DROP
+$IPT -P FORWARD DROP
 
-$IPT -A INPUT -m state --state ESTABLISHED -j ACCEPT
+$IPT -A INPUT -i lo -j ACCEPT
+$IPT -A OUTPUT -o lo -j ACCEPT
+$IPT -A INPUT -s 127.0.0.0/8 -j DROP
+
+$IPT -A OUTPUT -p tcp -m state --state NEW,ESTABLISHED -j ACCEPT
+$IPT -A OUTPUT -p udp -m state --state NEW,ESTABLISHED -j ACCEPT
+$IPT -A OUTPUT -p icmp -m state --state NEW,ESTABLISHED -j ACCEPT
+$IPT -A INPUT -p tcp -m state --state ESTABLISHED -j ACCEPT
+$IPT -A INPUT -p udp -m state --state ESTABLISHED -j ACCEPT
+$IPT -A INPUT -p icmp -m state --state ESTABLISHED -j ACCEPT
 $IPT -A INPUT -p icmp -m state --state RELATED -j ACCEPT
+
 
 $IPT -A INPUT -m limit --limit 3/min -j LOG --log-prefix "SFW2-IN-ILL-TARGET " --log-tcp-options --log-ip-options
 $IPT -A FORWARD -m physdev --physdev-is-bridged -j ACCEPT
@@ -64,10 +76,13 @@ do
     $IPT -A INPUT -p icmp -m icmp --icmp-type 4 -j ACCEPT
     $IPT -A OUTPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
 
-    # allow ssh/http only
-    $IPT -A INPUT -p tcp --dport 22 -j ACCEPT
-#    $IPT -A INPUT -p tcp --dport 80 -j ACCEPT
-#    $IPT -A INPUT -p tcp --dport 443 -j ACCEPT
+    # allow ssh/http/ntp/dhclint only
+    $IPT -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
+    $IPT -A INPUT -p udp --dport 123 -m state --state NEW -j ACCEPT
+    $IPT -A INPUT -p udp --dport 68 -m state --state NEW -j ACCEPT
+    ip6tables -A INPUT -p udp --dport 123 -m state --state NEW -j ACCEPT
+#    $IPT -A INPUT -p tcp --dport 80 -m state --state NEW -j ACCEPT
+#    $IPT -A INPUT -p tcp --dport 443 -m state --state NEW -j ACCEPT
  
     # allow incoming ICMP ping pong stuff
     $IPT -A INPUT -p icmp --icmp-type 8 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
