@@ -23,15 +23,9 @@ IPS6=$(which ip6tables)
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(${IPS4} -S | grep -Ec "^-A|^-I") -eq 0 ]; then
-        crit "Ip4tables is not set rule!"
-		if [ $(${IPS6} -S | grep -Ec "^-A|^-I") -eq 0 ]; then
-			crit "Ip6tables is not set rule!"
-			FNRET=1
-		else
-			ok "Ip6tables rules are set!"
-			FNRET=0
-		fi
+    if [ $(${IPS4} -S | grep -Ec "^-A|^-I") -eq 0 -o $(${IPS6} -S | grep -Ec "^-A|^-I") -eq 0 ]; then
+        crit "Iptables/Ip6tables is not set rule!"
+        FNRET=1
     else
         ok "Ip4tables rules are set!"
         FNRET=0

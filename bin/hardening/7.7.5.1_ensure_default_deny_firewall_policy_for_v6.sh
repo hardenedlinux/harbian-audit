@@ -5,8 +5,8 @@
 #
 
 #
-# 7.7.4 Ensure default deny firewall policy (Scored)
-# Include ipv4 and ipv6
+# 7.7.5.1 Ensure default deny firewall policy for v6 (Scored)
+# for ipv6
 # Add this feature:Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -15,22 +15,15 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
 
-IPS4=$(which iptables)
 IPS6=$(which ip6tables)
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(${IPS4} -S | grep -c "\-P INPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P OUTPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P FORWARD DROP") -eq 0 ]; then
-		crit "Iptables: Firewall policy is not default deny!"
-    	if [ $(${IPS6} -S | grep -c "\-P INPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P OUTPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P FORWARD DROP") -eq 0 ]; then
-			crit "Ip6tables: Firewall policy is not default deny!"
-			FNRET=1
-		else
-			ok "Ip6tables has set default deny for firewall policy!"
-			FNRET=0
-		fi
+    if [ $(${IPS6} -S | grep -c "\-P INPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P OUTPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P FORWARD DROP") -eq 0 ]; then
+		crit "Ip6tables: Firewall policy is not default deny!"
+		FNRET=1
 	else
-		ok "Iptables has set default deny for firewall policy!"
+		ok "Ip6tables has set default deny for firewall policy!"
 		FNRET=0
 	fi
 }
@@ -38,9 +31,9 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "Iptables/Ip6tables has set default deny for firewall policy!"
+        ok "Ip6tables has set default deny for firewall policy!"
     else
-        warn "Iptables/Ip6tables is not set default deny for firewall policy! need the administrator to manually add it. Howto set: iptables/ip6tables -P INPUT DROP; iptables/ip6tables -P OUTPUT DROP; iptables/ip6tables -P FORWARD DROP."
+        warn "Ip6tables is not set default deny for firewall policy! need the administrator to manually add it. Howto set: ip6tables -P INPUT DROP; ip6tables -P OUTPUT DROP; ip6tables -P FORWARD DROP."
     fi
 }
 
