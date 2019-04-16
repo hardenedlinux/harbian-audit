@@ -32,7 +32,7 @@ audit () {
 		PROTO_TYPE=$(echo ${LISTENING} | awk '{print $1}')
 		LISTEN_PORT=$(echo ${LISTENING} | awk '{print $4}' | awk -F: '{print $2}')
 		if [ $($IPS4 -S | grep "^\-A INPUT \-p $PROTO_TYPE" | grep -c "\-\-dport $LISTEN_PORT \-m state \-\-state NEW \-j ACCEPT") -ge 1 ]; then
-        	ok "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT is not set firewall rules."
+        	ok "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT was set firewall rules."
 		else	
 			echo "${PROTO_TYPE} ${LISTEN_PORT}" >> $PROTO_PORT
 			crit "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT is not set firewall rules."
@@ -48,7 +48,7 @@ audit () {
 		fi
 		LISTEN_PORT=$(echo ${LISTENING} | awk '{print $4}' | awk -F: '{print $4}')
 		if [ $($IPS6 -S | grep "^\-A INPUT \-p $PROTO_TYPE" | grep -c "\-\-dport $LISTEN_PORT \-m state \-\-state NEW \-j ACCEPT") -ge 1 ]; then
-        	ok "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT is not set ipv6 firewall rules."
+        	ok "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT was set ipv6 firewall rules."
 		else	
 			echo "${PROTO_TYPE} ${LISTEN_PORT}" >> $PROTO_PORT
 			crit "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT is not set ipv6 firewall rules."
