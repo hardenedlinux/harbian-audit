@@ -58,7 +58,7 @@ admin@ip:/opt/harbian-audit-master$ sudo reboot
 ```
 After reboot: 
 ```
-admin@ip:/opt/harbian-audit-master$ sudo bash ./docs/examples/configurations/etc.iptables.rules.v4.sh 
+admin@ip:/opt/harbian-audit-master$ sudo bash ./docs/configurations/etc.iptables.rules.v4.sh 
 admin@ip:/opt/harbian-audit-master$ sudo -s 
 admin@ip:/opt/harbian-audit-master# iptables-save > /etc/iptables/rules.v4 
 admin@ip:/opt/harbian-audit-master# ip6tables-save > /etc/iptables/rules.v6

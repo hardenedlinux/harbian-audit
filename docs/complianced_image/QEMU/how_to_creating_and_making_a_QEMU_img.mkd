@@ -32,11 +32,10 @@ Copy publib key(example: /home/username/.ssh/id_rsa_1.pub) to QEMU server, add c
 ### Use virl-manager  
 
 #### Add connection  
-![1](./picture/create_new_virt_1.png) 
-![2](./picture/create_new_virt_2.png) 
+![1](./picture/create_new_virt_1.png)   
 
 #### Create New Virtual Machine  
-![3](./picture/create_new_virt_3.png) 
+![2](./picture/create_new_virt_2.png)   
 Then follow the wizard to install step by step.  
 
 ## How to making  
@@ -70,7 +69,7 @@ root@harbian:/opt/harbian-audit-master# reboot
 
 After reboot: 
 ```
-harbian-audit@harbian:/opt/harbian-audit-master$ sudo bash ./docs/examples/configurations/etc.iptables.rules.v4.sh   
+harbian-audit@harbian:/opt/harbian-audit-master$ sudo bash ./docs/configurations/etc.iptables.rules.v4.sh   
 harbian-audit@harbian:/opt/harbian-audit-master$ sudo -s   
 root@harbian:/opt/harbian-audit-master# iptables-save > /etc/iptables/rules.v4   
 root@harbian:/opt/harbian-audit-master# ip6tables-save > /etc/iptables/rules.v6  
