@@ -6,6 +6,7 @@
 
 #
 # 8.1.7 Record Events That Modify the System's Mandatory Access Controls (Scored)
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over
@@ -13,20 +14,35 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-w /etc/selinux/ -p wa -k MAC-policy'
+SELINUX_PKG="selinux-basics"
+SE_AUDIT_PARAMS='-w /etc/selinux/ -p wa -k MAC-policy
+-w /usr/share/selinux/ -p wa -k MAC-policy'
+
+APPARMOR_PKG="apparmor"
+AA_AUDIT_PARAMS='-w /etc/apparmor/ -p wa -k MAC-policy
+-w /etc/apparmor.d/ -p wa -k MAC-policy'
+
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
     # define custom IFS and save default one
     d_IFS=$IFS
-    c_IFS=$'\n'
-    IFS=$c_IFS
+    IFS=$'\n'
+	is_pkg_installed $SELINUX_PKG
+	if [ $FNRET = 0 ]; then
+		AUDIT_PARAMS=$SE_AUDIT_PARAMS
+		info "SELinux has installed!"
+	else
+		is_pkg_installed $APPARMOR_PKG
+		if [ $FNRET = 0 ]; then
+			AUDIT_PARAMS=$AA_AUDIT_PARAMS
+			info "Apparmor has installed!"
+		fi
+	fi
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
-        IFS=$d_IFS
         does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
-        IFS=$c_IFS
         if [ $FNRET != 0 ]; then
             crit "$AUDIT_VALUE is not in file $FILE"
         else
@@ -38,7 +54,19 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+    d_IFS=$IFS
     IFS=$'\n'
+	is_pkg_installed $SELINUX_PKG
+	if [ $FNRET = 0 ]; then
+		AUDIT_PARAMS=$SE_AUDIT_PARAMS
+		info "SELinux has installed!"
+	else
+		is_pkg_installed $APPARMOR_PKG
+		if [ $FNRET = 0 ]; then
+			AUDIT_PARAMS=$AA_AUDIT_PARAMS
+			info "Apparmor has installed!"
+		fi
+	fi
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
         does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
@@ -50,6 +78,7 @@ apply () {
             ok "$AUDIT_VALUE is present in $FILE"
         fi
     done
+    IFS=$d_IFS
 }
 
 # This function will check config parameters required
