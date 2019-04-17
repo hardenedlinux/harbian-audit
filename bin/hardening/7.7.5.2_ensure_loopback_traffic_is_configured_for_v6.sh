@@ -6,7 +6,7 @@
 
 #
 # 7.7.5.2 Ensure loopback traffic is configured for v6 (Scored)
-# Foripv6
+# For ipv6
 # Add this feature:Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -82,7 +82,7 @@ apply () {
 		if [ $INPUT_DENY = 0 ]; then 
 			ok "Ip6tables loopback traffic INPUT deny from other interfaces has configured!"
 		else
-        	warn "Ip6tables loopback traffic INPUT deny from 127.0.0.0/8 is not configured! need the administrator to manually add it. Howto set: ip6tables -A INPUT -s 127.0.0.0/8 -j DROP"
+        	warn "Ip6tables loopback traffic INPUT deny from 127.0.0.0/8 is not configured! need the administrator to manually add it. Howto set: ip6tables -A INPUT -s ::1 -j DROP"
 		fi
 	else
 		ok "Ipv6 has set disabled, so pass."
