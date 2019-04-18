@@ -26,6 +26,8 @@ FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	# Set default to apparmor 
+	AUDIT_PARAMS=$AA_AUDIT_PARAMS
     # define custom IFS and save default one
     d_IFS=$IFS
     IFS=$'\n'
