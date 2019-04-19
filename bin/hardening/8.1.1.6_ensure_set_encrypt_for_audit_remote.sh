@@ -60,11 +60,9 @@ apply () {
     elif [ $FNRET = 2 ]; then
         warn "$FILE is not exist, please manual check."
     elif [ $FNRET = 3 ]; then
-        warn "$PATTERN value not exist in $FILE, add it"
-        add_end_of_file $FILE "${PATTERN} = $SETVALUE"
+        warn "$PATTERN value not exist in $FILE, need manual operation set it and ensure Kerberos is correct set."
     elif [ $FNRET = 4 ]; then
-        warn "$PATTERN value is incorrect in $FILE, reset it"
-        replace_in_file $FILE "^${PATTERN}[[:space:]].*" "${PATTERN} = $SETVALUE"
+        warn "$PATTERN value is incorrect in $FILE, need manual operation set it and ensure Kerberos is correct set."
     fi
 }
 
