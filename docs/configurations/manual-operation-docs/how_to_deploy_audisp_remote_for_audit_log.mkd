@@ -73,7 +73,7 @@ iptables -A OUTPUT -p tcp --sport 60 --dport 2006 -m state --state NEW,ESTABLISH
 ```
 
 ### Client 
-If TCP Wrapper is installed and set deny all on Audit logs receiver host, set TCP access control for audit service:
+If TCP Wrapper is installed and set deny all on client host, set TCP access control for audit service:
 Example server address is 172.16.237.135
 ```
 # vim /etc/hosts.allow
