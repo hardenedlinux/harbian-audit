@@ -41,22 +41,26 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-        if [ $FNRET = 1 ]; then
-			warn "file $SUDOLOG is not exist! Set default logfile path in /etc/sudoers."
-            sed -i '$aDefaults	logfile="/var/log/sudo.log"' /etc/sudoers
-			does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
-			if [ $FNRET != 0 ]; then
-            	warn "$AUDIT_VALUE is not in file $FILE, adding it"
-            	add_end_of_file $FILE $AUDIT_VALUE
-            	eval $(pkill -HUP -P 1 auditd)
-			fi
-		elif [ $FNRET = 2 ]; then
-            warn "$AUDIT_VALUE is not in file $FILE, adding it"
+    # define custom IFS and save default one
+    d_IFS=$IFS
+    IFS=$'\n'
+	if [ $FNRET = 1 ]; then
+		warn "file $SUDOLOG is not exist! Set default logfile path in /etc/sudoers."
+		sed -i '$aDefaults	logfile="/var/log/sudo.log"' /etc/sudoers
+		does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
+		if [ $FNRET != 0 ]; then
+			warn "$AUDIT_VALUE is not in file $FILE, adding it"
             add_end_of_file $FILE $AUDIT_VALUE
             eval $(pkill -HUP -P 1 auditd)
-        else
-            ok "$AUDIT_VALUE is present in $FILE"
-        fi
+		fi
+	elif [ $FNRET = 2 ]; then
+		warn "$AUDIT_VALUE is not in file $FILE, adding it"
+		add_end_of_file $FILE $AUDIT_VALUE
+		eval $(pkill -HUP -P 1 auditd)
+	else
+		ok "$AUDIT_VALUE is present in $FILE"
+	fi
+	IFS=$d_IFS
 }
 
 # This function will check config parameters required
