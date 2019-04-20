@@ -37,6 +37,13 @@ remote_server = 172.16.237.135
 port = 60
 local_port = 2006
 ```
+In audispd-plugins version is 1:2.6.7-2, need to replace queue_error to queue_error_action, because this version has a bug:
+```
+The queue_error configuration item in the configuration file 
+etc/audisp/audisp-remote.conf is inconsistent with the MAN document 
+(usr/share/man/man5/audisp-remote.conf.5.gz). The MAN document is 
+queue_error_action. 
+```
 
 If not record logs on local filesystem, Modify /etc/audit/auditd.conf:
 ```
