@@ -6,6 +6,7 @@
 
 #
 # 8.1.16 Collect System Administrator Actions (sudolog) (Scored)
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over
@@ -13,43 +14,49 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-w /var/log/audit/audit.log -p wa -k sudoaction'
+SUDOLOG='/var/log/sudo.log' 
+AUDIT_VALUE='-w /var/log/sudo.log -p wa -k sudoaction'
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
     # define custom IFS and save default one
     d_IFS=$IFS
-    c_IFS=$'\n'
-    IFS=$c_IFS
-    for AUDIT_VALUE in $AUDIT_PARAMS; do
-        debug "$AUDIT_VALUE should be in file $FILE"
-        IFS=$d_IFS
-        does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
-        IFS=$c_IFS
-        if [ $FNRET != 0 ]; then
-            crit "$AUDIT_VALUE is not in file $FILE"
-        else
-            ok "$AUDIT_VALUE is present in $FILE"
-        fi
-    done
-    IFS=$d_IFS
+    IFS=$'\n'
+	if [ -f $SUDOLOG ]; then
+		debug "$AUDIT_VALUE should be in file $FILE"
+		does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
+		if [ $FNRET != 0 ]; then
+			crit "$AUDIT_VALUE is not in file $FILE"
+			FNRET=2
+		else 
+			ok "$AUDIT_VALUE is present in $FILE"
+		fi
+	else
+		crit "file $SUDOLOG is not exist!"
+		FNRET=1
+	fi
+	IFS=$d_IFS
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    IFS=$'\n'
-    for AUDIT_VALUE in $AUDIT_PARAMS; do
-        debug "$AUDIT_VALUE should be in file $FILE"
-        does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
-        if [ $FNRET != 0 ]; then
+        if [ $FNRET = 1 ]; then
+			warn "file $SUDOLOG is not exist! Set default logfile path in /etc/sudoers."
+            sed -i '$aDefaults	logfile="/var/log/sudo.log"' /etc/sudoers
+			does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
+			if [ $FNRET != 0 ]; then
+            	warn "$AUDIT_VALUE is not in file $FILE, adding it"
+            	add_end_of_file $FILE $AUDIT_VALUE
+            	eval $(pkill -HUP -P 1 auditd)
+			fi
+		elif [ $FNRET = 2 ]; then
             warn "$AUDIT_VALUE is not in file $FILE, adding it"
             add_end_of_file $FILE $AUDIT_VALUE
             eval $(pkill -HUP -P 1 auditd)
         else
             ok "$AUDIT_VALUE is present in $FILE"
         fi
-    done
 }
 
 # This function will check config parameters required
