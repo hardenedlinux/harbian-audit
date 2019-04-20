@@ -1,0 +1,81 @@
+# How to deploy audisp-remote 
+
+## Server 
+### Install package 
+```
+sudo apt install -y auditd 
+```
+
+### Configure 
+Set auditd listen port in /etc/audit/auditd.conf:
+```
+tcp_listen_port = 60
+```
+
+### Restart service
+Restart auditd service:
+```
+systemctl restart auditd 
+```
+
+## Client 
+### Install package 
+```
+sudo apt install -y audispd-plugins  auditd 
+```
+
+### Configure 
+Modify /etc/audisp/plugins.d/au-remote.conf:
+```
+active = yes
+```
+
+Example remote server is 172.16.237.135
+Modify  /etc/audisp/audisp-remote.conf:
+```
+remote_server = 172.16.237.135
+port = 60
+local_port = 2006
+```
+
+If not record logs on local filesystem, Modify /etc/audit/auditd.conf:
+```
+write_logs = no
+```
+
+### Restart service 
+Restart auditd service:
+```
+systemctl restart auditd 
+```
+
+## Firewall set and wrapper set 
+### Server 
+If TCP Wrapper is installed and set deny all on Audit logs receiver host, set TCP access control for audit service:
+Example client address is 172.16.237.136
+```
+# vim /etc/hosts.allow
+# set allowed hosts
+auditd: 172.16.237.136
+```
+
+If firewall has set drop all for INPUT and OUTPUT policy, set ACCEPT to audit service traffic:
+```
+iptables -A INPUT -p tcp --dport 60 --sport 2006 -m state --state NEW,ESTABLISHED -j ACCEPT
+iptables -A OUTPUT -p tcp --sport 60 --dport 2006 -m state --state NEW,ESTABLISHED -j ACCEPT
+```
+
+### Client 
+If TCP Wrapper is installed and set deny all on Audit logs receiver host, set TCP access control for audit service:
+Example server address is 172.16.237.135
+```
+# vim /etc/hosts.allow
+# set allowed hosts
+audisp-remote: 172.16.237.135
+```
+
+If firewall has set drop all for INPUT and OUTPUT policy, set ACCEPT to audit service traffic:
+```
+iptables -A INPUT -p tcp --dport 2006 --sport 60 -m state --state NEW,ESTABLISHED -j ACCEPT
+iptables -A OUTPUT -p tcp --sport 2006 --dport 60 -m state --state NEW,ESTABLISHED -j ACCEPT
+```
