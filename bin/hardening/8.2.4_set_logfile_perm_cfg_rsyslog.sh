@@ -20,9 +20,12 @@ PERMISSIONS='640'
 USER='root'
 GROUP='adm'
 
-OWNER_USER_KEY='^\$FileOwner'
-OWNER_GROUP_KEY='^\$FileGroup'
-PERMIS_KEY='^\$FileCreateMode'
+OWNER_USER_KEY='$FileOwner'
+OWNER_GROUP_KEY='$FileGroup'
+PERMIS_KEY='$FileCreateMode'
+
+FILE='$SYSLOG_BASEDIR/rsyslog.conf'
+FILE_WIDE='$SYSLOG_BASEDIR/rsyslog.d/*.conf'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -30,40 +33,40 @@ audit () {
 	if [ $FNRET = 0 ]; then
 		ok "$PACKAGE_NG has installed, so pass."
 	else
-		does_file_exist "$SYSLOG_BASEDIR/rsyslog.conf"
+		does_file_exist "$FILE"
     	if [ $FNRET != 0 ]; then
-			warn "$SYSLOG_BASEDIR/rsyslog.conf is not exist! "
+			crit "$FILE is not exist! "
 		else
-			does_pattern_exist_in_file "$SYSLOG_BASEDIR/rsyslog.conf" "$OWNER_USER_KEY"
+			does_pattern_exist_in_file "$FILE" "$OWNER_USER_KEY"
     		if [ $FNRET != 0 ]; then
-				warn "$OWNER_USER_KEY is not exist in $SYSLOG_BASEDIR/rsyslog.conf"
+				crit "$OWNER_USER_KEY is not exist in $FILE"
 			else
-				OWNER_USER_NAME=$(grep "$OWNER_USER_KEY" /etc/rsyslog.conf /etc/rsyslog.d/*.conf 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
+				OWNER_USER_NAME=$(grep "$OWNER_USER_KEY" $FILE $FILE_WIDE 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
 				if [ "$OWNER_USER_NAME" != "$USER" ]; then
-					warn "File owner not set is root!"
+					crit "File owner not set is root!"
 				else
 					ok "File owner set is root!"
 				fi
 			fi
-			does_pattern_exist_in_file "$SYSLOG_BASEDIR/rsyslog.conf" "$OWNER_GROUP_KEY"
+			does_pattern_exist_in_file "$FILE" "$OWNER_GROUP_KEY"
     		if [ $FNRET != 0 ]; then
-				warn "$OWNER_USER_KEY is not exist in $SYSLOG_BASEDIR/rsyslog.conf"
+				crit "$OWNER_GROUP_KEY is not exist in $FILE"
 			else
-				OWNER_GROUP_NAME=$(grep "$OWNER_GROUP_KEY" /etc/rsyslog.conf /etc/rsyslog.d/*.conf 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
+				OWNER_GROUP_NAME=$(grep "$OWNER_GROUP_KEY" $FILE $FILE_WIDE 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
 				if [ "$OWNER_GROUP_NAME" != "$GROUP" ]; then
-					warn "File group not set is $GROUP!"
+					crit "File group not set is $GROUP!"
 				else
 					ok "File group set is $GROUP!"
 				fi
 			fi
 
-			does_pattern_exist_in_file "$SYSLOG_BASEDIR/rsyslog.conf" "$PERMIS_KEY"
+			does_pattern_exist_in_file "$FILE" "$PERMIS_KEY"
     		if [ $FNRET != 0 ]; then
-				warn "$OWNER_USER_KEY is not exist in $SYSLOG_BASEDIR/rsyslog.conf"
+				crit "$PERMIS_KEY is not exist in $FILE"
 			else
-				PERMIS_KEY_NAME=$(grep "$PERMIS_KEY" /etc/rsyslog.conf /etc/rsyslog.d/*.conf 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
+				PERMIS_KEY_NAME=$(grep "$PERMIS_KEY" $FILE $FILE_WIDE 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
 				if [ "$PERMIS_KEY_NAME" != "$PERMISSIONS" ]; then
-					warn "File permissions not set is $PERMISSIONS!"
+					crit "File permissions not set is $PERMISSIONS!"
 				else
 					ok "File permissions set is $PERMISSIONS!"
 				fi
@@ -78,47 +81,52 @@ apply () {
 	if [ $FNRET = 0 ]; then
 		ok "$PACKAGE_NG has installed, so pass."
 	else
-		does_file_exist "$SYSLOG_BASEDIR/rsyslog.conf"
+		does_file_exist "$FILE"
     	if [ $FNRET != 0 ]; then
-			warn "$SYSLOG_BASEDIR/rsyslog.conf is not exist! "
+			crit "$FILE is not exist! Please check."
 		else
-			does_pattern_exist_in_file "$SYSLOG_BASEDIR/rsyslog.conf" "$OWNER_USER_KEY"
+			does_pattern_exist_in_file "$FILE" "$OWNER_USER_KEY"
     		if [ $FNRET != 0 ]; then
-				warn "$OWNER_USER_KEY is not exist in $SYSLOG_BASEDIR/rsyslog.conf"
+				warn "$OWNER_USER_KEY is not exist in $FILE, add it"
+				add_end_of_file $FILE "$OWNER_USER_KEY $USER"
 			else
-				OWNER_USER_NAME=$(grep "$OWNER_USER_KEY" /etc/rsyslog.conf /etc/rsyslog.d/*.conf 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
+				OWNER_USER_NAME=$(grep "$OWNER_USER_KEY" $FILE $FILE_WIDE 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
 				if [ "$OWNER_USER_NAME" != "$USER" ]; then
-					warn "File owner not set is root!"
+					warn "File owner not set is $USER! Reset it"
+					replace_in_file $FILE "$OWNER_USER_KEY.*" "$OWNER_USER_KEY $USER"
 				else
-					ok "File owner set is root!"
+					ok "File owner set is $USER!"
 				fi
 			fi
-			does_pattern_exist_in_file "$SYSLOG_BASEDIR/rsyslog.conf" "$OWNER_GROUP_KEY"
+			does_pattern_exist_in_file "$FILE" "$OWNER_GROUP_KEY"
     		if [ $FNRET != 0 ]; then
-				warn "$OWNER_USER_KEY is not exist in $SYSLOG_BASEDIR/rsyslog.conf"
+				warn "$OWNER_GROUP_KEY is not exist in $FILE, add it"
+				add_end_of_file $FILE "$OWNER_GROUP_KEY $GROUP"
 			else
-				OWNER_GROUP_NAME=$(grep "$OWNER_GROUP_KEY" /etc/rsyslog.conf /etc/rsyslog.d/*.conf 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
+				OWNER_GROUP_NAME=$(grep "$OWNER_GROUP_KEY" $FILE $FILE_WIDE 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
 				if [ "$OWNER_GROUP_NAME" != "$GROUP" ]; then
-					warn "File group not set is $GROUP!"
+					warn "File group not set is $GROUP! Reset it"
+					replace_in_file $FILE  "$OWNER_GROUP_KEY.*" "$OWNER_GROUP_KEY $GROUP"
 				else
 					ok "File group set is $GROUP!"
 				fi
 			fi
 
-			does_pattern_exist_in_file "$SYSLOG_BASEDIR/rsyslog.conf" "$PERMIS_KEY"
+			does_pattern_exist_in_file "$FILE" "$PERMIS_KEY"
     		if [ $FNRET != 0 ]; then
-				warn "$OWNER_USER_KEY is not exist in $SYSLOG_BASEDIR/rsyslog.conf"
+				warn "$PERMIS_KEY is not exist in $FILE, add it"
+				add_end_of_file $FILE "$PERMIS_KEY $PERMISSIONS"
 			else
-				PERMIS_KEY_NAME=$(grep "$PERMIS_KEY" /etc/rsyslog.conf /etc/rsyslog.d/*.conf 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
+				PERMIS_KEY_NAME=$(grep "$PERMIS_KEY" $FILE $FILE_WIDE 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
 				if [ "$PERMIS_KEY_NAME" != "$PERMISSIONS" ]; then
-					warn "File permissions not set is $PERMISSIONS!"
+					warn "File permissions not set is $PERMISSIONS! Reset it"
+					replace_in_file $FILE "$PERMIS_KEY.*" "$PERMIS_KEY $PERMISSIONS"
 				else
 					ok "File permissions set is $PERMISSIONS!"
 				fi
 			fi
 		fi
 	fi
-
 }
 
 # This function will create the config file for this check with default values
