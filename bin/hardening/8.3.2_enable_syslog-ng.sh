@@ -5,7 +5,8 @@
 #
 
 #
-# 8.2.2 Ensure the syslog-ng Service is activated (Scored)
+# 8.3.2 Ensure the syslog-ng Service is activated (Scored)
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over
@@ -14,29 +15,42 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 SERVICE_NAME="syslog-ng"
+SERVICE_NAME_R="rsyslog"
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    info "Checking if $SERVICE_NAME is enabled"
-    is_service_enabled $SERVICE_NAME
-    if [ $FNRET = 0 ]; then
-        ok "$SERVICE_NAME is enabled"
-    else
-        crit "$SERVICE_NAME is disabled"
-    fi
+	is_pkg_installed $SERVICE_NAME_R
+	if [ $FNRET = 0 ]; then
+		ok "$SERVICE_NAME_R has installed, so pass."
+		FNRET=0
+	else
+    	info "Checking if $SERVICE_NAME is enabled"
+    	is_service_enabled $SERVICE_NAME
+    	if [ $FNRET = 0 ]; then
+        	ok "$SERVICE_NAME is enabled"
+    	else
+        	crit "$SERVICE_NAME is disabled"
+    	fi
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    info "Checking if $SERVICE_NAME is enabled"
-    is_service_enabled $SERVICE_NAME
-    if [ $FNRET != 0 ]; then
-        info "Enabling $SERVICE_NAME"
-        update-rc.d $SERVICE_NAME remove > /dev/null 2>&1
-        update-rc.d $SERVICE_NAME defaults > /dev/null 2>&1
-    else
-        ok "$SERVICE_NAME is enabled"
-    fi
+	is_pkg_installed $SERVICE_NAME_R
+	if [ $FNRET = 0 ]; then
+		ok "$SERVICE_NAME_R has installed, so pass."
+		FNRET=0
+	else
+    	info "Checking if $SERVICE_NAME is enabled"
+    	is_service_enabled $SERVICE_NAME
+    	if [ $FNRET != 0 ]; then
+        	info "Enabling $SERVICE_NAME"
+        	update-rc.d $SERVICE_NAME remove > /dev/null 2>&1
+        	update-rc.d $SERVICE_NAME defaults > /dev/null 2>&1
+    	else
+        	ok "$SERVICE_NAME is enabled"
+    	fi
+	fi
 }
 
 # This function will check config parameters required

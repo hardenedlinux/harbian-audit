@@ -5,8 +5,8 @@
 #
 
 #
-# 8.3.1 Install the syslog-ng package (Scored)
-# Modify by: Samson-W (sccxboy@gmail.com)
+# 8.2.5 Configure rsyslog to Send Logs to a Remote Log Host (Scored)
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
@@ -14,41 +14,41 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=3
 
-# NB : in CIS, rsyslog has been chosen, however we chose syslog-ng
-PACKAGE='syslog-ng'
-PACKAGE_R='rsyslog'
+PATTERN='^*.*[^I][^I]*@'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    is_pkg_installed $PACKAGE_R
-	if [ $FNRET = 0 ]; then
-		ok "$PACKAGE_R has installed, so pass."
-		FNRET=0
-	else
-    	if [ $FNRET != 0 ]; then
-        	crit "$PACKAGE is not installed!"
-			FNRET=1
-    	else
-        	ok "$PACKAGE is installed"
-			FNRET=0
-    	fi
-	fi
+    FILES="$SYSLOG_BASEDIR/rsyslog.conf $SYSLOG_BASEDIR/rsyslog.d/*.conf"
+    does_pattern_exist_in_file "$FILES" "$PATTERN"
+    if [ $FNRET != 0 ]; then
+		crit "$PATTERN is not present in $FILES"
+    else
+        ok "$PATTERN is present in $FILES"
+    fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-        is_pkg_installed $PACKAGE
-        if [ $FNRET = 0 ]; then
-            ok "$PACKAGE or $PACKAGE_R is installed"
-        else
-            crit "$PACKAGE is absent, installing it"
-            apt_install $PACKAGE
-        fi
+    FILES="$SYSLOG_BASEDIR/rsyslog.conf $SYSLOG_BASEDIR/rsyslog.d/*.conf"
+    does_pattern_exist_in_file "$FILES" "$PATTERN"
+    if [ $FNRET != 0 ]; then
+        crit "$PATTERN is not present in $FILES, please manual operation set a remote host to send your logs"
+    else
+        ok "$PATTERN is present in $FILES"
+    fi
+}
+
+# This function will create the config file for this check with default values
+create_config() {
+    cat <<EOF
+status=disabled
+SYSLOG_BASEDIR='/etc'
+EOF
 }
 
 # This function will check config parameters required
 check_config() {
-    :
+    :    
 }
 
 # Source Root Dir Parameter
