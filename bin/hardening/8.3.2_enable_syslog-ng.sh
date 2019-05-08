@@ -51,6 +51,7 @@ apply () {
         		update-rc.d $SERVICE_NAME defaults > /dev/null 2>&1
 			else
 				systemctl enable $SERVICE_NAME
+				systemctl start $SERVICE_NAME
 			fi
     	else
         	ok "$SERVICE_NAME is enabled"
