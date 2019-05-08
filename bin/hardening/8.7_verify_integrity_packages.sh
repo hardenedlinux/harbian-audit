@@ -3,28 +3,29 @@
 #
 # harbian audit 7/8/9  Hardening
 #
-
 #
-# 8.4 Configure logrotate (Not Scored)
+# 8.7 Verifies integrity all packages (Scored)
+# Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
-HARDENING_LEVEL=3
-
-SERVICE_NAME="syslog-ng"
+HARDENING_LEVEL=5
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    info "Ensure logs are properly rotated (especially syslog-ng)"
-    info "No measure here, please review the files by yourself"
+    verify_integrity_all_packages
+    if [ $FNRET != 0 ]; then
+        crit "Verify integrity all packages is fail!"
+    else
+        ok "Verify integrity all packages is ok."
+    fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    info "Ensure logs are properly rotated (especially syslog-ng)"
-    info "No measure here, please review the file by yourself"
+    info "This check item need to confirm manually. No automatic fix is available."
 }
 
 # This function will check config parameters required

@@ -1,31 +1,43 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 9  Hardening
 #
+
 #
-# 8.5 Verifies integrity all packages (Scored)
+# 8.5 Ensure permissions on all logfiles are configured (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
-HARDENING_LEVEL=5
+HARDENING_LEVEL=3
+
+LOGDIR='/var/log'
+PERMISS_MODE='/7137'
+PERMISS_SET='0640'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    verify_integrity_all_packages
-    if [ $FNRET != 0 ]; then
-        crit "Verify integrity all packages is fail!"
-    else
-        ok "Verify integrity all packages is ok."
-    fi
+	countnum=$(find $LOGDIR -type f -perm $PERMISS_MODE -ls | wc -l)
+	if [ $countnum -gt 0 ]; then
+		crit  "Permissions of all log files are not correctly configured!"
+		FNRET=1
+	else
+		ok "Permissions of all log files have correctly configured!"
+		FNRET=0
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    info "This check item need to confirm manually. No automatic fix is available."
+	if [ FNRET = 0 ]; then
+		ok "Permissions of all log files have correctly configured!"
+	else
+		warn  "Permissions of all log files are not correctly configured! Set it"
+		chmod -R $PERMISS_SET $LOGDIR/*
+	fi
 }
 
 # This function will check config parameters required
