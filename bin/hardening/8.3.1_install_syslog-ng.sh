@@ -25,6 +25,7 @@ audit () {
 		ok "$PACKAGE_R has installed, so pass."
 		FNRET=0
 	else
+    	is_pkg_installed $PACKAGE
     	if [ $FNRET != 0 ]; then
         	crit "$PACKAGE is not installed!"
 			FNRET=1
