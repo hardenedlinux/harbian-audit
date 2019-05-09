@@ -5,7 +5,7 @@
 #
 
 #
-# 9.3.26 Ensure SSH LoginGraceTime is set to one minute or less (Scored)
+# 9.3.27 Ensure SSH access is limited (Scored)
 # Auther: Samson-W (sccxboy@gmail.com)
 #
 
@@ -16,7 +16,15 @@ HARDENING_LEVEL=3
 
 PACKAGE='openssh-server'
 FILE='/etc/ssh/sshd_config'
-OPTIONS='LoginGraceTime=60'
+ALLOWUSER='AllowUsers[[:space:]]*\*'
+ALLOWGROUP='AllowGroups[[:space:]]*\*'
+DENYUSER='DenyUsers[[:space:]]*nobody'
+DENYGROUP='DenyGroups[[:space:]]*nobody'
+
+ALLOWUSER_RET=1
+ALLOWGROUP_RET=1
+DENYUSER_RET=1
+DENYGROUP_RET=1
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -25,18 +33,32 @@ audit () {
         crit "$PACKAGE is not installed!"
     else
         ok "$PACKAGE is installed"
-        for SSH_OPTION in $OPTIONS; do
-            SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-            SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
-            PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
-            does_pattern_exist_in_file $FILE "$PATTERN"
-            if [ $FNRET = 0 ]; then
-                ok "$PATTERN is present in $FILE"
-            else
-                crit "$PATTERN is not present in $FILE"
-            fi
-        done
-    fi
+		if [ $(sshd -T  | grep -ic $ALLOWUSER) -eq 1 ]; then 
+			crit "AllowUsers is not set!"
+		else
+			ok "AllowUsers has set limit."
+			ALLOWUSER_RET=0
+		fi
+
+		if [ $(sshd -T  | grep -ic $ALLOWGROUP) -eq 1 ]; then 
+			crit "AllowGroups is not set!"
+		else
+			ok "AllowGroups has set limit."
+			ALLOWGROUP_RET=0
+		fi
+		if [ $(sshd -T  | grep -ic $DENYUSER) -eq 1 ]; then 
+			crit "DenyUsers is not set!"
+		else
+			ok "DenyUsers has set limit."
+			DENYUSER_RET=0
+		fi
+		if [ $(sshd -T  | grep -ic $DENYGROUP) -eq 1 ]; then 
+			crit "DenyGroups is not set!"
+		else
+			ok "DenyGroups has set limit."
+			DENYGROUP_RET=0
+		fi
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
@@ -48,25 +70,26 @@ apply () {
         crit "$PACKAGE is absent, installing it"
         apt_install $PACKAGE
     fi
-    for SSH_OPTION in $OPTIONS; do
-            SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-            SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
-            PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
-            does_pattern_exist_in_file $FILE "$PATTERN"
-            if [ $FNRET = 0 ]; then
-                ok "$PATTERN is present in $FILE"
-            else
-                warn "$PATTERN is not present in $FILE, adding it"
-                does_pattern_exist_in_file $FILE "^$SSH_PARAM"
-                if [ $FNRET != 0 ]; then
-                    add_end_of_file $FILE "$SSH_PARAM $SSH_VALUE"
-                else
-                    info "Parameter $SSH_PARAM is present but with the wrong value -- Fixing"
-                    replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SSH_VALUE"
-                fi
-                /etc/init.d/ssh reload
-            fi
-    done
+	if [ $ALLOWUSER_RET -eq 1 ]; then
+		warn "AllowUsers is not set! Need manual operation set it."
+	else
+		ok "AllowUsers has set limit."
+	fi
+	if [ $ALLOWGROUP_RET -eq 1 ]; then
+		warn "AllowGroups is not set! Need manual operation set it."
+	else
+		ok "AllowGroups has set limit."
+	fi
+	if [ $DENYUSER_RET -eq 1 ]; then
+		warn "DenyUsers is not set! Need manual operation set it."
+	else
+		ok "DenyUsers has set limit."
+	fi
+	if [ $DENYGROUP_RET -eq 1 ]; then
+		warn "DenyGroups is not set! Need manual operation set it."
+	else
+		ok "DenyGroups has set limit."
+	fi
 }
 
 # This function will check config parameters required
