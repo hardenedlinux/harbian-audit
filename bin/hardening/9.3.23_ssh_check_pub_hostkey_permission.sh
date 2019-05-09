@@ -14,25 +14,38 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
 
+USER='root'
+GROUP='root'
+PERMISSIONS='0644'
+
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	if [ $(find /etc/ssh/ -name "*ssh_host*key" ! -uid 0 -o ! -gid 0 | wc -l) -gt 0 ]; then
+		crit "There are file ownership was not set to $USER:$GROUP"
+	else
+		ok "There are file has correct ownership"
+	fi
     if [ $(find /etc/ssh/ -name "*.pub" -perm /133 | wc -l) -gt 0 ]; then
-        crit "There are file file has a mode more permissive than "0644""
-        FNRET=1
+        crit "There are file file has a mode more permissive than $PERMISSIONS"
     else
-        ok "Not any file has a mode more permissive than "0644""
-		FNRET=0
+        ok "Not any file has a mode more permissive than $PERMISSIONS"
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    if [ $FNRET = 0 ]; then
-        ok "any file has a mode more permissive than "0644""
+	if [ $(find /etc/ssh/ -name "*ssh_host*key" ! -uid 0 -o ! -gid 0 | wc -l) -gt 0 ]; then
+		warn "There are file ownership was not set to $USER:$GROUP"
+		find /etc/ssh/ -name "*ssh_host*key" ! -uid 0 -o ! -gid 0 -exec chown $USER:$GROUP {} \;
+	else
+		ok "There are file has correct ownership"
+	fi
+    if [ $(find /etc/ssh/ -name "*.pub" -perm /133 | wc -l) -gt 0 ]; then
+        warn "Set ssh public host key permission to $PERMISSIONS"
+        find /etc/ssh/ -name "*.pub" -perm /133 -exec chmod $PERMISSIONS {} \;
     else
-        warn "Set ssh public host key permission to 0644"
-        find /etc/ssh/ -name "*.pub" -perm /133 -exec chmod 0644 {} \;
+        ok "Any file has a mode more permissive than $PERMISSIONS"
     fi
 }
 
