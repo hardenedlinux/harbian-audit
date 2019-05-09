@@ -6,6 +6,7 @@
 
 #
 # 9.1.1 Enable cron Daemon (Scored)
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over
@@ -43,8 +44,14 @@ apply () {
         is_service_enabled $SERVICE_NAME
         if [ $FNRET != 0 ]; then
             info "Enabling $SERVICE_NAME"
-            update-rc.d $SERVICE_NAME remove > /dev/null 2>&1
-            update-rc.d $SERVICE_NAME defaults > /dev/null 2>&1
+			is_debian_9 
+			if [ $FNRET = 0 ]; then
+            	systemctl enable $SERVICE_NAME > /dev/null 2>&1
+				systemctl start $SERVICE_NAME > /dev/null 2>&1
+			else
+				update-rc.d $SERVICE_NAME remove > /dev/null 2>&1
+            	update-rc.d $SERVICE_NAME defaults > /dev/null 2>&1
+			fi
         else
             ok "$SERVICE_NAME is enabled"
         fi
