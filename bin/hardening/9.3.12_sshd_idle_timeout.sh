@@ -6,7 +6,7 @@
 
 #
 # 9.3.12 Set Idle Timeout Interval for User Login (Scored)
-# FIXME: the implementation of this script doesn't do what it says
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over
@@ -75,7 +75,7 @@ create_config() {
 status=disabled
 # In seconds, value of ClientAliveInterval, ClientAliveCountMax bedoing set to 0
 # Settles sshd idle timeout
-SSHD_TIMEOUT=900
+SSHD_TIMEOUT=300
 EOF
 }
 
