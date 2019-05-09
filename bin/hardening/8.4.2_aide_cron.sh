@@ -5,7 +5,7 @@
 #
 
 #
-# 8.3.2 Implement Periodic Execution of File Integrity (Scored)
+# 8.4.2 Implement Periodic Execution of File Integrity (Scored)
 # Modify by:
 # Samson-W (sccxboy@gmail.com)
 #

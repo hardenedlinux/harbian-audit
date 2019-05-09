@@ -5,7 +5,7 @@
 #
 
 #
-# 8.2.6 Accept Remote rsyslog Messages Only on Designated Log Hosts (Not Scored)
+# 8.3.6 Accept Remote rsyslog Messages Only on Designated Log Hosts (Not Scored)
 #
 
 set -e # One error, it's over

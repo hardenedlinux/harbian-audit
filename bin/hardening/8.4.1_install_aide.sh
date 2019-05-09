@@ -5,7 +5,7 @@
 #
 
 #
-# 8.3.1 Install aide package (Scored)
+# 8.4.1 Install aide package (Scored)
 # Moidfy by; Samson Wen (sccxboy@gmail.com)
 #
 

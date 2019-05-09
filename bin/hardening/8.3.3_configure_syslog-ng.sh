@@ -5,7 +5,7 @@
 #
 
 #
-# 8.2.3 Configure /etc/syslog-ng/syslog-ng.conf (Not Scored)
+# 8.3.3 Configure /etc/syslog-ng/syslog-ng.conf (Not Scored)
 #
 
 set -e # One error, it's over

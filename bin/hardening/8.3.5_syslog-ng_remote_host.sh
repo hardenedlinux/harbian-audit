@@ -5,7 +5,7 @@
 #
 
 #
-# 8.2.5 Configure rsyslog to Send Logs to a Remote Log Host (Scored)
+# 8.3.5 Configure rsyslog to Send Logs to a Remote Log Host (Not Scored)
 #
 
 set -e # One error, it's over
