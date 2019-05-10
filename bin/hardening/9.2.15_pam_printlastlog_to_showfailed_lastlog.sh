@@ -53,7 +53,7 @@ apply () {
         apt_install $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "$PATTERN is not present in $FILE"
-        add_line_file_before_pattern $FILE "password [success=1 default=ignore] pam_unix.so obscure sha512 remember=5" "# pam-auth-update(8) for details."
+        add_line_file_before_pattern $FILE "password [success=1 default=ignore] pam_unix.so obscure sha512" "# pam-auth-update(8) for details."
     elif [ $FNRET = 3 ]; then
         crit "$FILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
