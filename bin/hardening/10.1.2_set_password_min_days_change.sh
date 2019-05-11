@@ -6,6 +6,7 @@
 
 #
 # 10.1.2 Set Password Change Minimum Number of Days (Scored)
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over
@@ -16,6 +17,7 @@ HARDENING_LEVEL=3
 PACKAGE='login'
 OPTIONS='PASS_MIN_DAYS=7'
 FILE='/etc/login.defs'
+SHA_FILE='/etc/shadow'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -24,18 +26,22 @@ audit () {
         crit "$PACKAGE is not installed!"
     else
         ok "$PACKAGE is installed"
-        for SSH_OPTION in $OPTIONS; do
-            SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-            SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
-            PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
-            does_pattern_exist_in_file $FILE "$PATTERN"
-            if [ $FNRET = 0 ]; then
-                ok "$PATTERN is present in $FILE"
-            else
-                crit "$PATTERN is not present in $FILE"
-            fi
-        done
-    fi
+		SSH_PARAM=$(echo $OPTIONS | cut -d= -f 1)
+		SSH_VALUE=$(echo $OPTIONS | cut -d= -f 2)
+		PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
+		does_pattern_exist_in_file $FILE "$PATTERN"
+		if [ $FNRET = 0 ]; then
+			ok "$PATTERN is present in $FILE"
+		else
+			crit "$PATTERN is not present in $FILE"
+		fi
+		
+		if [ $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '$4 < "'$SSH_VALUE'" {print $1}' | wc -l) -gt 0 ]; then
+			crit "Have least user's mininum password lifttime is not equal or less than $SSH_VALUE day"
+		else
+			ok "All user's mininum password lifttime is $SSH_VALUE day"
+		fi
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
@@ -47,24 +53,31 @@ apply () {
         crit "$PACKAGE is absent, installing it"
         apt_install $PACKAGE
     fi
-    for SSH_OPTION in $OPTIONS; do
-            SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-            SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
-            PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
-            does_pattern_exist_in_file $FILE "$PATTERN"
-            if [ $FNRET = 0 ]; then
-                ok "$PATTERN is present in $FILE"
-            else
-                warn "$PATTERN is not present in $FILE, adding it"
-                does_pattern_exist_in_file $FILE "^$SSH_PARAM"
-                if [ $FNRET != 0 ]; then
-                    add_end_of_file $FILE "$SSH_PARAM $SSH_VALUE"
-                else
-                    info "Parameter $SSH_PARAM is present but with the wrong value -- Fixing"
-                    replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SSH_VALUE"
-                fi
-            fi
-    done
+	SSH_PARAM=$(echo $OPTIONS | cut -d= -f 1)
+	SSH_VALUE=$(echo $OPTIONS | cut -d= -f 2)
+	PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
+	does_pattern_exist_in_file $FILE "$PATTERN"
+	if [ $FNRET = 0 ]; then
+		ok "$PATTERN is present in $FILE"
+	else
+		warn "$PATTERN is not present in $FILE, adding it"
+		does_pattern_exist_in_file $FILE "^$SSH_PARAM"
+		if [ $FNRET != 0 ]; then
+			add_end_of_file $FILE "$SSH_PARAM $SSH_VALUE"
+		else
+			info "Parameter $SSH_PARAM is present but with the wrong value -- Fixing"
+			replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SSH_VALUE"
+		fi
+	fi
+	if [ $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '$4 < "'$SSH_VALUE'" {print $1}' | wc -l) -gt 0 ]; then
+		warn "Have least user's mininum password lifttime is not equal or less than $SSH_VALUE day, Fixing"
+		for USERNAME in $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '$4 < "'$SSH_VALUE'" {print $1}');	
+		do
+			chage --mindays $SSH_VALUE $USERNAME
+		done
+	else
+		ok "All user's mininum password lifttime is $SSH_VALUE day"
+	fi
 }
 
 # This function will check config parameters required
