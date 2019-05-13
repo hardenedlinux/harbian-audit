@@ -6,6 +6,7 @@
 
 #
 # 12.3 Verify Permissions on /etc/group (Scored)
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over
@@ -15,9 +16,17 @@ HARDENING_LEVEL=1
 
 FILE='/etc/group'
 PERMISSIONS='644'
+USER='root'
+GROUP='root'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	has_file_correct_ownership $FILE $USER $GROUP
+	if [ $FNRET = 0 ]; then
+		ok "$FILE has correct ownership"
+	else
+		crit "$FILE ownership was not set to $USER:$GROUP"
+	fi
     has_file_correct_permissions $FILE $PERMISSIONS
     if [ $FNRET = 0 ]; then
         ok "$FILE has correct permissions"
@@ -28,6 +37,13 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+	has_file_correct_ownership $FILE $USER $GROUP
+	if [ $FNRET = 0 ]; then
+		ok "$FILE has correct ownership"
+	else
+		warn "fixing $FILE ownership to $USER:$GROUP"
+		chown $USER:$GROUP $FILE
+	fi
     has_file_correct_permissions $FILE $PERMISSIONS
     if [ $FNRET = 0 ]; then
         ok "$FILE has correct permissions"

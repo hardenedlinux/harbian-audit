@@ -6,6 +6,7 @@
 
 #
 # 12.1 Verify Permissions on /etc/passwd (Scored)
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over
