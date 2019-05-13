@@ -17,7 +17,7 @@ USER='root'
 PATTERN='TMOUT='
 VALUE='600'
 FILES_TO_SEARCH='/etc/bash.bashrc /etc/profile.d /etc/profile'
-FILE='/etc/profile.d/CIS_10.6_timeout.sh'
+FILE='/etc/profile.d/CIS_10.5_timeout.sh'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
