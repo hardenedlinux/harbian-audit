@@ -5,7 +5,7 @@
 #
 
 #
-# 10.6 Set Timeout on ttys
+# 10.5 Set Timeout on ttys
 #
 
 set -e # One error, it's over

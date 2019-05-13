@@ -5,7 +5,7 @@
 #
 
 #
-# 10.1.9 Set FAIL_DELAY Parameters Using pam_faildelay (Scored)
+# 10.1.8 Set FAIL_DELAY Parameters Using pam_faildelay (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 

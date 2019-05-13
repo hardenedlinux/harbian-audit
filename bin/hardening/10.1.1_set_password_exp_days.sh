@@ -6,6 +6,7 @@
 
 #
 # 10.1.1 Set Password Expiration Days (Scored)
+# Modify by: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over

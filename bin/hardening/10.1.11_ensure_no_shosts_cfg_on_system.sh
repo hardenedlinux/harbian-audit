@@ -5,7 +5,7 @@
 #
 
 #
-# 10.1.7 Remove nopasswd option from the sudoers configuration (Scored)
+# 10.1.11 Ensure no shosts configure file on system (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -14,46 +14,30 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=3
 
-NOPASSWD='NOPASSWD'
-PASSWD='PASSWD'
-FILE='/etc/sudoers'
-INCLUDFILE='/etc/sudoers.d/*'
+FILENAME='.shosts'
+FILENAME1='shosts.equiv'
 
 # This function will be called if the script status is on enabled / audit mode
-audit () 
-{
-	does_file_exist $FILE 
-    if [ $FNRET != 0 ]; then
-		crit "$FILE is not exist!"
-		FNRET=2
-	else
-    	does_pattern_exist_in_file $FILE $NOPASSWD
-    	if [ $FNRET = 0 ]; then
-        	crit "$NOPASSWD is set on $FILE, it's error conf"
-        	FNRET=1
-    	else
-        	ok "$NOPASSWD is not set on $FILE, it's ok"
-        	if [ $(grep $NOPASSWD $INCLUDFILE | wc -l) -gt 0 ]; then 
-            	crit "$NOPASSWD is set on $INCLUDFILE, it's error conf"
-            	FNRET=1
-        	else
-            	ok "$NOPASSWD is not set on $INCLUDFILE, it's ok"
-            	FNRET=0
-        	fi
-    	fi
-	fi
+audit () {
+    COUNT=$(find / -name "${FILENAME}" | wc -l)
+    COUNT1=$(find / -name "${FILENAME1}" | wc -l)
+    if [ "$COUNT" -ne 0 -o "$COUNT1" -ne 0 ]; then
+        crit "$FILENAME or $FILENAME1 file is exist on system."
+        FNRET=1
+    else
+        ok "$FILENAME and $FILENAME1 file is not on system."
+        FNRET=0
+    fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "APPLY: $NOPASSWD is not set on $FILE, it's ok"
+        ok "$FILENAME and $FILENAME1 file is not on system."
     elif [ $FNRET = 1 ]; then
-        info "$NOPASSWD is set on the $FILE or $INCLUDFILE, need remove"
-        backup_file $FILE $INCLUDFILE
-        chmod 640 $FILE $INCLUDFILE &&  sed -i -e "s/$NOPASSWD/$PASSWD/g" $FILE $INCLUDFILE && chmod 440 $FILE $INCLUDFILE
-    elif [ $FNRET = 2 ]; then
-		warn "$FILE is not exist! Maybe sudo package not installed."
+        warn "$FILENAME or $FILENAME1 file is exist on the system, delete all like this name file on the system."
+        find / -name "$FILENAME" -exec rm {} \;
+        find / -name "$FILENAME1" -exec rm {} \;
     fi
 }
 

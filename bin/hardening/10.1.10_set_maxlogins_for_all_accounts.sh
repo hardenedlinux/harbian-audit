@@ -5,7 +5,7 @@
 #
 
 #
-# 10.1.11 Set maxlogins for all accounts  (Scored)
+# 10.1.10 Set maxlogins for all accounts  (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 

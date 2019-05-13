@@ -5,7 +5,7 @@
 #
 
 #
-# 10.1.8 Remove not authenticate option from the sudoers configuration (Scored)
+# 10.1.6 Remove nopasswd option from the sudoers configuration (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -14,8 +14,8 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=3
 
-NOAUTH='!authenticate'
-AUTHENTICATE='authenticate'
+NOPASSWD='NOPASSWD'
+PASSWD='PASSWD'
 FILE='/etc/sudoers'
 INCLUDFILE='/etc/sudoers.d/*'
 
@@ -23,21 +23,21 @@ INCLUDFILE='/etc/sudoers.d/*'
 audit () 
 {
 	does_file_exist $FILE 
-	if [ $FNRET != 0 ]; then
+    if [ $FNRET != 0 ]; then
 		crit "$FILE is not exist!"
 		FNRET=2
 	else
-    	does_pattern_exist_in_file $FILE $NOAUTH
+    	does_pattern_exist_in_file $FILE $NOPASSWD
     	if [ $FNRET = 0 ]; then
-        	crit "$NOAUTH is set on $FILE, it's error conf"
+        	crit "$NOPASSWD is set on $FILE, it's error conf"
         	FNRET=1
     	else
-        	ok "$NOAUTH is not set on $FILE, it's ok"
-        	if [ $(grep $NOAUTH $INCLUDFILE | wc -l) -gt 0 ]; then 
-            	crit "$NOAUTH is set on $INCLUDFILE, it's error conf"
+        	ok "$NOPASSWD is not set on $FILE, it's ok"
+        	if [ $(grep $NOPASSWD $INCLUDFILE | wc -l) -gt 0 ]; then 
+            	crit "$NOPASSWD is set on $INCLUDFILE, it's error conf"
             	FNRET=1
         	else
-            	ok "$NOAUTH is not set on $INCLUDFILE, it's ok"
+            	ok "$NOPASSWD is not set on $INCLUDFILE, it's ok"
             	FNRET=0
         	fi
     	fi
@@ -47,12 +47,12 @@ audit ()
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "APPLY: $NOAUTH is not set on $FILE, it's ok"
+        ok "APPLY: $NOPASSWD is not set on $FILE, it's ok"
     elif [ $FNRET = 1 ]; then
-        info "$NOAUTH is set on the $FILE or $INCLUDFILE, need remove"
+        info "$NOPASSWD is set on the $FILE or $INCLUDFILE, need remove"
         backup_file $FILE $INCLUDFILE
-        chmod 640 $FILE $INCLUDFILE &&  sed -i -e "s/$NOAUTH/$AUTHENTICATE/g" $FILE $INCLUDFILE && chmod 440 $FILE $INCLUDFILE
-    elif [ $FNRET = 1 ]; then
+        chmod 640 $FILE $INCLUDFILE &&  sed -i -e "s/$NOPASSWD/$PASSWD/g" $FILE $INCLUDFILE && chmod 440 $FILE $INCLUDFILE
+    elif [ $FNRET = 2 ]; then
 		warn "$FILE is not exist! Maybe sudo package not installed."
     fi
 }
