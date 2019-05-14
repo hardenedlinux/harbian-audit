@@ -902,7 +902,7 @@ Fixtext: Configure the operating system to generate audit records that modify co
 ```
 The audit daemon must be restarted for the changes to take effect.
 
-## 8.5 Verifies integrity all packages (scored) 
+## 8.7 Verifies integrity all packages (scored) 
 
 ### Profile Applicability
 Level 5
@@ -1620,55 +1620,7 @@ Configure the operating system to store only SHA512 encrypted representations of
 ENCRYPT_METHOD SHA512
 ```
 
-## 10.1.5 Set accounts minimum password lifetime (Scored) 
-
-### Profile Applicability
-Level 3
-
-### Description
-Passwords must be restricted to a 24 hours/1 day minimum lifetime.
-
-### Rationale
-Enforcing a minimum password lifetime helps to prevent repeated password changes to defeat the password reuse or history enforcement requirement. If users are allowed to immediately and continually change their password, the password could be repeatedly changed in a short period of time to defeat the organization's policy regarding password reuse.
-
-### Aduit
-Check whether the minimum time period between password changes for each user account is one day or greater.
-```
-# awk -F: '$4 < 1 {print $1}' /etc/shadow 
-```
-If any results are returned that are not associated with a system account, this is a finding.
-
-### Remediation
-Configure non-compliant accounts to enforce a 24 hours/1 day minimum password lifetime:
-```
-# chage -m 1 [username]
-```
-
-## 10.1.6 Set accounts maximum password lifetime (Scored) 
-
-### Profile Applicability
-Level 3
-
-### Description
-Existing passwords must be restricted to a 60-day maximum lifetime.
-
-### Rationale
-Any password, no matter how complex, can eventually be cracked. Therefore, passwords need to be changed periodically. If the operating system does not limit the lifetime of passwords and force users to change their passwords, there is the risk that the operating system passwords could be compromised.   
-
-### Aduit
-Check whether the maximum time period for existing passwords is restricted to 60 days. 
-```
-# awk -F: '$5 > 60 {print $1}' /etc/shadow 
-```
-If any results are returned that are not associated with a system account, this is a finding.
-
-### Remediation
-Configure non-compliant accounts to enforce a 60-day maximum password lifetime restriction.
-```
-# chage -M 60 [username]
-```
-
-## 10.1.7 Remove(Replace) NOPASSWD to PASSWD in the sudoers config file (Scored) 
+## 10.1.6 Remove(Replace) NOPASSWD to PASSWD in the sudoers config file (Scored) 
 
 ### Profile Applicability
 Level 3
@@ -1689,7 +1641,7 @@ If any uncommented line is found with a "NOPASSWD" tag, this is a finding.
 ### Remediation
 Replace any occurrences of "NOPASSWD" tags to "PASSWD" tags in the file.
 
-## 10.1.8 Remove(Replace) not authenticate(!authenticate) to authenticate in the sudoers config file (Scored) 
+## 10.1.7 Remove(Replace) not authenticate(!authenticate) to authenticate in the sudoers config file (Scored) 
 
 ### Profile Applicability
 Level 3
@@ -1710,7 +1662,7 @@ If any line is found with a "!authenticate" tag, this is a finding.
 ### Remediation
 Replace any occurrences of "!authenticate" tags to "authenticate" tags in the file.
 
-## 10.1.9  Set FAIL_DELAY to wait to allow login when the last login failed (Scored) 
+## 10.1.8  Set FAIL_DELAY to wait to allow login when the last login failed (Scored) 
 
 ### Profile Applicability
 Level 2
@@ -1735,7 +1687,7 @@ Configure the operating system to enforce a delay of at least four seconds betwe
 auth       optional   pam_faildelay.so delay=4000000
 ```
 
-## 10.1.10  Set create home bool to yes (Scored) 
+## 10.1.9  Set create home bool to yes (Scored) 
 
 ### Profile Applicability
 Level 3
@@ -1760,7 +1712,7 @@ Configure the operating system to assign home directories to all new local inter
 CREATE_HOME yes
 ```
 
-## 10.1.11 Set maxlogins for all accounts (Scored) 
+## 10.1.10 Set maxlogins for all accounts (Scored) 
 
 ### Profile Applicability
 Level 2
@@ -1785,7 +1737,7 @@ Configure the operating system to limit the number of concurrent sessions to "10
 * hard maxlogins 10
 ```
 
-## 10.1.12 Ensure no shosts configure file on system (Scored) 
+## 10.1.11 Ensure no shosts configure file on system (Scored) 
 
 ### Profile Applicability
 Level 3
@@ -1811,28 +1763,7 @@ Remove any found ".shosts" and "shosts.equiv" files from the system.
 # rm /[path]/[to]/[file]/shosts.equiv
 ```
 
-## 10.1.13 Disabled Kernel core dumps (Scored) 
-
-### Profile Applicability
-Level 2
-
-### Description
-Kernel core dumps must be disabled unless needed.
-
-### Rationale
-Kernel core dumps may contain the full contents of system memory at the time of the crash. Kernel core dumps may consume a considerable amount of disk space and may result in denial of service by exhausting the available space on the target file system partition.
-
-### Aduit
-Verify that kernel core dumps are disabled unless needed. Check the status of the "kdump" service with the following command:
-```
-# grep "core" /etc/security/limits.conf
-```
-If the kernel core dump is set, this is a finding.
-
-### Remediation
-If kernel core dumps are not required, delete the contain "core" line in /etc/security/limits.conf.
-
-## 10.6 Set Timeout on ttys (Scored) 
+## 10.5 Set Timeout on ttys (Scored) 
 
 ### Profile Applicability
 Level 2
