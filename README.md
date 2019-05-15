@@ -156,7 +156,7 @@ This example only allows 192.168.1.[1-255] 192.168.5.[1-255] to access this syst
 
 4) Set basic iptables rules 
 Set the corresponding firewall rules according to the applications used. HardenedLinux community for Debian GNU/Linux basic firewall rules: 
-[etc.iptables.rules.v4.sh](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/examples/configurations/etc.iptables.rules.v4.sh)
+[etc.iptables.rules.v4.sh](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/etc.iptables.rules.v4.sh)
 to do the following:
 ```
 $ INTERFACENAME="your network interfacename(Example eth0)"
@@ -210,6 +210,7 @@ $ bash bin/hardening.sh --apply --only 99.99
 This document is a description of the additions to the sections not included in the [CIS reference documentation](https://benchmarks.cisecurity.org/downloads/show-single/index.cfm?file=debian8.100). Includes STIG reference documentation and additional checks recommended by the HardenedLinux community. 
 
 [CIS Debian GNU/Linux 8 Benchmark v1.0.0](https://benchmarks.cisecurity.org/downloads/show-single/index.cfm?file=debian8.100)  
+[CIS Debian GNU/Linux 9 Benchmark v1.0.0](https://benchmarks.cisecurity.org/downloads/show-single/index.cfm?file=debian8.100)  
 [harbian audit Debian Linux 9 Benchmark](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/harbian_audit_Debian_9_Benchmark_v0.1.mkd)  
 
 ### Manual Operation docs 
@@ -219,7 +220,7 @@ This document is a description of the additions to the sections not included in 
 
 ### Use case docs  
 [Nodejs + redis + mysql demo](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/use-cases/nodejs-redis-mysql-usecase/README.md)  
-[deploy-hyperledger-cello-on-debian-9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/use-cases/hyperledger-cello-usecase/Readme.mkd)  
+[deploy-hyperledger-cello-on-debian-9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/use-cases/hyperledger-cello-usecase/README.mkd)  
 [nginx-mutual-ssl-proxy-http](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/use-cases/tls-transmission-usecase/nginx-mutual-ssl-proxy-http-service/Readme.mkd)  
 [nginx-mutual-ssl-proxy-tcp-udp](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/use-cases/tls-transmission-usecase/using-Nginx-as-SSL-tunnel-4TCP-UDP-service/Readme.mkd)   
 
@@ -241,8 +242,8 @@ AMI ID: ami-003de0c48c2711265
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 #### Docs  
-[how to creating and making an AMI public](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/how_to_creating_and_making_an_AMI_public.mkd)  
-[how to use harbian-audit complianced for GNU/Linux Debian 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/how_to_use_harbian_audit_complianced_Debian_9.mkd)  
+[how to creating and making an AMI public](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/AMI/how_to_creating_and_making_an_AMI_public.mkd)  
+[how to use harbian-audit complianced for GNU/Linux Debian 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/AMI/how_to_use_harbian_audit_complianced_Debian_9.mkd)  
 
 ### QEMU Image    
 
