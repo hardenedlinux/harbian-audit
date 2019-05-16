@@ -19,6 +19,8 @@ PATTERN='^password.*pam_unix.so'
 FILE='/etc/pam.d/common-password'
 KEYWORD='pam_unix.so'
 OPTIONNAME='sha512'
+ROUNDS_KEY='rounds'
+ROUNDS_V='5000'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -37,6 +39,13 @@ audit () {
             else
                 crit "$OPTIONNAME is not configured"
             fi
+            check_param_pair_by_pam $FILE $KEYWORD $ROUNDS_KEY ge $ROUNDS_V 
+            if [ $FNRET = 0 ]; then
+                ok "$ROUNDS_KEY set condition is $ROUNDS_V"
+            else
+                crit "$ROUNDS_KEY set is not match legally, $ROUNDS_KEY is set $ROUNDS_V"
+                #FNRET=3
+			fi
         else
             crit "$PATTERN is not present in $FILE"
             FNRET=2
@@ -53,12 +62,24 @@ apply () {
         apt_install $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "$PATTERN is not present in $FILE"
-        add_line_file_before_pattern $FILE "password [success=1 default=ignore] pam_unix.so obscure sha512" "# pam-auth-update(8) for details."
-    elif [ $FNRET = 3 ]; then
+        add_line_file_before_pattern $FILE "password [success=1 default=ignore] pam_unix.so obscure sha512 rounds=5000" "# pam-auth-update(8) for details."
+    fi
+	check_no_param_option_by_pam $KEYWORD $OPTIONNAME $FILE
+    if [ $FNRET = 3 ]; then
         crit "$FILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
         crit "$OPTIONNAME is not conf in $FILE"
         add_option_to_password_check $FILE $KEYWORD $OPTIONNAME
+    fi 
+	check_param_pair_by_pam $FILE $KEYWORD $ROUNDS_KEY ge $ROUNDS_V 
+    if [ $FNRET = 3 ]; then
+        crit "$FILE is not exist, please check"
+    elif [ $FNRET = 4 ]; then
+        crit "$ROUNDS_KEY is not conf"
+        add_option_to_password_check $FILE $KEYWORD "$ROUNDS_KEY=$ROUNDS_V"
+    elif [ $FNRET = 5 ]; then
+        crit "$ROUNDS_KEY set is not match legally, reset it to $ROUNDS_V"
+        reset_option_to_password_check $FILE $KEYWORD "$ROUNDS_KEY" "$ROUNDS_V"
     fi 
 }
 

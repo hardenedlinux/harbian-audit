@@ -653,7 +653,8 @@ reset_option_to_password_check()
     # For example : 
     # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=1
     # password  requisite           pam_cracklib.so  minlen=8 difok=3 retry=3
-    sed -i "s/${OPTIONNAME}=./${OPTIONNAME}=${OPTIONVAL}/" $PAMPWDFILE
+	cndt_value=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $PAMPWDFILE | grep "$KEYWORD.*$OPTIONNAME" | tr "\t" " " | tr " " "\n" | sed -n "/$OPTIONNAME/p" | awk -F "=" '{print $2}')
+    sed -i "s/${OPTIONNAME}=${cndt_value}/${OPTIONNAME}=${OPTIONVAL}/" $PAMPWDFILE
 }
 
 # Reset auth check option value when option is not set a correct value 
