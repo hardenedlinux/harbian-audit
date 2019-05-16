@@ -568,7 +568,6 @@ check_no_param_option_by_pam()
     
     if [ -f "$LOCATION" ];then
         RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep "$KEYWORD.*$OPTION" | wc -l)
-        echo $RESULT
         if [ "$RESULT" -eq 1 ]; then
             debug "$KEYWORD $OPTION is conf"
             FNRET=0
