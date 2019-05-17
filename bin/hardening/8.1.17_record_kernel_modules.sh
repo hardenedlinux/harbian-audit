@@ -17,11 +17,13 @@ HARDENING_LEVEL=4
 ARCH64_AUDIT_PARAMS='-w /sbin/insmod -p x -k modules 
 -w /sbin/rmmod -p x -k modules
 -w /sbin/modprobe -p x -k modules
+-w /bin/kmod -p x -k modules
 -a always,exit -F arch=b32 -S init_module -S delete_module -S create_module -S finit_module -k modules
 -a always,exit -F arch=b64 -S init_module -S delete_module -S create_module -S finit_module -k modules'
 ARCH32_AUDIT_PARAMS='-w /sbin/insmod -p x -k modules 
 -w /sbin/rmmod -p x -k modules
 -w /sbin/modprobe -p x -k modules
+-w /bin/kmod -p x -k modules
 -a always,exit -F arch=b32 -S init_module -S delete_module -S create_module -S finit_module -k modules'
 
 FILE='/etc/audit/rules.d/audit.rules'

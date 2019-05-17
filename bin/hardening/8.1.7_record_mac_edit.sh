@@ -16,11 +16,13 @@ HARDENING_LEVEL=4
 
 SELINUX_PKG="selinux-basics"
 SE_AUDIT_PARAMS='-w /etc/selinux/ -p wa -k MAC-policy
--w /usr/share/selinux/ -p wa -k MAC-policy'
+-w /usr/share/selinux/ -p wa -k MAC-policy
+-a always,exit -F path=/usr/bin/chcon -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng'
 
 APPARMOR_PKG="apparmor"
 AA_AUDIT_PARAMS='-w /etc/apparmor/ -p wa -k MAC-policy
--w /etc/apparmor.d/ -p wa -k MAC-policy'
+-w /etc/apparmor.d/ -p wa -k MAC-policy
+-a always,exit -F path=/sbin/apparmor_parser -F perm=x -F auid>=1000 -F auid!=4294967295 -k MAC-policy'
 
 FILE='/etc/audit/rules.d/audit.rules'
 
