@@ -59,7 +59,7 @@ apply () {
         if [ $FNRET != 0 ]; then
             warn "$AUDIT_VALUE is not in file $FILE, adding it"
             add_end_of_file $FILE $AUDIT_VALUE
-			check_audit_is_immutable_mode
+			check_auditd_is_immutable_mode
         else
             ok "$AUDIT_VALUE is present in $FILE"
         fi
