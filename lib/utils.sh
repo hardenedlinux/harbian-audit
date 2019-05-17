@@ -872,3 +872,11 @@ check_ipv6_is_enable()
 	fi
 }
 
+check_audit_is_immutable_mode()
+{
+	if [ $(auditctl -s | head -n 1 | awk '{print $2}') -eq 2 ]; then
+		warn "The audit system is in immutable mode, no rule changes allowed. So must need reboot after adding/modifying the auditd rule!"
+	else
+		eval $(pkill -HUP -P 1 auditd)
+	fi
+}
