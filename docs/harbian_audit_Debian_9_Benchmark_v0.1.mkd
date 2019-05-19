@@ -16,7 +16,7 @@ Changes to any software components can have significant effects on the overall s
 ### Aduit
 Verify the operating system prevents the installation of patches, service packs, device drivers, or operating system components from a repository without verification that they have been digitally signed using a certificate that is recognized and approved by the organization. Check that apt verifies the signature of packages from a repository prior to install with the following command:
 ```
-# grep AllowUnauthenticated /etc/apt/ -r 
+$ sudo grep AllowUnauthenticated /etc/apt/ -r 
 APT::Get::AllowUnauthenticated "true";
 ```
 If "AllowUnauthenticated" is set to "true", this is a finding.
@@ -38,7 +38,7 @@ Changes to any software components can have significant effects on the overall s
 ### Aduit
 Verify the operating system prevents the installation of patches, service packs, device drivers, or operating system components from a repository without verification that they have been digitally signed using a certificate that is recognized and approved by the organization. Check that apt verifies the signature of packages from a repository prior to install with the following command:
 ```
-# grep -v "^#" /etc/dpkg/dpkg.cfg | grep no-debsig
+$ sudo grep -v "^#" /etc/dpkg/dpkg.cfg | grep no-debsig
 no-debsig
 ```
 If "no-debsig" is set, this is a finding.
@@ -61,7 +61,7 @@ Changes to any software components can have significant effects on the overall s
 
 Verify the operating system prevents the installation of patches, service packs, device drivers, or operating system components of local packages without verification of the repository metadata. Check that apt verifies the package metadata prior to install with the following command:
 ```
-# grep AllowInsecureRepositories /etc/apt/ -r 
+$ sudo grep AllowInsecureRepositories /etc/apt/ -r 
 Acquire::AllowInsecureRepositories "true";
 ```
 If "AllowInsecureRepositories" is set to "true", this is a finding.
@@ -87,14 +87,14 @@ The "nosuid" mount option causes the system to not execute setuid and setgid fil
 Verify file systems that contain user home directories are mounted with the "nosuid" option. Find the file system(s) that contain the user home directories with the following command:
 Note: If a separate file system has not been created for the user home directories (user home directories are mounted under "/"), this is not a finding as the "nosuid" option cannot be used on the "/" system.
 ```
-# cut -d: -f 1,3,6 /etc/passwd | egrep ":[1-4][0-9]{3}"
+$ sudo cut -d: -f 1,3,6 /etc/passwd | egrep ":[1-4][0-9]{3}"
 smithj:1001:/home/smithj
 thomasr:1002:/home/thomasr
 ```
 
 Check the file systems that are mounted at boot time with the following command:
 ```
-# more /etc/fstab
+$ sudo more /etc/fstab
 UUID=a411dc99-f2a1-4c87-9e05-184977be8539 /home   ext4   rw,relatime,discard,data=ordered,nosuid 0 2
 ```     
 
@@ -115,7 +115,7 @@ The "nosuid" mount option causes the system to not execute "setuid" and "setgid"
 ### Aduit
 Verify file systems that are being NFS exported are mounted with the "nosuid" option. Find the file system(s) that contain the directories being exported with the following command:
 ```
-# more /etc/fstab | grep nfs
+$ sudo more /etc/fstab | grep nfs
 UUID=59754be2-37c0-4938-973f-e8865dc84d10 /hardenedlinux               nfs    errors=remount-ro 0       2
 arrakis.internal.falcot.com:/shared /srv/shared               nfs4  rw 0       2
 ```
@@ -138,7 +138,7 @@ The "noexec" mount option causes the system to not execute binary files. This op
 ### Aduit
 Verify file systems that are being NFS exported are mounted with the "noexec" option. Find the file system(s) that contain the directories being exported with the following command:
 ```
-# more /etc/fstab | grep nfs
+$ sudo more /etc/fstab | grep nfs
 UUID=59754be2-37c0-4938-973f-e8865dc84d10 /hardenedlinux               nfs    errors=remount-ro 0       2
 arrakis.internal.falcot.com:/shared /srv/shared               nfs4  rw 0       2
 ```
@@ -161,7 +161,7 @@ When an NFS server is configured to use RPCSEC_SYS, a selected userid and groupi
 ### Aduit
 Verify "AUTH_GSS" is being used to authenticate NFS mounts. To check if the system is importing an NFS file system, look for any entries in the "/etc/fstab" file that have a file system type of "nfs" with the following command:
 ```
-# cat /etc/fstab | grep nfs
+$ sudo cat /etc/fstab | grep nfs
 192.168.21.5:/mnt/export /data1 nfs4 rw,sync ,soft,sec=krb5:krb5i:krb5p
 ```
 If the system is mounting file systems via NFS and has the sec option without the "krb5:krb5i:krb5p" settings, the "sec" option has the "sys" setting, or the "sec" option is missing, this is a finding.
@@ -183,7 +183,7 @@ USB Devices permits easy introduction of unknown devices, thereby facilitating m
 ### Aduit
 If there is an HBSS with a Device Control Module and a Data Loss Prevention mechanism, this requirement is not applicable. Verify the operating system disables the ability to use USB devices. Check to see if USB Devices is disabled with the following command:
 ```
-# grep '^ACTION=="add", SUBSYSTEMS=="usb", TEST=="authorized_default", ATTR{authorized_default}="0"' /etc/udev/rules.d/ -r
+$ sudo grep '^ACTION=="add", SUBSYSTEMS=="usb", TEST=="authorized_default", ATTR{authorized_default}="0"' /etc/udev/rules.d/ -r
 /etc/udev/rules.d/CIS_4.6_usb_devices.conf:ACTION=="add", SUBSYSTEMS=="usb", TEST=="authorized_default", ATTR{authorized_default}="0"
 ```
 If the command does not return any output, and use of USB storage devices is not documented with the Information System Security Officer (ISSO) as an operational requirement, this is a finding.
@@ -191,7 +191,7 @@ If the command does not return any output, and use of USB storage devices is not
 ### Remediation
 Configure the operating system to disable the ability to use USB devices.
 ```
-# vim /etc/udev/rules.d/CIS_4.6_usb_devices.conf
+$ sudo vim /etc/udev/rules.d/CIS_4.6_usb_devices.conf
 ```
 Add or update the line:
 ```
@@ -902,6 +902,141 @@ Fixtext: Configure the operating system to generate audit records that modify co
 ```
 The audit daemon must be restarted for the changes to take effect.
 
+## 8.1.28 Recored setfacl and chacl commands usage (scored)
+
+### Profile Applicability
+Level 4
+
+### Description
+All uses of the setfacl and chacl commands must be audited.
+
+### Rationale
+Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter).
+
+### Aduit
+Verify the operating system generates an audit record when successful/unsuccessful attempts to use the "setfacl" and "chacl" command occur. Check that the following calls are being audited by performing the following command to check the file system rules in "/etc/audit/rules.d/audit.rules":
+```
+$ sudo grep -w setfacl /etc/audit/rules.d/audit.rules
+-a always,exit -F arch=b32 path=/usr/bin/setfacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F arch=b64 path=/usr/bin/setfacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+$ sudo grep -w chacl /etc/audit/rules.d/audit.rules
+-a always,exit -F arch=b32 path=/usr/bin/chacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F arch=b64 path=/usr/bin/chacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+```
+If the command does not return a line, or the line is commented out, this is a finding.
+
+### Remediation 
+Configure the audit system to generate an audit event for any successful/unsuccessful use of the "setfacl" and "chacl" command.  Add or update the following rules in the "/etc/audit/rules.d/audit.rules" file:
+```
+-a always,exit -F arch=b32 path=/usr/bin/setfacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F arch=b64 path=/usr/bin/setfacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F arch=b32 path=/usr/bin/chacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F arch=b64 path=/usr/bin/chacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+```
+The audit daemon must be restarted for the changes to take effect. To restart the audit daemon, run the following command:
+```
+$ sudo systemctl restart auditd.service
+```
+If The audit system is in immutable mode, the operating system  must be reboot for the changes to take effect.
+
+## 8.1.29 Recored usermod command usage (scored)
+
+### Profile Applicability
+Level 4
+
+### Description
+All uses of the usermod command must be audited.
+
+### Rationale
+Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter).
+
+### Aduit
+Verify that an audit event is generated for any successful/unsuccessful use of the "usermod" command. Check for the following system call being audited by performing the following command to check the file system rules in "/etc/audit/rules.d/audit.rules":
+```
+$ sudo grep -w usermod /etc/audit/rules.d/audit.rules
+-a always,exit -F arch=b32 path=/usr/sbin/usermod -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-usermod
+-a always,exit -F arch=b64 path=/usr/sbin/usermod -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-usermod
+```
+If the command does not return a line, or the line is commented out, this is a finding.
+
+### Remediation 
+Configure the audit system to generate an audit event for any successful/unsuccessful uses of the "usermod" command. Add or update the following rules in the "/etc/audit/rules.d/audit.rules" file:
+```
+-a always,exit -F arch=b32 path=/usr/sbin/usermod -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-usermod
+-a always,exit -F arch=b64 path=/usr/sbin/usermod -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-usermod
+```
+The audit daemon must be restarted for the changes to take effect. To restart the audit daemon, run the following command:
+```
+$ sudo systemctl restart auditd.service
+```
+If The audit system is in immutable mode, the operating system  must be reboot for the changes to take effect.
+
+## 8.1.30 Recored unix_update command usage (scored)
+
+### Profile Applicability
+Level 4
+
+### Description
+All uses of the usermod command must be audited.
+
+### Rationale
+Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. 
+
+### Aduit
+Verify that an audit event is generated for any successful/unsuccessful use of the "unix_update" command.\n\nCheck for the following system call being audited by performing the following command to check the file system rules in "/etc/audit/rules.d/audit.rules":
+```
+$ sudo grep -w "unix_update" /etc/audit/rules.d/audit.rules
+-a always,exit -F path=/sbin/unix_update -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-unix-update
+```
+If the command does not return a line, or the line is commented out, this is a finding.
+
+### Remediation 
+Configure the audit system to generate an audit event for any successful/unsuccessful uses of the "unix_update" command. Add or update the following rules in the "/etc/audit/rules.d/audit.rules" file:
+```
+-a always,exit -F path=/sbin/unix_update -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-unix-update
+```
+The audit daemon must be restarted for the changes to take effect. To restart the audit daemon, run the following command:
+```
+$ sudo systemctl restart auditd.service
+```
+If The audit system is in immutable mode, the operating system  must be reboot for the changes to take effect.
+
+## 8.1.31 Record Events the execve systemcall usage (scored)
+
+### Profile Applicability
+Level 4
+
+### Description
+The audit system must be configured to audit the execution of privileged functions and prevent all software from executing at higher privilege levels than users executing the software.
+
+### Rationale
+Misuse of privileged functions, either intentionally or unintentionally by authorized users, or by unauthorized external entities that have compromised information system accounts, is a serious and ongoing concern and can have significant adverse impacts on organizations. Auditing the use of privileged functions is one way to detect such misuse and identify the risk from insider threats and the advanced persistent threat.
+
+### Aduit
+Verify the operating system audits the execution of privilege functions. Check if the operating system is configured to audit the execution of the "execve" system call, by running the following command:
+```
+$ sudo grep execve /etc/audit/rules.d/audit.rules
+-a always,exit -F arch=b32 -S execve -C uid!=euid -F key=execpriv 
+-a always,exit -F arch=b64 -S execve -C uid!=euid -F key=execpriv
+-a always,exit -F arch=b32 -S execve -C gid!=egid -F key=execpriv 
+-a always,exit -F arch=b64 -S execve -C gid!=egid -F key=execpriv
+```
+If the command does not return all lines, or the lines are commented out, this is a finding. 
+
+### Remediation 
+Configure the operating system to audit the execution of the "execve" system call. Add or update the following file system rules to "/etc/audit/rules.d/audit.rules":
+```
+-a always,exit -F arch=b32 -S execve -C uid!=euid -F key=execpriv
+-a always,exit -F arch=b64 -S execve -C uid!=euid -F key=execpriv
+-a always,exit -F arch=b32 -S execve -C gid!=egid -F key=execpriv
+-a always,exit -F arch=b64 -S execve -C gid!=egid -F key=execpriv
+```
+The audit daemon must be restarted for the changes to take effect. To restart the audit daemon, run the following command:
+```
+$ sudo systemctl restart auditd.service
+```
+If The audit system is in immutable mode, the operating system  must be reboot for the changes to take effect.
+
 ## 8.7 Verifies integrity all packages (scored) 
 
 ### Profile Applicability
@@ -916,7 +1051,7 @@ Verify integrity all packages features to to monitor the files of the packages i
 ### Aduit
 Perform the following to determine(example):
 ```
-# dpkg -V 
+$ sudo dpkg -V 
 ??5?????? c /etc/sudoers
 ??5?????? c /etc/vim/vimrc
 ```
@@ -924,11 +1059,11 @@ Perform the following to determine(example):
 ### Remediation
 Run the following command to determine which package owns the file:
 ```
-# dpkg -S <filename>
+$ sudo  dpkg -S <filename>
 ```
 If the confirmation is not modified by owner, the package can be reinstalled from a apt repository using the command:
 ```
-# apt-get --reinstall <packagename> 
+$ sudo apt-get --reinstall <packagename> 
 ```
 
 ## 9.2.1  Set password creation requirement Parameters Using pam_cracklib: retry option (scored) 
@@ -945,7 +1080,7 @@ Prevent multiple attempts and guess the password.
 ### Aduit
 The "retry" option sets the number of attempt password times. Check for the value of the "retry" option in "/etc/pam.d/common-password" with the following command: 
 ```
-# grep retry /etc/pam.d/common-password 
+$ sudo grep retry /etc/pam.d/common-password 
 password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3
 ```
 If the value of "retry" is set to more than "3", this is a finding.
@@ -970,7 +1105,7 @@ The shorter the password, the lower the number of possible combinations that nee
 ### Aduit
 Verify the operating system enforces a minimum 14-character password length. The "minlen" option sets the minimum number of characters in a new password. Check for the value of the "minlen" option in "/etc/pam.d/common-password " with the following command:
 ```
-# grep minlen /etc/pam.d/common-password 
+$ sudo grep minlen /etc/pam.d/common-password 
 password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3 
 ```
 If the command does not return a "minlen" value of 14 or greater, this is a finding.
@@ -995,7 +1130,7 @@ Use of a complex password helps to increase the time and resources required to c
 ### Aduit
 The value to require a number of numeric characters to be set is expressed as a negative number in "/etc/pam.d/common-password ". Check the value for "dcredit" in "/etc/pam.d/common-password" with the following command:
 ```
-# grep dcredit /etc/pam.d/common-password  
+$ sudo grep dcredit /etc/pam.d/common-password  
 password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3  dcredit=-1
 ```
 If the value of "dcredit" is not set to a negative value, this is a finding. 
@@ -1020,7 +1155,7 @@ Use of a complex password helps to increase the time and resources required to c
 ### Aduit 
 The value to require a number of upper-case characters to be set is expressed as a negative number in "/etc/pam.d/common-password". Check the value for "ucredit" in "/etc/pam.d/common-password" with the following command: 
 ```
-# grep ucredit /etc/pam.d/common-password 
+$ sudo grep ucredit /etc/pam.d/common-password 
 password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3 ucredit=-1 
 ```
 If the value of "ucredit" is not set to a negative value, this is a finding.
@@ -1045,7 +1180,7 @@ Use of a complex password helps to increase the time and resources required to c
 ### Aduit 
 Verify the operating system enforces password complexity by requiring that at least one special character be used. Note: The value to require a number of special characters to be set is expressed as a negative number in "/etc/pam.d/common-password". Check the value for "ocredit" in "/etc/pam.d/common-password" with the following command:
 ```
-# grep ocredit /etc/pam.d/common-password 
+$ sudo grep ocredit /etc/pam.d/common-password 
 password	  requisite			pam_cracklib.so retry=3 minlen=8 difok=3 nocredit=-1
 ```
 If the value of "ocredit" is not set to a negative value, this is a finding.
@@ -1070,7 +1205,7 @@ Use of a complex password helps to increase the time and resources required to c
 ### Aduit
 The value to require a number of lower-case characters to be set is expressed as a negative number in "/etc/pam.d/common-password ". Check the value for "lcredit" in "/etc/pam.d/common-password " with the following command: 
 ```
-# grep lcredit /etc/pam.d/common-password 
+$ sudo grep lcredit /etc/pam.d/common-password 
 password	   requisite			pam_cracklib.so retry=3 minlen=8 difok=3 lcredit=-1 
 ```
 If the value of "lcredit" is not set to a negative value, this is a finding.
@@ -1095,7 +1230,7 @@ Use of a complex password helps to increase the time and resources required to c
 ### Aduit 
 The "difok" option sets the number of characters in a password that must not be present in the old password. Check for the value of the "difok" option in "/etc/pam.d/common-password" with the following command:
 ```
-# grep difok /etc/pam.d/common-password 
+$ sudo grep difok /etc/pam.d/common-password 
 password  	requisite			pam_cracklib.so retry=3 minlen=8 difok=3
 ```
 If the value of "difok" is set to less than "8", this is a finding.
@@ -1120,7 +1255,7 @@ Use of a complex password helps to increase the time and resources required to c
 ### Aduit
 The "minclass" option sets the minimum number of required classes of characters for the new password (digits, upper-case, lower-case, others). Check for the value of the "minclass" option in "/etc/pam.d/common-password" with the following command:
 ```
-# grep minclass /etc/pam.d/common-password
+$ sudo grep minclass /etc/pam.d/common-password
 password  	requisite			pam_cracklib.so retry=3 minlen=8 difok=8 minclass=4
 ```
 If the value of "minclass" is set to less than "4", this is a finding.
@@ -1145,7 +1280,7 @@ Use of a complex password helps to increase the time and resources required to c
 ### Aduit
 The "maxrepeat" option sets the maximum number of allowed same consecutive characters in a new password. Check for the value of the "maxrepeat" option in "/etc/pam.d/common-password" with the following command:
 ```
-# grep maxrepeat /etc/pam.d/common-password 
+$ sudo grep maxrepeat /etc/pam.d/common-password 
 password  	requisite			pam_cracklib.so retry=3 minlen=8 difok=8 maxrepeat=3
 ```
 If the value of "maxrepeat" is set to more than "3", this is a finding.
@@ -1170,7 +1305,7 @@ Use of a complex password helps to increase the time and resources required to c
 ### Aduit 
 The "maxclassrepeat" option sets the maximum number of allowed same consecutive characters in the same class in the new password. Check for the value of the "maxclassrepeat" option in "/etc/pam.d/common-password" with the following command:
 ```
-# grep maxclassrepeat /etc/pam.d/common-password
+$ sudo grep maxclassrepeat /etc/pam.d/common-password
 password	requisite			pam_cracklib.so retry=3 minlen=8 difok=3 maxclassrepeat=4
 ```
 If the value of "maxclassrepeat" is set to more than "4", this is a finding.
@@ -1195,7 +1330,7 @@ By limiting the number of failed logon attempts, the risk of unauthorized system
 ### Aduit 
 Check that the system deny an account for the maximum period after three unsuccessful logon attempts with the following command:
 ```
-# grep -w "^auth.*pam_tally2.so.*deny" /etc/pam.d/common-auth
+$ sudo grep -w "^auth.*pam_tally2.so.*deny" /etc/pam.d/common-auth
 auth required pam_tally2.so deny=3 unlock_time=900 
 ```
 If the "deny" setting is less than or equal to "3" on both lines with the "pam_tally2.so" module name or is missing from a line, this is a finding.
@@ -1220,7 +1355,7 @@ Passwords need to be protected at all times, and encryption is the standard meth
 ### Aduit 
 Verify the PAM system service is configured to store only encrypted representations of passwords. The strength of encryption that must be used to hash passwords for all accounts is SHA512. Check that the system is configured to create SHA512 hashed passwords with the following command:
 ```
-# grep "password.*pam_unix.*sha512" /etc/pam.d/common-password    
+$ sudo grep "password.*pam_unix.*sha512" /etc/pam.d/common-password    
 password	[success=1 default=ignore]	pam_unix.so obscure use_authtok try_first_pass sha512
 ```
 If the "/etc/pam.d/common-password" configuration files allow for password hashes other less than SHA512 to be used, this is a finding.
@@ -1245,16 +1380,16 @@ If an account has an empty password, anyone could log on and run commands with t
 ### Aduit 
 To verify that null passwords cannot be used, run the following command: 
 ```
-# grep nullok /etc/pam.d/common-auth
-# grep nullok_secure /etc/pam.d/common-auth
+$ sudo grep nullok /etc/pam.d/common-auth
+$ sudo grep nullok_secure /etc/pam.d/common-auth
 ```
 If this produces any output, it may be possible to log on with accounts with empty passwords. If null passwords can be used, this is a finding.
 
 ### Remediation
 If an account is configured for password authentication but does not have an assigned password, it may be possible to log on to the account without authenticating. Remove any instances of the "nullok" option in "/etc/pam.d/common-auth" to prevent logons with empty passwords. 
 ```
-# sed -ie "s/nullok//"  /etc/pam.d/common-auth
-# sed -ie "s/nullok_secure//"  /etc/pam.d/common-auth
+$ sudo sed -ie "s/nullok//"  /etc/pam.d/common-auth
+$ sudo sed -ie "s/nullok_secure//"  /etc/pam.d/common-auth
 ```
 
 ## 9.2.15  Set login display the date and time of last fail logon using pam_lastlog (scored) 
@@ -1271,7 +1406,7 @@ Providing users with feedback on when account accesses last occurred facilitates
 ### Aduit 
 Verify users are provided with feedback on when account accesses last occurred. Check that "pam_lastlog" is used and not silent with the following command:
 ```
-# grep pam_lastlog /etc/pam.d/login
+$ sudo grep pam_lastlog /etc/pam.d/login
 session optional pam_lastlog.so showfailed
 ```
 If "pam_lastlog" is missing from "/etc/pam.d/login" file, this is a finding.
@@ -1296,7 +1431,7 @@ By limiting the number of failed login attempts, the risk of unauthorized system
 ### Aduit 
 Check that the system unlock_time an account for the maximum period after three unsuccessful logon attempts with the following command:
 ```
-# grep -w "^auth.*pam_tally2.so.*unlock_time" /etc/pam.d/common-auth
+$ sudo grep -w "^auth.*pam_tally2.so.*unlock_time" /etc/pam.d/common-auth
 auth required pam_tally2.so deny=3 unlock_time=900 
 ```
 If the "unlock_time" setting is less than "900" on both lines with the "pam_tally2.so" module name or is missing from a line, this is a finding.
@@ -1321,7 +1456,7 @@ By limiting the number of failed logon attempts, the risk of unauthorized system
 ### Aduit 
 Check that the system deny an account for the maximum period after three unsuccessful logon attempts with the following command:
 ```
-# grep -w "^auth.*pam_tally2.so.*even_deny_root" /etc/pam.d/common-auth
+$ sudo grep -w "^auth.*pam_tally2.so.*even_deny_root" /etc/pam.d/common-auth
 auth required pam_tally2.so deny=3 unlock_time=900 even_deny_root
 ```
 If the "even_deny_root" is missing from a line, this is a finding.
@@ -1346,7 +1481,7 @@ Providing users with feedback on when account accesses via SSH last occurred fac
 ### Aduit 
 Verify SSH provides users with feedback on when account accesses last occurred. Check that "PrintLastLog" keyword in the sshd daemon configuration file is used and set to "yes" with the following command:
 ```
-# grep -i printlastlog /etc/ssh/sshd_config
+$ sudo grep -i printlastlog /etc/ssh/sshd_config
 PrintLastLog yes
 ```
 If the "PrintLastLog" keyword is set to "no", is missing, or is commented out, this is a finding.
@@ -1372,7 +1507,7 @@ Configuring this setting for the SSH daemon provides additional assurance that r
 ### Aduit 
 Verify the SSH daemon does not allow authentication using known hosts authentication. To determine how the SSH daemon's "IgnoreUserKnownHosts" option is set, run the following command:
 ```
-# grep -i IgnoreUserKnownHosts /etc/ssh/sshd_config
+$ sudo grep -i IgnoreUserKnownHosts /etc/ssh/sshd_config
 IgnoreUserKnownHosts yes
 ```
 If the value is returned as "no", the returned line is commented out, or no output is returned, this is a finding.
@@ -1398,7 +1533,7 @@ GSSAPI authentication is used to provide additional authentication mechanisms to
 ### Aduit 
 Verify the SSH daemon does not permit GSSAPI authentication unless approved. Check that the SSH daemon does not permit GSSAPI authentication with the following command:
 ```
-# grep -i gssapiauth /etc/ssh/sshd_config
+$ sudo grep -i gssapiauth /etc/ssh/sshd_config
 GSSAPIAuthentication no
 ```
 If the "GSSAPIAuthentication" keyword is missing, is set to "yes" and is not documented with the Information System Security Officer (ISSO), or the returned line is commented out, this is a finding.
@@ -1425,7 +1560,7 @@ Kerberos authentication for SSH is often implemented using Generic Security Serv
 ### Aduit 
 Verify the SSH daemon does not permit Kerberos to authenticate passwords unless approved. Check that the SSH daemon does not permit Kerberos to authenticate passwords with the following command:
 ```
-# grep -i kerberosauth /etc/ssh/sshd_config
+$ sudo grep -i kerberosauth /etc/ssh/sshd_config
 KerberosAuthentication no
 ```
 If the "KerberosAuthentication" keyword is missing, or is set to "yes" and is not documented with the Information System Security Officer (ISSO), or the returned line is commented out, this is a finding.
@@ -1451,7 +1586,7 @@ If other users have access to modify user-specific SSH configuration files, they
 ### Aduit 
 Verify the SSH daemon performs strict mode checking of home directory configuration files. The location of the "sshd_config" file may vary if a different daemon is in use. Inspect the "sshd_config" file with the following command:
 ```
-# grep -i strictmodes /etc/ssh/sshd_config
+$ sudo grep -i strictmodes /etc/ssh/sshd_config
 StrictModes yes
 ```
 If "StrictModes" is set to "no", is missing, or the returned line is commented out, this is a finding.
@@ -1477,7 +1612,7 @@ SSH daemon privilege separation causes the SSH process to drop root privileges w
 ### Aduit 
 Verify the SSH daemon performs privilege separation. Check that the SSH daemon performs privilege separation with the following command:
 ```
-# grep -i usepriv /etc/ssh/sshd_config
+$ sudo grep -i usepriv /etc/ssh/sshd_config
 UsePrivilegeSeparation sandbox
 ```
 If the "UsePrivilegeSeparation" keyword is set to "no", is missing, or the retuned line is commented out, this is a finding.
@@ -1503,7 +1638,7 @@ If compression is allowed in an SSH connection prior to authentication, vulnerab
 ### Aduit 
 Verify the SSH daemon performs compression after a user successfully authenticates. Check that the SSH daemon performs compression after a user successfully authenticates with the following command:
 ```
-# grep -i compression /etc/ssh/sshd_config
+$ sudo grep -i compression /etc/ssh/sshd_config
 Compression delayed
 ```
 If the "Compression" keyword is set to "yes", is missing, or the retuned line is commented out, this is a finding.
@@ -1529,7 +1664,7 @@ DoD information systems are required to use FIPS 140-2 approved cryptographic ha
 ### Aduit 
 Verify the SSH daemon is configured to only use MACs employing FIPS 140-2-approved ciphers. Check that the SSH daemon is configured to only use MACs employing FIPS 140-2-approved ciphers with the following command:
 ```
-# grep -i macs /etc/ssh/sshd_config
+$ sudo grep -i macs /etc/ssh/sshd_config
 MACs hmac-sha2-256,hmac-sha2-512
 ```
 If any ciphers other than "hmac-sha2-256" or "hmac-sha2-512" are listed or the retuned line is commented out, this is a finding.
@@ -1555,7 +1690,7 @@ If a public host key file is modified by an unauthorized user, the SSH service m
 ### Aduit 
 Verify the SSH public host key files have mode "0644" or less permissive. Note: SSH public key files may be found in other directories on the system depending on the installation. The following command will find all SSH public key files on the system:
 ```
-# find /etc/ssh/ -name "*key.pub" -perm /133 -exec ls -l {} \;
+$ sudo find /etc/ssh/ -name "*key.pub" -perm /133 -exec ls -l {} \;
 -rw-rw-rw- 1 root root 91 Jun 13 00:40 /etc/ssh/ssh_host_ed25519_key.pub
 -rw-rw-rw- 1 root root 391 Jun 13 00:40 /etc/ssh/ssh_host_rsa_key.pub
 ```
@@ -1564,7 +1699,7 @@ If any file has a mode more permissive than "0644", this is a finding.
 ### Remediation
 Note: SSH public key files may be found in other directories on the system depending on the installation. Change the mode of public host key files under "/etc/ssh" to "0644" with the following command:
 ```
-# chmod 0644 /etc/ssh/*.key.pub
+$ sudo chmod 0644 /etc/ssh/*.key.pub
 ```
 
 ## 9.3.24 Check SSH private host key permission  (scored) 
@@ -1581,7 +1716,7 @@ If an unauthorized user obtains the private SSH host key file, the host could be
 ### Aduit 
 Verify the SSH private host key files have mode "0600" or less permissive. Check the mode of the private host key files under "/etc/ssh" file with the following command:
 ```
-# find /etc/ssh/ -type f -name "*ssh_host*key" -exec ls -l {} \;
+$ sudo find /etc/ssh/ -type f -name "*ssh_host*key" -exec ls -l {} \;
 -rwxrwxrwx 1 root root 399 Jun 13 00:40 /etc/ssh/ssh_host_ed25519_key
 -rwxrwxrwx 1 root root 1679 Jun 13 00:40 /etc/ssh/ssh_host_rsa_key
 -rwxrwxrwx 1 root root 227 Jun 13 00:40 /etc/ssh/ssh_host_ecdsa_key
@@ -1609,7 +1744,7 @@ Passwords need to be protected at all times, and encryption is the standard meth
 ### Aduit
 Verify the system's shadow file is configured to store only encrypted representations of passwords. The strength of encryption that must be used to hash passwords for all accounts is SHA512. Check that the system is configured to create SHA512 hashed passwords with the following command:
 ```
-# grep -i encrypt /etc/login.defs
+$ sudo grep -i encrypt /etc/login.defs
 ENCRYPT_METHOD SHA512
 ```
 If the "/etc/login.defs" configuration file does not exist or allows for password hashes other than SHA512 to be used, this is a finding.
@@ -1634,7 +1769,7 @@ Without re-authentication, users may access resources or perform tasks for which
 ### Aduit
 If passwords are not being used for authentication, this is Not Applicable. Verify the operating system requires users to supply a password for privilege escalation. Check the configuration of the "/etc/sudoers" and "/etc/sudoers.d/*" files with the following command: 
 ```
-# grep -i nopasswd /etc/sudoers /etc/sudoers.d/*
+$ sudo grep -i nopasswd /etc/sudoers /etc/sudoers.d/*
 ```
 If any uncommented line is found with a "NOPASSWD" tag, this is a finding.
 
@@ -1655,7 +1790,7 @@ Without re-authentication, users may access resources or perform tasks for which
 ### Aduit
 Verify the operating system requires users to reauthenticate for privilege escalation. Check the configuration of the "/etc/sudoers" and "/etc/sudoers.d/*" files with the following command:
 ```
-# grep -i authenticate /etc/sudoers /etc/sudoers.d/*
+$ sudo grep -i authenticate /etc/sudoers /etc/sudoers.d/*
 ```
 If any line is found with a "!authenticate" tag, this is a finding.
 
@@ -1676,7 +1811,7 @@ Configuring the operating system to implement organization-wide security impleme
 ### Aduit
 Verify the operating system enforces a delay of at least four seconds between console logon prompts following a failed logon attempt. Check the value of the "delay" parameter in the "/etc/pam.d/login" file with the following command:
 ```
-# grep -i delay /etc/pam.d/login
+$ sudo grep -i delay /etc/pam.d/login
 auth       optional   pam_faildelay.so delay=4000000
 ```
 If the value of "delay" is not set to "4000000" or greater, this is a finding.
@@ -1701,7 +1836,7 @@ If local interactive users are not assigned a valid home directory, there is no 
 ### Aduit
 Verify all local interactive users on the system are assigned a home directory upon creation. Check to see if the system is configured to create home directories for local interactive users with the following command:
 ```
-# grep -i create_home /etc/login.defs
+$ sudo grep -i create_home /etc/login.defs
 CREATE_HOME yes
 ```
 If the value for "CREATE_HOME" parameter is not set to "yes", the line is missing, or the line is commented out, this is a finding.
@@ -1726,7 +1861,7 @@ Operating system management includes the ability to control the number of users 
 ### Aduit
 Verify the operating system limits the number of concurrent sessions to "10" for all accounts and/or account types by issuing the following command:
 ```
-# grep "maxlogins" /etc/security/limits.conf
+$ sudo grep "maxlogins" /etc/security/limits.conf
 * hard maxlogins 10
 ```
 This can be set as a global domain (with the * wildcard) but may be set differently for multiple domains. If the "maxlogins" item is missing or the value is not set to "10" or less for all domains that have the "maxlogins" item assigned, this is a finding.
@@ -1751,8 +1886,8 @@ The .shosts and shosts.equiv files are used to configure host-based authenticati
 ### Aduit
 Verify there are no ".shosts" and "shosts.equiv" files on the system. Check the system for the existence of these files with the following command:
 ```
-# find / -name .shosts
-# find / -name shosts.equiv
+$ sudo find / -name .shosts
+$ sudo find / -name shosts.equiv
 ```
 If any ".shosts" and "shosts.equiv" files are found on the system, this is a finding.
 
@@ -1777,7 +1912,7 @@ Terminating an idle session within a short time period reduces the window of opp
 ### Aduit
 Verify the operating system terminates all network connections associated with a communications session at the end of the session or based on inactivity. Check the value of the system inactivity timeout with the following command: 
 ```
-# grep -i tmout /etc/bashrc /etc/profile.d/*
+$ sudo grep -i tmout /etc/bashrc /etc/profile.d/*
 TMOUT=600
 ```
 If "TMOUT" is not set to "600" or less in "/etc/bashrc" or in a script created to enforce session termination after inactivity, this is a finding.
