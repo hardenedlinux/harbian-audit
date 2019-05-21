@@ -38,6 +38,10 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+    is_pkg_installed $PACKAGE_R
+	if [ $FNRET = 0 ]; then
+		ok "$PACKAGE_R has installed, so pass."
+	else
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
             ok "$PACKAGE or $PACKAGE_R is installed"
@@ -45,6 +49,7 @@ apply () {
             crit "$PACKAGE is absent, installing it"
             apt_install $PACKAGE
         fi
+	fi
 }
 
 # This function will check config parameters required
