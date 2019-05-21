@@ -5,44 +5,56 @@
 #
 
 #
-# 8.3.5 Configure rsyslog to Send Logs to a Remote Log Host (Not Scored)
+# 8.3.5 Configure syslog-ng to Send Logs to a Remote Log Host (Not Scored)
 #
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=3
-
+SERVICE_NAME_R="rsyslog"
 PATTERN='^destination.*(tcp|udp)[[:space:]]*\([[:space:]]*\".*\"[[:space:]]*\)'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-	if [ -d "$SYSLOG_BASEDIR" ]; then
-    	FILES="$SYSLOG_BASEDIR/syslog-ng.conf $SYSLOG_BASEDIR/conf.d/*"
-    	does_pattern_exist_in_file "$FILES" "$PATTERN"
-    	if [ $FNRET != 0 ]; then
-        	crit "$PATTERN is not present in $FILES"
-    	else
-        	ok "$PATTERN is present in $FILES"
-    	fi
+	is_pkg_installed $SERVICE_NAME_R
+	if [ $FNRET = 0 ]; then
+		ok "$SERVICE_NAME_R has installed, so pass."
+		FNRET=0
 	else
-		warn "$SYSLOG_BASEDIR is not exist!"
-		FNRET=1	
-	fi 
+		if [ -d "$SYSLOG_BASEDIR" ]; then
+    		FILES="$SYSLOG_BASEDIR/syslog-ng.conf $SYSLOG_BASEDIR/conf.d/*"
+    		does_pattern_exist_in_file "$FILES" "$PATTERN"
+    		if [ $FNRET != 0 ]; then
+        		crit "$PATTERN is not present in $FILES"
+    		else
+        		ok "$PATTERN is present in $FILES"
+    		fi
+		else
+			warn "$SYSLOG_BASEDIR is not exist!"
+			FNRET=1	
+		fi
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-	if [ $FNRET = 1 ]; then  
-		warn "$SYSLOG_BASEDIR is not exist!"
+	is_pkg_installed $SERVICE_NAME_R
+	if [ $FNRET = 0 ]; then
+		ok "$SERVICE_NAME_R has installed, so pass."
+		FNRET=0
 	else
-    	FILES="$SYSLOG_BASEDIR/syslog-ng.conf $SYSLOG_BASEDIR/conf.d/*"
-    	does_pattern_exist_in_file "$FILES" "$PATTERN"
-    	if [ $FNRET != 0 ]; then
-        	crit "$PATTERN is not present in $FILES, please set a remote host to send your logs"
-    	else
-        	ok "$PATTERN is present in $FILES"
-    	fi
+		if [ $FNRET = 1 ]; then  
+			warn "$SYSLOG_BASEDIR is not exist!"
+		else
+    		FILES="$SYSLOG_BASEDIR/syslog-ng.conf $SYSLOG_BASEDIR/conf.d/*"
+    		does_pattern_exist_in_file "$FILES" "$PATTERN"
+    		if [ $FNRET != 0 ]; then
+        		crit "$PATTERN is not present in $FILES, please set a remote host to send your logs"
+    		else
+        		ok "$PATTERN is present in $FILES"
+    		fi
+		fi
 	fi
 }
 

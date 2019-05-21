@@ -15,7 +15,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=1
 
 FILE='/etc/group-'
-PERMISSIONS='644'
+PERMISSIONS='600'
 USER='root'
 GROUP='root'
 

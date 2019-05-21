@@ -40,7 +40,7 @@ audit () {
             if [ $FNRET = 0 ]; then
                 ok "$OPTIONNAME set condition is $CONDT_VAL"
             else
-                crit "$OPTIONNAME set condition is not $CONDT_VAL"
+                crit "$OPTIONNAME set condition is not equal or greater than $CONDT_VAL"
             fi
         else
             crit "$PATTERN is not present in $FILE"
