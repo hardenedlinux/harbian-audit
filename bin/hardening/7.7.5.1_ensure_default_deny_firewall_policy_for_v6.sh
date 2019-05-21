@@ -23,7 +23,7 @@ audit () {
 	check_ipv6_is_enable
 	IPV6_ENABLE=$FNRET
 	if [ $IPV6_ENABLE -eq 0 ]; then
-    	if [ $(${IPS6} -S | grep -c "\-P INPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P OUTPUT DROP") -eq 0 -o  $(${IPS4} -S | grep -c "\-P FORWARD DROP") -eq 0 ]; then
+    	if [ $(${IPS6} -S | grep -c "\-P INPUT DROP") -eq 0 -o  $(${IPS6} -S | grep -c "\-P OUTPUT DROP") -eq 0 -o  $(${IPS6} -S | grep -c "\-P FORWARD DROP") -eq 0 ]; then
 			crit "Ip6tables: Firewall policy is not default deny!"
 			FNRET=1
 		else

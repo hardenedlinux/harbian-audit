@@ -17,33 +17,43 @@ SERVICE_NAME="autofs"
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    info "Checking if $SERVICE_NAME is enabled"
-    is_service_enabled $SERVICE_NAME
+	is_pkg_installed $SERVICE_NAME
     if [ $FNRET = 0 ]; then
-        crit "$SERVICE_NAME is enabled"
+    	info "Checking if $SERVICE_NAME is enabled"
+    	is_service_enabled $SERVICE_NAME
+    	if [ $FNRET = 0 ]; then
+        	crit "$SERVICE_NAME is enabled"
+    	else
+        	ok "$SERVICE_NAME is disabled"
+    	fi
     else
-        ok "$SERVICE_NAME is disabled"
-    fi
+        ok "$SERVICE_NAME is not installed"
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    info "Checking if $SERVICE_NAME is enabled"
-    is_service_enabled $SERVICE_NAME
+	is_pkg_installed $SERVICE_NAME
     if [ $FNRET = 0 ]; then
-        is_debian_9 
-        if [ $FNRET = 0 ]; then
-            info "Disabling $SERVICE_NAME"
-            systemctl stop $SERVICE_NAME
-            systemctl disable $SERVICE_NAME
-            apt-get -y purge --autoremove $SERVICE_NAME
-        else
-            info "Disabling $SERVICE_NAME"
-            update-rc.d $SERVICE_NAME remove > /dev/null 2>&1
-        fi
-    else
-        ok "$SERVICE_NAME is disabled"
-    fi
+    	info "Checking if $SERVICE_NAME is enabled"
+    	is_service_enabled $SERVICE_NAME
+    	if [ $FNRET = 0 ]; then
+        	is_debian_9 
+        	if [ $FNRET = 0 ]; then
+            	info "Disabling $SERVICE_NAME"
+            	systemctl stop $SERVICE_NAME
+            	systemctl disable $SERVICE_NAME
+            	apt-get -y purge --autoremove $SERVICE_NAME
+        	else
+            	info "Disabling $SERVICE_NAME"
+            	update-rc.d $SERVICE_NAME remove > /dev/null 2>&1
+        	fi
+    	else
+        	ok "$SERVICE_NAME is disabled"
+    	fi
+	else
+        ok "$SERVICE_NAME is not installed"
+	fi
 }
 
 # This function will check config parameters required

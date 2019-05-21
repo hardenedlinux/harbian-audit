@@ -54,7 +54,7 @@ audit () {
 			info "Ip6tables: loopback traffic INPUT deny from other interfaces is not configured!"
 		fi 
 
-		if [ $INPUT_ACCEPT -eq 0 -a $OUTPUT_ACCEPT -eq -a $OUTPUT_ACCEPT -eq ]; then
+		if [ $INPUT_ACCEPT -eq 0 -a $OUTPUT_ACCEPT -eq 0 -a $OUTPUT_ACCEPT -eq 0 ]; then
 			ok "Loopback traffic rules were configured for v6!"
 		else
 			crit "Loopback traffic rules are not configured for v6!"
