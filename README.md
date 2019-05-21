@@ -6,7 +6,8 @@ Hardened Debian GNU/Linux distro auditing.
 
 The main test environment is in debian 9, and other versions are not fully tested. There are no implementations of desktop and SELinux related items in this release.
 
-The code framework is based on the [OVH-debian-cis](https://github.com/ovh/debian-cis) project, Modified some of the original implementations according to the features of Debian 9, added and implemented check items for [STIG V1R4](https://iasecontent.disa.mil/stigs/zip/U_Red_Hat_Enterprise_Linux_7_V1R4_STIG.zip) and [cisecurity.org](https://www.cisecurity.org/) recommendations, and also added and implemented some check items by the HardenedLinux community. The audit and apply functions of the infrastructure are implemented, and the automatic fix function is implemented for the items that can be automatically fixed. 
+The code framework is based on the [OVH-debian-cis](https://github.com/ovh/debian-cis) project, Modified some of the original implementations according to the features of Debian 9, added and implemented check items for [STIG Redhat V1R4](https://iasecontent.disa.mil/stigs/zip/U_Red_Hat_Enterprise_Linux_7_V1R4_STIG.zip) [STIG Ubuntu V1R2](https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_Canonical_Ubuntu_16-04_LTS_V1R2_STIG.zip) and [cisecurity.org](https://www.cisecurity.org/) recommendations, and also added and implemented some check items by the HardenedLinux community. The audit and apply functions of the infrastructure are implemented, and the automatic fix function is implemented for the items that can be automatically fixed. 
+
 
 ```console
 $ sudo bash bin/hardening.sh --audit-all
@@ -20,12 +21,12 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 
 [...]
 ################### SUMMARY ###################
-      Total Available Checks : 256
-         Total Runned Checks : 256
-         Total Passed Checks : [ 111/256 ]
-         Total Failed Checks : [ 144/256 ]
+      Total Available Checks : 278
+         Total Runned Checks : 278
+         Total Passed Checks : [ 239/278 ]
+         Total Failed Checks : [  39/278 ]
    Enabled Checks Percentage : 100.00 %
-       Conformity Percentage : 43.36 %
+       Conformity Percentage : 85.97 %
 ```
 ## Quickstart
 
@@ -44,12 +45,12 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 1.1_install_updates       [ OK ] Check Passed
 [...]
 ################### SUMMARY ###################
-      Total Available Checks : 256
-         Total Runned Checks : 256
-         Total Passed Checks : [ 109/256 ]
-         Total Failed Checks : [ 147/256 ]
+      Total Available Checks : 278
+         Total Runned Checks : 278
+         Total Passed Checks : [ 239/278 ]
+         Total Failed Checks : [  39/278 ]
    Enabled Checks Percentage : 100.00 %
-       Conformity Percentage : 42.58 %
+       Conformity Percentage : 85.97 %
 $ sudo bin/hardening.sh --set-hardening-level 5
 $ sudo bin/hardening.sh --apply 
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
