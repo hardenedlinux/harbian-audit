@@ -14,17 +14,29 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 SERVICE_NAME="syslog-ng"
+PACKAGE_R='rsyslog'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    info "Ensure default and local facilities are preserved on the system"
-    info "No measure here, please review the file by yourself"
+    is_pkg_installed $PACKAGE_R
+	if [ $FNRET = 0 ]; then
+		ok "$PACKAGE_R has installed, so pass."
+		FNRET=0
+	else
+    	info "Ensure default and local facilities are preserved on the system"
+    	info "No measure here, please review the file by yourself"
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    info "Ensure default and local facilities are preserved on the system"
-    info "No measure here, please review the file by yourself"
+    is_pkg_installed $PACKAGE_R
+	if [ $FNRET = 0 ]; then
+		ok "$PACKAGE_R has installed, so pass."
+	else
+    	info "Ensure default and local facilities are preserved on the system"
+    	info "No measure here, please review the file by yourself"
+	fi
 }
 
 # This function will check config parameters required

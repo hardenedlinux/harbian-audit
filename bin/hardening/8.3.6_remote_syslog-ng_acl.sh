@@ -12,15 +12,27 @@ set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=3
+PACKAGE_R='rsyslog'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    info "Not implemented yet"
+    is_pkg_installed $PACKAGE_R
+	if [ $FNRET = 0 ]; then
+		ok "$PACKAGE_R has installed, so pass."
+		FNRET=0
+	else
+    	info "Not implemented yet"
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    info "Not implemented yet"
+    is_pkg_installed $PACKAGE_R
+	if [ $FNRET = 0 ]; then
+		ok "$PACKAGE_R has installed, so pass."
+	else
+    	info "Not implemented yet"
+	fi
 }
 
 # This function will check config parameters required
