@@ -2,6 +2,9 @@
 Debian Buster uses the nftables framework by default. 
 
 ## Pre-install  
+```
+$ sudo apt install nftables
+```
 
 ## Check iptables link point 
 Starting with Debian Buster, nf_tables is the default backend when using iptables, by means of the iptables-nft layer (i.e, using iptables syntax with the nf_tables kernel subsystem). This also affects ip6tables, arptables and ebtables.
