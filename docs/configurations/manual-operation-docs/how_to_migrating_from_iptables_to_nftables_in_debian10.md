@@ -261,6 +261,11 @@ table ip mangle {
 }
 ```
 
+## Uninstall iptables 
+```
+$ sudo apt purge --autoremove iptables 
+```
+
 ## Reference  
 [https://wiki.debian.org/nftables](https://wiki.debian.org/nftables)   
 [https://wiki.nftables.org/wiki-nftables/index.php/Moving_from_iptables_to_nftables](https://wiki.nftables.org/wiki-nftables/index.php/Moving_from_iptables_to_nftables)  
