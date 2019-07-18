@@ -52,7 +52,7 @@ Instead of translating command by command, you can translate your whole ruleset 
 ```
 $ sudo iptables-save > save.txt
 $ sudo iptables-restore-translate -f save.txt
-\# Translated by iptables-restore-translate v1.8.2 on Fri Jul 12 04:33:36 2019
+# Translated by iptables-restore-translate v1.8.2 on Fri Jul 12 04:33:36 2019
 add table ip filter
 add chain ip filter INPUT { type filter hook input priority 0; policy drop; }
 add chain ip filter FORWARD { type filter hook forward priority 0; policy drop; }
