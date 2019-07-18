@@ -11,6 +11,11 @@ nftables    0.9.0-2
 $ sudo apt-get install -y nftables netfilter-persistent 
 ```  
 
+## Uninstall iptables 
+```
+$ sudo apt purge --autoremove iptables 
+```
+
 ## How to enable netfilter-persistent service
 
 netfilter-persistent service is auto running when netfilter-persistent was installed.
@@ -25,7 +30,7 @@ If netfilter-persistent service is not started, use the following command to ena
 $ sudo systemctl start netfilter-persistent
 ```
 
-## How to config for persistent iptables 
+## How to config for persistent nft rules  
 
 ### Get nftables ruleset  
 ```
@@ -38,13 +43,33 @@ Note: Please replace ens33 to interface name of your device
 ### Get plugin of netfilter-persistent 
 ```
 ~$ wget https://raw.githubusercontent.com/hardenedlinux/harbian-audit/master/docs/configurations/nftables-plugin.sh
-~$ sudo mv nftables-plugin.sh /usr/share/netfilter-persistent/plugins.d/
+~$ sudo mv nftables-plugin.sh /usr/share/netfilter-persistent/plugins.d/15-nft
+~$ sudo chmod 755 /usr/share/netfilter-persistent/plugins.d/15-nft 
 ```
 
 ## Well-done 
 Nft rules would auto restore nftables rules when Operation system restart, or manual to exec following command:
 ```
-$ sudo systemctl restart  netfilter-persistent
+$ sudo netfilter-persistent start 
+run-parts: executing /usr/share/netfilter-persistent/plugins.d/15-nft start 
+```
+
+## Additional usage 
+### Flush nft rules 
+```
+$ sudo netfilter-persistent flush
+run-parts: executing /usr/share/netfilter-persistent/plugins.d/15-nft flush 
+```
+### Save nft rules 
+```
+$ sudo netfilter-persistent save 
+run-parts: executing /usr/share/netfilter-persistent/plugins.d/15-nft save 
+```
+
+### Restore nft rules 
+```
+$ sudo netfilter-persistent start
+run-parts: executing /usr/share/netfilter-persistent/plugins.d/15-nft start 
 ```
 
 ## Reference 
