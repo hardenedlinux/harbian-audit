@@ -172,9 +172,8 @@ $ sudo -s
 
 ### nft format rules:
 [nftables.conf](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/etc.nftables.conf)
-to do the following:
+to do the following(your network interfacename(Example eth0)):
 ```
-$ INTERFACENAME="your network interfacename(Example eth0)"
 $ sed -i 's/^define int_if = ens33/define int_if = eth0/g' etc.nftables.conf 
 $ sudo nft -f ./etc.nftables.conf 
 ```
