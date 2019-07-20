@@ -34,16 +34,16 @@ $ sudo systemctl start netfilter-persistent
 
 ### Get nftables ruleset  
 ```
-~$ wget https://raw.githubusercontent.com/hardenedlinux/harbian-audit/master/docs/configurations/nftables.conf 
-~$ sudo mv nftables.conf /etc/nftables.conf 
+~$ wget https://raw.githubusercontent.com/hardenedlinux/harbian-audit/master/docs/configurations/etc.nftables.conf 
+~$ sudo mv etc.nftables.conf /etc/nftables.conf 
 ``` 
 
 Note: Please replace ens33 to interface name of your device 
 
 ### Get plugin of netfilter-persistent 
 ```
-~$ wget https://raw.githubusercontent.com/hardenedlinux/harbian-audit/master/docs/configurations/nftables-plugin.sh
-~$ sudo mv nftables-plugin.sh /usr/share/netfilter-persistent/plugins.d/15-nft
+~$ wget https://raw.githubusercontent.com/hardenedlinux/harbian-audit/master/docs/configurations/usr.share.netfilter-persistent.plugins.d.15-nft
+~$ sudo mv usr.share.netfilter-persistent.plugins.d.15-nft /usr/share/netfilter-persistent/plugins.d/15-nft
 ~$ sudo chmod 755 /usr/share/netfilter-persistent/plugins.d/15-nft 
 ```
 
