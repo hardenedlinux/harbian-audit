@@ -228,7 +228,7 @@ This document is a description of the additions to the sections not included in 
 [How to config grub2 password protection](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_config_grub2_password_protection.mkd)  
 [How to persistent iptables rules with debian 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_persistent_iptables_rules_with_debian_9.mkd)  
 [How to deploy audisp-remote for auditd log](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_deploy_audisp_remote_for_audit_log.mkd)  
-[how to migrating from iptables to nftables in debian10](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_migrating_from_iptables_to_nftables_in_debian10.md)  
+[How to migrating from iptables to nftables in debian10](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_migrating_from_iptables_to_nftables_in_debian10.md)  
 [How to persistent nft rules with debian 10](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_persistent_nft_rules_with_debian_10.mkd)  
 
 ### Use case docs  

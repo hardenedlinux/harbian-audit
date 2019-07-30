@@ -23,6 +23,7 @@ AUDIT_ALL_ENABLE_PASSED=0
 ALLOW_SERVICE_LIST=0
 SET_HARDENING_LEVEL=0
 SUDO_MODE=''
+INIT_G_CONFIG=0
 
 usage() {
     cat << EOF
@@ -30,8 +31,11 @@ $LONG_SCRIPT_NAME <RUN_MODE> [OPTIONS], where RUN_MODE is one of:
 
     --help -h
         Show this help
-
-    --apply
+	
+	--init 
+		Initialize the global configuration file(/etc/default/cis-hardening) based on the release version number
+    
+	--apply
         Apply hardening for enabled scripts.
         Beware that NO confirmation is asked whatsoever, which is why you're warmly
         advised to use --audit before, which can be regarded as a dry-run mode.
@@ -140,6 +144,9 @@ while [[ $# > 0 ]]; do
         -h|--help)
             usage
         ;;
+		--init)
+			INIT_G_CONFIG=1
+		;;
         *)
             usage
         ;;
@@ -161,6 +168,21 @@ fi
 [ -r $CIS_ROOT_DIR/etc/hardening.cfg ] && . $CIS_ROOT_DIR/etc/hardening.cfg
 [ -r $CIS_ROOT_DIR/lib/common.sh     ] && . $CIS_ROOT_DIR/lib/common.sh
 [ -r $CIS_ROOT_DIR/lib/utils.sh      ] && . $CIS_ROOT_DIR/lib/utils.sh
+
+if [ $INIT_G_CONFIG -eq 1 ]; then
+	if [ -r /etc/redhat-release ]; then
+		info "This OS is redhat or CentOS."
+		sed -i 's/^OS_RELEASE=.*/OS_RELEASE=2/g' /etc/default/cis-hardening 
+	elif [ -r /etc/debian_version ]; then
+		info "This OS is Debian."
+		:
+	else
+		crit "This OS not support!"
+		exit 128
+	fi
+	exit 0
+fi
+
 
 # If --allow-service-list is specified, don't run anything, just list the supported services
 if [ "$ALLOW_SERVICE_LIST" = 1 ] ; then
