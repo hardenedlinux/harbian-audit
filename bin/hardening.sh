@@ -33,7 +33,8 @@ $LONG_SCRIPT_NAME <RUN_MODE> [OPTIONS], where RUN_MODE is one of:
         Show this help
 	
 	--init 
-		Initialize the global configuration file(/etc/default/cis-hardening) based on the release version number
+		Initialize the global configuration file(/etc/default/cis-hardening) based 
+		on the release version number.
     
 	--apply
         Apply hardening for enabled scripts.
