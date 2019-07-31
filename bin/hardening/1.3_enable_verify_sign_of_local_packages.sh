@@ -31,8 +31,8 @@ audit_debian () {
 
 audit_redhat ()
 {
-    if [ $(grep -c "^$YUM_OPTION" $YUM_CONF) -gt 0 ]; then
-        if [ $(grep "^$YUM_OPTION" $YUM_CONF | awk -F"=" '{print $2}') -eq 1 ]; then
+    if [ $(grep -c "^$YUM_OPTION" $YUM_CONFFILE) -gt 0 ]; then
+        if [ $(grep "^$YUM_OPTION" $YUM_CONFFILE | awk -F"=" '{print $2}') -eq 1 ]; then
             ok "The signature of packages option is enable "
             FNRET=0
         else
@@ -40,7 +40,7 @@ audit_redhat ()
             FNRET=1
         fi
     else
-        crit "Option $YUM_OPTION is not set in $YUM_CONF!"
+        crit "Option $YUM_OPTION is not set in $YUM_CONFFILE!"
         FNRET=2
     fi
 }
@@ -73,10 +73,10 @@ apply_redhat () {
         ok "The signature of packages option is enable "
     elif [ $FNRET = 1 ]; then
         warn "Set to enabled signature of packages option"
-        sed -i "s/$YUM_OPTION=.*/$YUM_OPTION=1/g" $YUM_CONF
+        sed -i "s/$YUM_OPTION=.*/$YUM_OPTION=1/g" $YUM_CONFFILE
     else
-        warn "Add $YUM_OPTION option to $YUM_CONF"
-        add_end_of_file $YUM_CONF "$YUM_OPTION=1"
+        warn "Add $YUM_OPTION option to $YUM_CONFFILE"
+        add_end_of_file $YUM_CONFFILE "$YUM_OPTION=1"
     fi
 }
 
