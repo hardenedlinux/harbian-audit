@@ -73,7 +73,7 @@ apply_debian () {
 apply_redhat () {
 	if [ $FNRET = 0 ]; then 
 		ok "The signature of packages option is enable "
-	elif [ $FNRET = 1 ]
+	elif [ $FNRET = 1 ]; then
 		warn "Set to enabled signature of packages option"
 		sed -i "s/$YUM_OPTION=.*/$YUM_OPTION=1/g" $YUM_CONF
 	else 
