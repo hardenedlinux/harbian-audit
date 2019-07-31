@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit Debian 9 Hardening
+# harbian audit Debian 9 / CentOS Hardening
 # Authors : Thibault Dewailly, OVH <thibault.dewailly@corp.ovh.com>
 # Authors : Samson wen, Samson <sccxboy@gmail.com>
 
@@ -171,8 +171,9 @@ fi
 
 if [ $INIT_G_CONFIG -eq 1 ]; then
 	if [ -r /etc/redhat-release ]; then
-		info "This OS is redhat or CentOS."
+		info "This OS is redhat/CentOS."
 		sed -i 's/^OS_RELEASE=.*/OS_RELEASE=2/g' /etc/default/cis-hardening 
+		. /etc/default/cis-hardening
 	elif [ -r /etc/debian_version ]; then
 		info "This OS is Debian."
 		:
@@ -183,6 +184,14 @@ if [ $INIT_G_CONFIG -eq 1 ]; then
 	exit 0
 fi
 
+if [ $OS_RELEASE -eq 1 ]; then
+	info "Start auditing for Debian."
+elif [ $OS_RELEASE -eq 2 ]; then
+	info "Start auditing for redhat/CentOS."
+else
+	crit "This OS not support!"
+	exit 128
+fi
 
 # If --allow-service-list is specified, don't run anything, just list the supported services
 if [ "$ALLOW_SERVICE_LIST" = 1 ] ; then

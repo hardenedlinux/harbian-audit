@@ -880,3 +880,22 @@ check_auditd_is_immutable_mode()
 		eval $(pkill -HUP -P 1 auditd)
 	fi
 }
+
+
+#
+# yum
+#
+
+# FNRET values:
+# 100: need update
+# 0: not need update
+# 1: error
+yum_check_updates() 
+{
+	FNRET=$($SUDO_CMD yum check-update > /dev/null; echo $?)
+	if [ $FNRET -eq 100 ]; then 
+		# update too old, refresh database
+		$SUDO_CMD yum makecache >/dev/null 2>/dev/null
+    fi
+}
+
