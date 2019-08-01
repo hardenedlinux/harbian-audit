@@ -241,9 +241,14 @@ does_group_exist() {
 
 is_service_enabled() {
     local SERVICE=$1
-    is_debian_9
+	if [ $OS_RELEASE -eq 2 ]; then
+		FNRET=0
+	else
+    	is_debian_9
+	fi
     if [ $FNRET = 0 ]; then
-        if [ $(systemctl is-enabled $SERVICE | grep -wc "^enabled") -eq 1 ]; then
+		
+        if [ $(systemctl is-active $SERVICE | grep -c "^active") -eq 1 ]; then
             debug "Service $SERVICE is enabled"
             FNRET=0
         else
@@ -493,27 +498,41 @@ apt_install()
 is_pkg_installed()
 {
     PKG_NAME=$1
-    if $(dpkg -s $PKG_NAME 2> /dev/null | grep -q '^Status: install ') ; then
-        debug "$PKG_NAME is installed"
-        FNRET=0
-    else
-        debug "$PKG_NAME is not installed"
-        FNRET=1
-    fi
+	if [ $OS_RELEASE -eq 2 ]; then
+		if [ $(rpm -qa | grep -c $PKG_NAME) -gt 0 ]; then
+			debug "$PKG_NAME is installed"
+			FNRET=0
+		else
+			debug "$PKG_NAME is not installed"
+			FNRET=1
+		fi
+	else
+		if $(dpkg -s $PKG_NAME 2> /dev/null | grep -q '^Status: install ') ; then
+			debug "$PKG_NAME is installed"
+			FNRET=0
+		else
+			debug "$PKG_NAME is not installed"
+			FNRET=1
+		fi
+	fi
 }
 
 
 verify_integrity_all_packages()
 {
-	dpkg -V > /dev/shm/dpkg_verify_ret
-    if [ $(cat /dev/shm/dpkg_verify_ret | wc -l) -gt 0 ]; then
-        debug "Verify integrity all packages is fail"
-		cat /dev/shm/dpkg_verify_ret
-        FNRET=1
-    else
-        debug "Verify integrity all packages is OK"
-        FNRET=0
-    fi
+	if [ $OS_RELEASE -eq 2 ]; then
+		:
+	else
+		dpkg -V > /dev/shm/dpkg_verify_ret
+    	if [ $(cat /dev/shm/dpkg_verify_ret | wc -l) -gt 0 ]; then
+        	debug "Verify integrity all packages is fail"
+			cat /dev/shm/dpkg_verify_ret
+        	FNRET=1
+    	else
+        	debug "Verify integrity all packages is OK"
+        	FNRET=0
+    	fi
+	fi
 }
 
 check_param_pair_by_pam()

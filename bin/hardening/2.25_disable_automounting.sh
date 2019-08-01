@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS  Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -38,18 +39,31 @@ apply () {
     	info "Checking if $SERVICE_NAME is enabled"
     	is_service_enabled $SERVICE_NAME
     	if [ $FNRET = 0 ]; then
-        	is_debian_9 
+			if [ $OS_RELEASE -eq 2 ]; then
+				:
+			else
+        		is_debian_9 
+			fi
         	if [ $FNRET = 0 ]; then
             	info "Disabling $SERVICE_NAME"
             	systemctl stop $SERVICE_NAME
             	systemctl disable $SERVICE_NAME
-            	apt-get -y purge --autoremove $SERVICE_NAME
+				if [ $OS_RELEASE -eq 2 ]; then
+					yum -y autoremove $SERVICE_NAME
+				else
+            		apt-get -y purge --autoremove $SERVICE_NAME
+				fi
         	else
             	info "Disabling $SERVICE_NAME"
             	update-rc.d $SERVICE_NAME remove > /dev/null 2>&1
         	fi
     	else
         	ok "$SERVICE_NAME is disabled"
+			if [ $OS_RELEASE -eq 2 ]; then
+				yum -y autoremove $SERVICE_NAME
+			else
+           		apt-get -y purge --autoremove $SERVICE_NAME				
+			fi
     	fi
 	else
         ok "$SERVICE_NAME is not installed"
