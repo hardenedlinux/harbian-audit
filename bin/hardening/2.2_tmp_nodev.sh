@@ -47,10 +47,10 @@ audit () {
     else
         warn "$PARTITION is not partition in /etc/fstab, check tmp.mount service"
         if [ -e $SERVICEPATH -o -e $REDHAT_SERVICEPATH ]; then
-			if [ $OS_RELEASE -eq 1 ]; then
-            	has_mount_option_systemd $SERVICEPATH $OPTION 
-        	elif [ $OS_RELEASE -eq 2 ]; then
-            	has_mount_option_systemd $REDHAT_SERVICEPATH $OPTION 
+			if [ $OS_RELEASE -eq 2 ]; then
+				has_mount_option_systemd $REDHAT_SERVICEPATH $OPTION 
+			else
+				has_mount_option_systemd $SERVICEPATH $OPTION 
 			fi
             if [ $FNRET -gt 0 ]; then
                 crit "$PARTITION has no option $OPTION in systemd service!"
@@ -67,10 +67,10 @@ audit () {
                 fi
             fi
         else
-			if [ $OS_RELEASE -eq 1 ]; then
-	            crit "$SERVICEPATH is not exist!"
-			elif [ $OS_RELEASE -eq 2 ]; then
-				crit "$REDHAT_SERVICEPATH is not exist!"
+			if [ $OS_RELEASE -eq 2 ]; then
+				crit "$REDHAT_SERVICEPATH is not exist!"	
+			else
+				crit "$SERVICEPATH is not exist!"
 			fi
             FNRET=2  
         fi
@@ -95,10 +95,10 @@ apply () {
         fi
     elif [ $FNRET = 3 ]; then
         info "Adding $OPTION to systemd"
-		if [ $OS_RELEASE -eq 1 ]; then
-        	add_option_to_systemd $SERVICEPATH $OPTION $SERVICENAME
-		elif [ $OS_RELEASE -eq 2 ]; then
-        	add_option_to_systemd $REDHAT_SERVICEPATH $OPTION $SERVICENAME
+		if [ $OS_RELEASE -eq 2 ]; then
+			add_option_to_systemd $REDHAT_SERVICEPATH $OPTION $SERVICENAME
+		else
+			add_option_to_systemd $SERVICEPATH $OPTION $SERVICENAME
 		fi
         remount_partition_by_systemd $SERVICENAME $PARTITION
     elif [ $FNRET = 4 ]; then
