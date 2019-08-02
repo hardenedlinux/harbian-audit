@@ -98,7 +98,6 @@ apply () {
         apply_redhat
     else
         crit "Current OS is not support!"
-        FNRET=44
     fi
 }
 
