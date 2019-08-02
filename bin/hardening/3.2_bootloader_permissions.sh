@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -16,10 +17,16 @@ HARDENING_LEVEL=1
 # Assertion : Grub Based.
 
 FILE='/boot/grub/grub.cfg'
+PKGNAME='grub-pc'
 PERMISSIONS='400'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		FILE='/boot/grub2/grub.cfg'
+	else
+		:
+	fi
     has_file_correct_permissions $FILE $PERMISSIONS
     if [ $FNRET = 0 ]; then
         ok "$FILE has correct permissions"
@@ -32,6 +39,11 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		FILE='/boot/grub2/grub.cfg'
+	else
+		:
+	fi
     if [ $FNRET = 0 ]; then
         ok "$FILE has correct permissions"
     else
@@ -42,9 +54,16 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    is_pkg_installed "grub-pc"
+	if [ $OS_RELEASE -eq 2 ]; then
+		FILE='/boot/grub2/grub.cfg'
+		PKGNAME='grub2-pc'
+	else
+		:
+	fi
+
+	is_pkg_installed "$PKGNAME"
     if [ $FNRET != 0 ]; then
-        warn "grub-pc is not installed, not handling configuration"
+        warn "$PKGNAME is not installed, not handling configuration"
         exit 128
     fi
     if [ $FNRET != 0 ]; then
