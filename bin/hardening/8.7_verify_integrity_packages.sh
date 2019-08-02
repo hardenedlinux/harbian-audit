@@ -1,14 +1,14 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS  Hardening
 #
 #
 # 8.7 Verifies integrity all packages (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
-set -e # One error, it's over
+set -e # One error, it's over  
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=5
@@ -25,7 +25,7 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    info "This check item need to confirm manually. No automatic fix is available."
+    warn "This check item need to confirm manually. No automatic fix is available."
 }
 
 # This function will check config parameters required

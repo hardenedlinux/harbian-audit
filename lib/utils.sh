@@ -521,17 +521,29 @@ is_pkg_installed()
 verify_integrity_all_packages()
 {
 	if [ $OS_RELEASE -eq 2 ]; then
-		:
+		set +e
+		rpm -Va > /dev/shm/yum_verify_ret
+		COUNT=$(cat /dev/shm/yum_verify_ret | wc -l ) 
+    		if [ $COUNT -gt 0 ]; then
+			debug "Verify integrity all packages is fail"
+			cat /dev/shm/yum_verify_ret
+			rm /dev/shm/yum_verify_ret
+        		FNRET=1
+    		else
+        		debug "Verify integrity all packages is OK"
+        		FNRET=0
+    		fi
+		set -e
 	else
 		dpkg -V > /dev/shm/dpkg_verify_ret
-    	if [ $(cat /dev/shm/dpkg_verify_ret | wc -l) -gt 0 ]; then
-        	debug "Verify integrity all packages is fail"
+    		if [ $(cat /dev/shm/dpkg_verify_ret | wc -l) -gt 0 ]; then
+        		debug "Verify integrity all packages is fail"
 			cat /dev/shm/dpkg_verify_ret
-        	FNRET=1
-    	else
-        	debug "Verify integrity all packages is OK"
-        	FNRET=0
-    	fi
+        		FNRET=1
+    		else
+        		debug "Verify integrity all packages is OK"
+       	 		FNRET=0
+    		fi
 	fi
 }
 
