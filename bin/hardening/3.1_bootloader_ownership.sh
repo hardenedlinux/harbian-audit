@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS  Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -16,53 +17,87 @@ HARDENING_LEVEL=1
 # Assertion : Grub Based.
 
 FILE='/boot/grub/grub.cfg'
+FILE_GRUB2='/boot/grub2/grub.cfg'
 USER='root'
 GROUP='root'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    has_file_correct_ownership $FILE $USER $GROUP
-    if [ $FNRET = 0 ]; then
-        ok "$FILE has correct ownership"
-    else
-        crit "$FILE ownership was not set to $USER:$GROUP"
-    fi 
+	if [ $OS_RELEASE -eq 2 ]; then
+		has_file_correct_ownership $FILE_GRUB2 $USER $GROUP
+		if [ $FNRET = 0 ]; then
+			ok "$FILE_GRUB2 has correct ownership"
+		else
+			crit "$FILE_GRUB2 ownership was not set to $USER:$GROUP"	
+		fi 
+	else
+		has_file_correct_ownership $FILE $USER $GROUP
+		if [ $FNRET = 0 ]; then
+			ok "$FILE has correct ownership"
+		else
+			crit "$FILE ownership was not set to $USER:$GROUP"
+		fi 
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    has_file_correct_ownership $FILE $USER $GROUP
-    if [ $FNRET = 0 ]; then
-        ok "$FILE has correct ownership"
-    else
-        info "fixing $FILE ownership to $USER:$GROUP"
-        chown $USER:$GROUP $FILE
-    fi
+	if [ $OS_RELEASE -eq 2 ]; then	
+		has_file_correct_ownership $FILE_GRUB2 $USER $GROUP
+		if [ $FNRET = 0 ]; then
+			ok "$FILE_GRUB2 has correct ownership"
+		else
+			info "fixing $FILE_GRUB2 ownership to $USER:$GROUP"
+			chown $USER:$GROUP $FILE_GRUB2
+		fi
+	else
+		has_file_correct_ownership $FILE $USER $GROUP
+		if [ $FNRET = 0 ]; then
+			ok "$FILE has correct ownership"
+		else
+			info "fixing $FILE ownership to $USER:$GROUP"
+			chown $USER:$GROUP $FILE
+		fi
+	fi
 }
 
 # This function will check config parameters required
 check_config() {
+	if [ $OS_RELEASE -eq 2 ]; then
+		is_pkg_installed "grub2-pc"
+	else
+		is_pkg_installed "grub-pc"
+	fi
+	if [ $FNRET != 0 ]; then
+		warn "Grub is not installed, not handling configuration"
+		exit 128
+	fi
 
-    is_pkg_installed "grub-pc"
-    if [ $FNRET != 0 ]; then
-        warn "Grub is not installed, not handling configuration"
-        exit 128
-    fi
-    does_user_exist $USER
-    if [ $FNRET != 0 ]; then
-        crit "$USER does not exist"
-        exit 128
-    fi
-    does_group_exist $GROUP
-    if [ $FNRET != 0 ]; then
-        crit "$GROUP does not exist"
-        exit 128
-    fi
-    does_file_exist $FILE
-    if [ $FNRET != 0 ]; then
-        crit "$FILE does not exist"
-        exit 128
-    fi
+	does_user_exist $USER
+	if [ $FNRET != 0 ]; then
+		crit "$USER does not exist"
+		exit 128
+	fi
+
+	does_group_exist $GROUP
+	if [ $FNRET != 0 ]; then
+		crit "$GROUP does not exist"
+		exit 128
+	fi
+
+	if [ $OS_RELEASE -eq 2 ]; then
+		does_file_exist $FILE_GRUB2
+    	if [ $FNRET != 0 ]; then
+        	crit "$FILE_GRUB2 does not exist"
+        	exit 128
+    	fi
+	else
+    	does_file_exist $FILE
+    	if [ $FNRET != 0 ]; then
+        	crit "$FILE does not exist"
+        	exit 128
+    	fi
+	fi
 }
 
 # Source Root Dir Parameter
