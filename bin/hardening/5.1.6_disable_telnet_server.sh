@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -17,9 +18,9 @@ HARDENING_LEVEL=2
 PACKAGES='telnetd inetutils-telnetd telnetd-ssl krb5-telnetd heimdal-servers'
 FILE='/etc/inetd.conf'
 PATTERN='^telnet'
+PACKAGE_REDHAT='telnet-server'
 
-# This function will be called if the script status is on enabled / audit mode
-audit () {
+audit_debian () {
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
@@ -41,8 +42,28 @@ audit () {
     done
 }
 
-# This function will be called if the script status is on enabled mode
-apply () {
+audit_redhat () {
+	is_pkg_installed $PACKAGE_REDHAT
+	if [ $FNRET = 0 ]; then
+		crit "$PACKAGE_REDHAT is installed"
+	else
+		ok "$PACKAGE_REDHAT is absent"
+	fi
+}
+
+# This function will be called if the script status is on enabled / audit mode
+audit () {
+	if [ $OS_RELEASE -eq 1 ]; then
+		audit_debian
+	elif [ $OS_RELEASE -eq 2 ]; then
+		audit_redhat
+	else
+		crit "Current OS is not support!"
+		FNRET=44
+	fi
+}
+
+apply_debian () {
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
@@ -68,6 +89,27 @@ apply () {
             fi
         fi
     done
+}
+
+apply_redhat () {
+	is_pkg_installed $PACKAGE_REDHAT
+	if [ $FNRET = 0 ]; then
+		crit "$PACKAGE_REDHAT is installed, purging it"
+		yum remove $PACKAGE_REDHAT -y 
+	else
+		ok "$PACKAGE_REDHAT is absent"
+	fi
+}
+
+# This function will be called if the script status is on enabled mode
+apply () {
+	if [ $OS_RELEASE -eq 1 ]; then
+		apply_debian
+	elif [ $OS_RELEASE -eq 2 ]; then
+		apply_redhat
+	else
+		crit "Current OS is not support!"
+	fi
 }
 
 # This function will check config parameters required
