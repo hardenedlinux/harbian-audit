@@ -93,7 +93,7 @@ apply_debian () {
 apply_redhat () {
 	is_pkg_installed $PACKAGE_REDHAT
     if [ $FNRET = 0 ]; then
-		crit "$$PACKAGE_REDHAT is installed, purging it"
+		crit "$PACKAGE_REDHAT is installed, purging it"
 		yum -y remove $PACKAGE_REDHAT
 	else
 		ok "$PACKAGE_REDHAT is absent"
