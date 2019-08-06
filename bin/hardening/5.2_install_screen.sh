@@ -5,7 +5,7 @@
 #
 
 #
-# 5.7 Install screen (Scored)
+# 5.2 Install screen (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com> 
 #
 

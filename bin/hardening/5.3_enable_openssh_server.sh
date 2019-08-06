@@ -5,7 +5,7 @@
 #
 
 #
-# 5.8 Ensure openssh server is enabled (Scored)
+# 5.3 Ensure openssh server is enabled (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com> 
 #
 
@@ -32,7 +32,7 @@ audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
 		SERVICE_NAME=$SERVICE_NAME_REDHAT
 	fi
-	is_service_enabled $SERVICE_NAME
+	is_service_active $SERVICE_NAME
 	if [ $FNRET = 0 ]; then
 		ok "$SERVICE_NAME is actived"
 	else

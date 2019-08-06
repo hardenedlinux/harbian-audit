@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #
-# harbian audit 9  Hardening
+# harbian audit 9 or CentOS Hardening
 #
 
 #
-# 5.9 Ensure ctrl-alt-del is disabled (Scored)
+# 5.4 Ensure ctrl-alt-del is disabled (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com> 
 #
 
