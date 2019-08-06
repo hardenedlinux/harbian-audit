@@ -21,11 +21,11 @@ audit () {
 	is_pkg_installed $SERVICE_NAME
     if [ $FNRET = 0 ]; then
     	info "Checking if $SERVICE_NAME is enabled"
-    	is_service_enabled $SERVICE_NAME
+    	is_service_active $SERVICE_NAME
     	if [ $FNRET = 0 ]; then
-        	crit "$SERVICE_NAME is enabled"
+        	crit "$SERVICE_NAME is actived"
     	else
-        	ok "$SERVICE_NAME is disabled"
+        	ok "$SERVICE_NAME is inactived"
     	fi
     else
         ok "$SERVICE_NAME is not installed"
@@ -36,8 +36,8 @@ audit () {
 apply () {
 	is_pkg_installed $SERVICE_NAME
     if [ $FNRET = 0 ]; then
-    	info "Checking if $SERVICE_NAME is enabled"
-    	is_service_enabled $SERVICE_NAME
+    	info "Checking if $SERVICE_NAME is active"
+    	is_service_active $SERVICE_NAME
     	if [ $FNRET = 0 ]; then
 			if [ $OS_RELEASE -eq 2 ]; then
 				:

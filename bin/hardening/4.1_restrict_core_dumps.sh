@@ -38,12 +38,12 @@ audit_debian () {
 }
 
 audit_redhat () {
-	is_service_enabled $SERVICE_NAME
+	is_service_active $SERVICE_NAME
 	if [ $FNRET -eq 0 ]; then
-		crit "$SERVICE_NAME is enabled"
+		crit "$SERVICE_NAME is actived"
 		FNRET=1
 	else
-		ok "$SERVICE_NAME is disabled"
+		ok "$SERVICE_NAME is inactived"
 		FNRET=0
 	fi
 }

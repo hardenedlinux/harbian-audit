@@ -239,6 +239,32 @@ does_group_exist() {
 # Service Boot Checks
 #
 
+is_service_active() {
+    local SERVICE=$1
+	if [ $OS_RELEASE -eq 2 ]; then
+		FNRET=0
+	else
+    	is_debian_9
+	fi
+    if [ $FNRET = 0 ]; then
+        if [ $(systemctl is-active $SERVICE | grep -c "^active") -eq 1 ]; then
+            debug "Service $SERVICE is actived"
+            FNRET=0
+        else
+            debug "Service $SERVICE is inactived"
+            FNRET=1
+        fi
+    else
+        if [ $($SUDO_CMD find /etc/rc?.d/ -name "S*$SERVICE" -print | wc -l) -gt 0 ]; then
+            debug "Service $SERVICE is enabled"
+            FNRET=0
+        else
+            debug "Service $SERVICE is disabled"
+            FNRET=1
+        fi
+    fi
+}
+
 is_service_enabled() {
     local SERVICE=$1
 	if [ $OS_RELEASE -eq 2 ]; then
@@ -247,8 +273,7 @@ is_service_enabled() {
     	is_debian_9
 	fi
     if [ $FNRET = 0 ]; then
-		
-        if [ $(systemctl is-active $SERVICE | grep -c "^active") -eq 1 ]; then
+        if [ $(systemctl is-enabled $SERVICE | grep -c "^enabled") -eq 1 ]; then
             debug "Service $SERVICE is enabled"
             FNRET=0
         else
