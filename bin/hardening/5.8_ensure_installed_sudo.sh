@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #
-# harbian audit 9  Hardening
+# harbian audit 9 or CentOS Hardening
 #
 
 #
-# 5.10 Ensure sudo is installed (Scored)
+# 5.8 Ensure sudo is installed (Scored)
 # Add new by: 
 # Author : Samson wen, Samson <sccxboy@gmail.com> 
 #

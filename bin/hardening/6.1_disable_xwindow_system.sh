@@ -7,6 +7,7 @@
 #
 # 6.1 Ensure the X Window system is not installed (Scored)
 #
+# todo test for centos
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
