@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9 or CentOS Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -15,9 +16,13 @@ HARDENING_LEVEL=3
 HARDENING_EXCEPTION=ldap
 
 PACKAGES='slapd'
+PACKAGES_REDHAT='openldap-servers'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGES=$PACKAGES_REDHAT	
+	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
@@ -34,6 +39,9 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGES=$PACKAGES_REDHAT	
+	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
@@ -41,8 +49,12 @@ apply () {
                 warn "$PACKAGE is installed! But the exception is set to true, so don't need any operate."
             else
                 crit "$PACKAGE is installed, purging it"
-                apt-get purge $PACKAGE -y
-                apt-get autoremove
+				if [ $OS_RELEASE -eq 2 ]; then
+					yum autoremove $PACKAGE -y 
+				else
+					apt-get purge $PACKAGE -y
+					apt-get autoremove
+				fi
             fi
         else
             ok "$PACKAGE is absent"

@@ -14,7 +14,6 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=3
 PACKAGES='ntp chrony'
-PACKAGES_COUNT=$(echo $PACKAGES | wc -w)
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
