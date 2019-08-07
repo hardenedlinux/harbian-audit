@@ -51,7 +51,7 @@ apply () {
             else
                 crit "$PACKAGE is installed, purging it"
 				if [ $OS_RELEASE -eq 2 ]; then
-					yum remove $PACKAGE -y
+					yum autoremove $PACKAGE -y
 				else
                 	apt-get purge $PACKAGE -y
                 	apt-get autoremove
