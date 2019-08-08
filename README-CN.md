@@ -75,7 +75,7 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 ### 需要预装的软件  
 如果是使用的最小安装方式安装的Debian GNU/Linux系统，在使用此项目之前，需要安装如下的软件：
 ```
-sudo apt-get install -y bc net-tools 
+sudo apt-get install -y bc net-tools pciutils 
 ```
 
 ### 需要预先进行的配置 

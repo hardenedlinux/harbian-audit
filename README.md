@@ -73,7 +73,7 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 
 If use Network install from a minimal CD to installed Debian GNU/Linux, need install bc package before use the hardening tool. 
 ```
-sudo apt-get install -y bc net-tools 
+sudo apt-get install -y bc net-tools pciutils
 ```
 
 ### Pre-Set 
