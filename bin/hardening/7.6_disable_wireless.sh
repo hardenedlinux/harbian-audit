@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #
-# harbian audit 9  Hardening
+# harbian audit 9 or CentOS Hardening
 #
 
 #
 # 7.6 Ensure wireless interfaces are disabled (Not Scored)
-# Author : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <samson@hardenedlinux.org>
 #
 
 set -e # One error, it's over
@@ -35,7 +35,8 @@ apply () {
 	if [ $FNRET = 0 ]; then
 		ok "Wireless interfaces are disabled!"
 	else
-		warn "Wireless interfaces is not disabled! Need the administrator to manually disable it. HOWTO: ip link set <interface> down"
+		warn "Wireless interfaces is not disabled! Disabled wireless."
+		nmcli radio wifi off
 	fi
 }
 

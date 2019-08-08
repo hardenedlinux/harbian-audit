@@ -71,9 +71,14 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 
 ### Pre-Install 
 
-If use Network install from a minimal CD to installed Debian GNU/Linux, need install bc package before use the hardening tool. 
+If use Network install from a minimal CD to installed Debian GNU/Linux, need install packages before use the hardening tool. 
 ```
-sudo apt-get install -y bc net-tools pciutils
+sudo apt-get install -y bc net-tools pciutils network-manager 
+```
+
+Redhat/CentOS need install packages before use the hardening tool:
+```
+sudo yum install -y bc net-tools pciutils NetworkManager 
 ```
 
 ### Pre-Set 

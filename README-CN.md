@@ -77,6 +77,10 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 ```
 sudo apt-get install -y bc net-tools pciutils 
 ```
+如果系统是Redhat/CentOS，在使用此项目前，需要安装如下的软件包：
+```
+sudo yum install -y bc net-tools pciutils NetworkManager 
+```
 
 ### 需要预先进行的配置 
 在使用此项目前，必须给所有要用到的用户设置了密码。如果没有设置密码的话，将在进行自动化加固后不能够登录到系统。例如(用户：root和test）:
