@@ -9,6 +9,7 @@
 #
 # 8.1.3 Enable Auditing for Processes That Start Prior to auditd (Scored)
 #
+# todo test for centos
 
 set -e # One error, it's over
 set -u # One variable unset, it's over

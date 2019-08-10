@@ -1,8 +1,10 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS  Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
+
 
 #
 # 8.1.8 Collect Login and Logout Events (Scored)
@@ -16,10 +18,15 @@ HARDENING_LEVEL=4
 AUDIT_PARAMS='-w /var/log/faillog -p wa -k logins
 -w /var/log/lastlog -p wa -k logins
 -w /var/log/tallylog -p wa -k logins'
+AUDIT_PARAMS_REDHAT='-w /var/log/lastlog -p wa -k logins
+-w /var/log/tallylog -p wa -k logins'
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		AUDIT_PARAMS=$AUDIT_PARAMS_REDHAT
+	fi
     # define custom IFS and save default one
     d_IFS=$IFS
     IFS=$'\n'
@@ -37,6 +44,9 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		AUDIT_PARAMS=$AUDIT_PARAMS_REDHAT
+	fi
     d_IFS=$IFS
     IFS=$'\n'
     for AUDIT_VALUE in $AUDIT_PARAMS; do

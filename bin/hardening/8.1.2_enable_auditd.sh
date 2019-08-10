@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
 #
 
 #
@@ -15,10 +15,14 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=4
 
 PACKAGE='auditd'
+PACKAGE_REDHAT='auditd'
 SERVICE_NAME='auditd'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE=$PACKAGE_REDHAT
+	fi
     is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
         crit "$PACKAGE is not installed!"
@@ -35,12 +39,19 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE=$PACKAGE_REDHAT
+	fi
 	is_pkg_installed $PACKAGE
 	if [ $FNRET = 0 ]; then
 		ok "$PACKAGE is installed"
 	else
 		warn "$PACKAGE is absent, installing it"
-		apt_install $PACKAGE
+		if [ $OS_RELEASE -eq 2 ]; then
+			yum install -y $PACKAGE
+		else
+			apt_install $PACKAGE
+		fi
 	fi
 	is_service_enabled $SERVICE_NAME
 	if [ $FNRET = 0 ]; then
@@ -48,8 +59,9 @@ apply () {
 	else    
 		warn "$SERVICE_NAME is not enabled, enabling it"
 		is_debian_9
-		if [ $FNRET = 0 ]; then
-			systemctl enable auditd
+		if [ $FNRET = 0 -o $OS_RELEASE -eq 2 ]; then
+			systemctl enable $SERVICE_NAME
+			systemctl start $SERVICE_NAME
 		else
 			update-rc.d $SERVICE_NAME remove >  /dev/null 2>&1
 			update-rc.d $SERVICE_NAME defaults > /dev/null 2>&1

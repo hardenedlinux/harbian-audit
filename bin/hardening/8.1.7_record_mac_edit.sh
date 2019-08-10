@@ -8,6 +8,7 @@
 # 8.1.7 Record Events That Modify the System's Mandatory Access Controls (Scored)
 # Modify by: Samson-W (sccxboy@gmail.com)
 #
+# todo test for centos
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
