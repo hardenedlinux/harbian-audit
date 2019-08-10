@@ -15,7 +15,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=4
 
 PACKAGE='auditd'
-PACKAGE_REDHAT='auditd'
+PACKAGE_REDHAT='audit'
 SERVICE_NAME='auditd'
 
 # This function will be called if the script status is on enabled / audit mode
