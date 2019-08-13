@@ -955,3 +955,19 @@ yum_check_updates()
     fi
 }
 
+# Check path of audit rule is exist, return 0 if path string is not NULL, else return 1 
+# Example: 
+# AUDITRULE="-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd"
+check_audit_path ()
+{
+	AUDITRULE=$1
+	RESULT=$(echo $AUDITRULE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
+	if [ -z $(eval echo $RESULT) ]; then
+		debug "Result is NULL"
+		FNRET=1
+	else
+		debug "Result is not NULL"
+		FNRET=0
+	fi
+}
+
