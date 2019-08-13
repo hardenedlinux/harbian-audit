@@ -33,7 +33,6 @@ audit () {
 			crit "path is not exsit! Please check file path is exist!"
 			continue
 		else
-			info "path is exsit!"
         	debug "$AUDIT_VALUE should be in file $FILE"
         	IFS=$d_IFS
         	does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
@@ -57,7 +56,6 @@ apply () {
 			crit "path is not exsit! Please check file path is exist!"
 			continue
 		else
-			info "path is exsit!"
         	debug "$AUDIT_VALUE should be in file $FILE"
         	does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
         	if [ $FNRET != 0 ]; then
