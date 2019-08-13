@@ -15,7 +15,7 @@ HARDENING_LEVEL=4
 
 
 AUDIT_PARAMS="-a always,exit -F path=$(find / -name "ssh-keysign") -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
--a always,exit -F path=$(which sshd-agent 2>/dev/null) -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh"
+-a always,exit -F path=$(which ssh-agent 2>/dev/null) -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh"
 
 set -e # One error, it's over
 
