@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 9  Hardening
+# harbian audit 9/10 or CentOS Hardening
 #
 
 #
@@ -9,25 +9,25 @@
 # Author: Samson-W (sccxboy@gmail.com) author add this 
 #
 
-set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-w /etc/audisp/audisp-remote.conf -p wa -k config_file_change
--w /etc/audit/auditd.conf -p wa -k config_file_change
--w /etc/audit/rules.d/ -p wa -k config_file_change
--w /etc/default/grub -p wa -k config_file_change
--w /etc/fstab -p wa -k config_file_change
--w /etc/hosts.deny -p wa -k config_file_change
--w /etc/login.defs -p wa -k config_file_change
--w /etc/pam.d/ -p wa -k config_file_change
--w /etc/profile -p wa -k config_file_change
--w /etc/profile.d/ -p wa -k config_file_change
--w /etc/security/ -p wa -k config_file_change
--w /etc/iptables/ -p wa -k config_file_change
--w /etc/sysctl.conf -p wa -k config_file_change'
+AUDIT_PARAMS='-a always,exit -F path=$(find / -name audisp-remote.conf) -F perm=wa -k config_file_change
+-a always,exit -F path=$(find / -name auditd.conf) -F perm=wa -k config_file_change
+-a always,exit -F dir=$(find /etc/audit/ -name rules.d) -F perm=wa -k config_file_change
+-a always,exit -F path=$(find / -name grub) -F perm=wa -k config_file_change
+-a always,exit -F path=$(find / -name fstab) -F perm=wa -k config_file_change
+-a always,exit -F path=$(find / -name hosts.deny) -F perm=wa -k config_file_change
+-a always,exit -F path=$(find / -name login.defs) -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/pam.d/ -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/profile -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/profile.d/ -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/security/ -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/iptables/ -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/sysctl.conf -F perm=wa -k config_file_change'
 
+set -e # One error, it's over
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
@@ -37,15 +37,21 @@ audit () {
     c_IFS=$'\n'
     IFS=$c_IFS
     for AUDIT_VALUE in $AUDIT_PARAMS; do
-        debug "$AUDIT_VALUE should be in file $FILE"
-        IFS=$d_IFS
-        does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
-        IFS=$c_IFS
-        if [ $FNRET != 0 ]; then
-            crit "$AUDIT_VALUE is not in file $FILE"
-        else
-            ok "$AUDIT_VALUE is present in $FILE"
-        fi
+		check_audit_path $AUDIT_VALUE 
+		if [ $FNRET -eq 1 ];then
+			crit "path is not exsit! Please check file path is exist!"
+			continue
+		else
+        	debug "$AUDIT_VALUE should be in file $FILE"
+        	IFS=$d_IFS
+        	does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
+        	IFS=$c_IFS
+        	if [ $FNRET != 0 ]; then
+            	crit "$AUDIT_VALUE is not in file $FILE"
+        	else
+            	ok "$AUDIT_VALUE is present in $FILE"
+        	fi
+		fi
     done
     IFS=$d_IFS
 }
@@ -54,15 +60,21 @@ audit () {
 apply () {
     IFS=$'\n'
     for AUDIT_VALUE in $AUDIT_PARAMS; do
-        debug "$AUDIT_VALUE should be in file $FILE"
-        does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
-        if [ $FNRET != 0 ]; then
-            warn "$AUDIT_VALUE is not in file $FILE, adding it"
-            add_end_of_file $FILE $AUDIT_VALUE
-			check_auditd_is_immutable_mode
-        else
-            ok "$AUDIT_VALUE is present in $FILE"
-        fi
+		check_audit_path $AUDIT_VALUE 
+		if [ $FNRET -eq 1 ];then
+			crit "path is not exsit! Please check file path is exist!"
+			continue
+		else
+        	debug "$AUDIT_VALUE should be in file $FILE"
+        	does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
+        	if [ $FNRET != 0 ]; then
+            	warn "$AUDIT_VALUE is not in file $FILE, adding it"
+            	add_end_of_file $FILE $AUDIT_VALUE
+				check_auditd_is_immutable_mode
+        	else
+            	ok "$AUDIT_VALUE is present in $FILE"
+        	fi
+		fi
     done
 }
 

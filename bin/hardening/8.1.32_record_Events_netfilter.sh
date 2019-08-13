@@ -7,7 +7,7 @@
 #
 # 8.1.32 Record netfilter related Events (Scored)
 # Author: Samson-W (samson@hardenedlinux.org) author add this 
-#
+# todo test for centos
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
