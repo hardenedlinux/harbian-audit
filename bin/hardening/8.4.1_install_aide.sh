@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 9  Hardening
+# harbian audit 9/10 or CentOS Hardening
 #
 
 #
@@ -34,9 +34,14 @@ apply () {
         ok "$PACKAGE is installed"
     else
         crit "$PACKAGE is absent, installing it"
-        apt_install $PACKAGE
-	    aideinit
-        info "${PACKAGE} is now installed but not fully functionnal, please see readme to go further"
+		if [ $OS_RELEASE -eq 2 ]; then
+			yum install -y $PACKAGE
+			aide --init
+		else
+        	apt_install $PACKAGE
+	    	aideinit
+        	info "${PACKAGE} is now installed but not fully functionnal, please see readme to go further"
+		fi
     fi
 }
 
