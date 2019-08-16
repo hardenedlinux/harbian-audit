@@ -37,6 +37,7 @@ apply () {
 		if [ $OS_RELEASE -eq 2 ]; then
 			yum install -y $PACKAGE
 			aide --init
+			mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz 
 		else
         	apt_install $PACKAGE
 	    	aideinit
