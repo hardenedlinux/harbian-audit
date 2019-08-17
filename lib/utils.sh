@@ -7,24 +7,34 @@
 
 is_debian_9()
 {
-    if $(cat /etc/debian_version | grep -q "^9.[0-9]"); then
-        debug "Debian version is 9.*."
-        FNRET=0
-    else
-        debug "Debian version is not 9.*."
-        FNRET=1
-    fi
+	if [ -r /etc/debian_version ]
+    	if $(cat /etc/debian_version | grep -q "^9.[0-9]"); then
+        	debug "Debian version is 9.*."
+        	FNRET=0
+    	else
+        	debug "Debian version is not 9.*."
+        	FNRET=1
+    	fi
+	else
+		debug "Current OS is not Debian."
+		FNRET=2
+	fi
 }
 
 is_debian_10()
 {
-    if $(cat /etc/debian_version | grep -q "^10.[0-9]"); then
-        debug "Debian version is buster/10."
-        FNRET=0
-    else
-        debug "Debian version is not buster/10."
-        FNRET=1
-    fi
+	if [ -r /etc/debian_version ]
+    	if $(cat /etc/debian_version | grep -q "^10.[0-9]"); then
+       		debug "Debian version is buster/10."
+        	FNRET=0
+    	else
+        	debug "Debian version is not buster/10."
+        	FNRET=1
+    	fi
+	else
+		debug "Current OS is not Debian."
+		FNRET=2
+	fi
 }
 
 is_64bit_arch()
@@ -546,7 +556,6 @@ is_pkg_installed()
 verify_integrity_all_packages()
 {
 	if [ $OS_RELEASE -eq 2 ]; then
-		set +e
 		rpm -Va > /dev/shm/yum_verify_ret
 		COUNT=$(cat /dev/shm/yum_verify_ret | wc -l ) 
     		if [ $COUNT -gt 0 ]; then
@@ -558,7 +567,6 @@ verify_integrity_all_packages()
         		debug "Verify integrity all packages is OK"
         		FNRET=0
     		fi
-		set -e
 	else
 		dpkg -V > /dev/shm/dpkg_verify_ret
     		if [ $(cat /dev/shm/dpkg_verify_ret | wc -l) -gt 0 ]; then
