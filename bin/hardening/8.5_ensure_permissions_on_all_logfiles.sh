@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 9  Hardening
+# harbian audit 9/10 or CentOS Hardening
 #
 
 #
@@ -15,17 +15,21 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 LOGDIR='/var/log'
+ERRPERFILELIST='/dev/shm/8.5-filelist'
 PERMISS_MODE='/7137'
 PERMISS_SET='0640'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-	countnum=$(find $LOGDIR -type f -perm $PERMISS_MODE -ls | wc -l)
+	find $LOGDIR -type f -perm $PERMISS_MODE -ls > $ERRPERFILELIST
+	countnum=$(cat $ERRPERFILELIST | wc -l)
 	if [ $countnum -gt 0 ]; then
 		crit  "Permissions of all log files are not correctly configured!"
+		cat $ERRPERFILELIST
 		FNRET=1
 	else
 		ok "Permissions of all log files have correctly configured!"
+		rm $ERRPERFILELIST
 		FNRET=0
 	fi
 }
@@ -37,6 +41,7 @@ apply () {
 	else
 		warn  "Permissions of all log files are not correctly configured! Set it"
 		chmod -R $PERMISS_SET $LOGDIR/*
+		rm $ERRPERFILELIST
 	fi
 }
 
