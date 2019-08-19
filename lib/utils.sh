@@ -603,6 +603,9 @@ check_param_pair_by_pam()
             if [ "$cndt_value" "-$COMPARE" "$CONDITION" ]; then
                 debug "$cndt_value -$COMPARE  $CONDITION is ok"
                 FNRET=0
+            elif [ "$cndt_value" -eq 0 ]; then
+                debug "$cndt_value -eq 0, is not ok"
+                FNRET=5
             else
                 debug "$cndt_value -$COMPARE  $CONDITION is not ok"
                 FNRET=5
