@@ -7,7 +7,7 @@
 
 is_debian_9()
 {
-	if [ -r /etc/debian_version ]
+	if [ -r /etc/debian_version ]; then
     	if $(cat /etc/debian_version | grep -q "^9.[0-9]"); then
         	debug "Debian version is 9.*."
         	FNRET=0
@@ -23,7 +23,7 @@ is_debian_9()
 
 is_debian_10()
 {
-	if [ -r /etc/debian_version ]
+	if [ -r /etc/debian_version ]; then
     	if $(cat /etc/debian_version | grep -q "^10.[0-9]"); then
        		debug "Debian version is buster/10."
         	FNRET=0
