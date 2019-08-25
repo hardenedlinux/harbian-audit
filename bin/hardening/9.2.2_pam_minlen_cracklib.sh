@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
 #
 
 #
@@ -19,13 +19,15 @@ PAMLIBNAME='pam_cracklib.so'
 PATTERN='^password.*pam_cracklib.so'
 FILE='/etc/pam.d/common-password'
 
+# Redhat/CentOS default use pam_pwquality
+FILE_REDHAT='/etc/security/pwquality.conf'
+
 OPTIONNAME='minlen'
 
 # condition 
-CONDT_VAL=14
+CONDT_VAL=15
 
-# This function will be called if the script status is on enabled / audit mode
-audit () {
+audit_debian () {
     is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
         crit "$PACKAGE is not installed!"
@@ -49,8 +51,32 @@ audit () {
     fi
 }
 
-# This function will be called if the script status is on enabled mode
-apply () {
+audit_redhat () {
+	check_param_pair_by_value $FILE_REDHAT $OPTIONNAME ge $CONDT_VAL  
+	if [ $FNRET = 0 ]; then
+		ok "$OPTIONNAME set condition is $CONDT_VAL"
+	elif [ $FNRET = 1 ]; then
+		crit "$OPTIONNAME set condition is not set $CONDT_VAL"
+	elif [ $FNRET = 2 ]; then
+		crit "$OPTIONNAME is not conf"
+	elif [ $FNRET = 3 ]; then
+		crit "Config file $FILE_REDHAT is not exist!"
+    fi
+}
+
+# This function will be called if the script status is on enabled / audit mode
+audit () {
+	if [ $OS_RELEASE -eq 1 ]; then
+		audit_debian
+	elif [ $OS_RELEASE -eq 2 ]; then
+		audit_redhat
+	else
+		crit "Current OS is not support!"
+		FNRET=44
+	fi
+}
+
+apply_debian () {
     if [ $FNRET = 0 ]; then
         ok "$PACKAGE is installed"
     elif [ $FNRET = 1 ]; then
@@ -68,6 +94,21 @@ apply () {
         crit "$OPTIONNAME set is not match legally, reset it to $CONDT_VAL"
         reset_option_to_password_check $FILE $PAMLIBNAME "$OPTIONNAME" "$CONDT_VAL"
     fi 
+}
+
+apply_redhat () {
+	:
+}
+
+# This function will be called if the script status is on enabled mode
+apply () {
+	if [ $OS_RELEASE -eq 1 ]; then
+		apply_debian
+	elif [ $OS_RELEASE -eq 2 ]; then
+		apply_redhat
+	else
+		crit "Current OS is not support!"
+	fi
 }
 
 # This function will check config parameters required

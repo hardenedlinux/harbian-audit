@@ -580,6 +580,42 @@ verify_integrity_all_packages()
 	fi
 }
 
+# Check paramer with value 
+# example : minlen = 9
+# ruturn: 0  1  2  3 
+check_param_pair_by_value ()
+{   
+	FILENAME=$1
+	OPTION=$2
+	COMPARE=$3
+	OP_VALUE=$4
+
+    #Example:
+    # FILENAME="/etc/security/pwquality.conf"
+    # OPTION="minlen"
+	# COMPARE="ge"
+    # OP_VALUE=15
+	if [ -f "$FILENAME" ];then
+		RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILENAME | grep "^$OPTION[[:space:]]=[[:space:]]")
+		if [ $(echo $RESULT | wc -l) -eq 1 ]; then
+	        debug "$OPTION is conf"
+			if [ "$(echo $RESULT | awk -F'= ' '{print $2}')" "-$COMPARE" "$OP_VALUE" ]; then 
+            	debug "$OPTION conf is right."
+            	FNRET=0
+			else
+           		debug "$OPTION conf is not right."
+           		FNRET=1
+			fi
+        else
+            debug "$OPTION is not conf of $FILENAME"
+            FNRET=2
+        fi
+    else
+        debug "$FILENAME is not exist"
+        FNRET=3   
+    fi
+}
+
 check_param_pair_by_pam()
 {   
     LOCATION=$1
