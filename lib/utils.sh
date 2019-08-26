@@ -595,18 +595,20 @@ check_param_pair_by_value ()
     # OPTION="minlen"
 	# COMPARE="ge"
     # OP_VALUE=15
+
 	if [ -f "$FILENAME" ];then
-		RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILENAME | grep "^$OPTION[[:space:]]=[[:space:]]")
-		if [ $(echo $RESULT | wc -l) -eq 1 ]; then
+		COUNT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILENAME | grep "^$OPTION[[:space:]]=[[:space:]]" | wc -l)
+		if [ $COUNT -eq 1 ]; then
 	        debug "$OPTION is conf"
+			RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILENAME | grep "^$OPTION[[:space:]]=[[:space:]]")
 			if [ "$(echo $RESULT | awk -F'= ' '{print $2}')" "-$COMPARE" "$OP_VALUE" ]; then 
-            	debug "$OPTION conf is right."
-            	FNRET=0
+				debug "$OPTION conf is right."
+				FNRET=0
 			else
-           		debug "$OPTION conf is not right."
-           		FNRET=1
+				debug "$OPTION conf is not right."
+				FNRET=1
 			fi
-        else
+       	else
             debug "$OPTION is not conf of $FILENAME"
             FNRET=2
         fi

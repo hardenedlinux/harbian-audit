@@ -54,11 +54,11 @@ audit_debian () {
 audit_redhat () {
 	check_param_pair_by_value $FILE_REDHAT $OPTIONNAME ge $CONDT_VAL  
 	if [ $FNRET = 0 ]; then
-		ok "$OPTIONNAME set condition is $CONDT_VAL"
+		ok "Option $OPTIONNAME set condition is $CONDT_VAL in $FILE_REDHAT"
 	elif [ $FNRET = 1 ]; then
-		crit "$OPTIONNAME set condition is not set $CONDT_VAL"
+		crit "Option $OPTIONNAME set condition is not set $CONDT_VAL in $FILE_REDHAT"
 	elif [ $FNRET = 2 ]; then
-		crit "$OPTIONNAME is not conf"
+		crit "Option $OPTIONNAME is not conf in $FILE_REDHAT"
 	elif [ $FNRET = 3 ]; then
 		crit "Config file $FILE_REDHAT is not exist!"
     fi
@@ -97,7 +97,17 @@ apply_debian () {
 }
 
 apply_redhat () {
-	:
+	if [ $FNRET = 0 ]; then
+		ok "$OPTIONNAME set condition is $CONDT_VAL in $FILE_REDHAT"
+	elif [ $FNRET = 1 ]; then
+		warn "Set option $OPTIONNAME to $CONDT_VAL in $FILE_REDHAT"
+		replace_in_file $FILE_REDHAT "^$OPTIONNAME.*" "$OPTIONNAME = $CONDT_VAL"
+	elif [ $FNRET = 2 ]; then
+		warn "$OPTIONNAME is not conf, add to $FILE_REDHAT"
+		add_end_of_file $FILE_REDHAT "$OPTIONNAME = $CONDT_VAL"
+	elif [ $FNRET = 3 ]; then
+		crit "Config file $FILE_REDHAT is not exist!"
+    fi
 }
 
 # This function will be called if the script status is on enabled mode
