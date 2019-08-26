@@ -39,9 +39,9 @@ audit_debian () {
             ok "$PATTERN is present in $FILE"
             check_param_pair_by_pam $FILE $PAMLIBNAME $OPTIONNAME le $CONDT_VAL  
             if [ $FNRET = 0 ]; then
-                ok "$OPTIONNAME set condition is $CONDT_VAL"
+                ok "$OPTIONNAME set condition is less than or equal to $CONDT_VAL"
             else
-                crit "$OPTIONNAME set condition is $CONDT_VAL"
+                crit "$OPTIONNAME set condition is greater than $CONDT_VAL"
                 #FNRET=3
             fi
         else
@@ -54,9 +54,9 @@ audit_debian () {
 audit_redhat () {
 	check_param_pair_by_value $FILE_REDHAT $OPTIONNAME le $CONDT_VAL
 	if [ $FNRET = 0 ]; then
-		ok "Option $OPTIONNAME set condition is $CONDT_VAL in $FILE_REDHAT"
+		ok "Option $OPTIONNAME set condition is less than or equal to $CONDT_VAL in $FILE_REDHAT"
 	elif [ $FNRET = 1 ]; then
-		crit "Option $OPTIONNAME set condition is not set $CONDT_VAL in $FILE_REDHAT"
+		crit "Option $OPTIONNAME set condition is greater than $CONDT_VAL in $FILE_REDHAT"
 	elif [ $FNRET = 2 ]; then
 		crit "Option $OPTIONNAME is not conf in $FILE_REDHAT"
 	elif [ $FNRET = 3 ]; then
@@ -98,9 +98,9 @@ apply_debian () {
 
 apply_redhat () {
 	if [ $FNRET = 0 ]; then
-		ok "$OPTIONNAME set condition is $CONDT_VAL in $FILE_REDHAT"
+		ok "$OPTIONNAME set condition is less than or equal to $CONDT_VAL in $FILE_REDHAT"
 	elif [ $FNRET = 1 ]; then
-		warn "Set option $OPTIONNAME to $CONDT_VAL in $FILE_REDHAT"
+		warn "Reset option $OPTIONNAME to $CONDT_VAL in $FILE_REDHAT"
 		replace_in_file $FILE_REDHAT "^$OPTIONNAME.*" "$OPTIONNAME = $CONDT_VAL"
 	elif [ $FNRET = 2 ]; then
 		warn "$OPTIONNAME is not conf, add to $FILE_REDHAT"

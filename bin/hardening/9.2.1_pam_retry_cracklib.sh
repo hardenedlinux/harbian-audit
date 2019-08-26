@@ -49,9 +49,9 @@ audit () {
             ok "$PATTERN is present in $FILE"
             check_param_pair_by_pam $FILE $PAMLIBNAME $OPTIONNAME le $CONDT_VAL  
             if [ $FNRET = 0 ]; then
-                ok "$OPTIONNAME set condition is $CONDT_VAL"
+                ok "$OPTIONNAME set condition is less than or equal to $CONDT_VAL"
             else
-                crit "$OPTIONNAME set condition is $CONDT_VAL"
+                crit "$OPTIONNAME set condition is greater than $CONDT_VAL"
                 #FNRET=3
             fi
         else
