@@ -114,7 +114,7 @@ apply_redhat () {
 			ok "$OPTIONNAME is already configured in $FILE"
 		else
 			warn "$OPTIONNAME is not configured in $FILE, set it"
-			sed -i "s;\($PATTERN.*$OPTIONNAME\);\1 $OPTIONNAME;" $FILE
+			sed -i "s;\($PATTERN.*\);\1 $OPTIONNAME;" $FILE
 		fi
 	done
 }
