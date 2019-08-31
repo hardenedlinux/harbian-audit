@@ -19,8 +19,8 @@ FILENAME1='shosts.equiv'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    COUNT=$(find / -name "${FILENAME}" | wc -l)
-    COUNT1=$(find / -name "${FILENAME1}" | wc -l)
+    COUNT=$(find / -xdev -name "${FILENAME}" | wc -l)
+    COUNT1=$(find / -xdev -name "${FILENAME1}" | wc -l)
     if [ "$COUNT" -ne 0 -o "$COUNT1" -ne 0 ]; then
         crit "$FILENAME or $FILENAME1 file is exist on system."
         FNRET=1

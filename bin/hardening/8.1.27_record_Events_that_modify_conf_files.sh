@@ -13,13 +13,13 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F path=$(find / -name audisp-remote.conf) -F perm=wa -k config_file_change
--a always,exit -F path=$(find / -name auditd.conf) -F perm=wa -k config_file_change
+AUDIT_PARAMS='-a always,exit -F path=$(find /etc/ -name audisp-remote.conf) -F perm=wa -k config_file_change
+-a always,exit -F path=$(find /etc/ -name auditd.conf) -F perm=wa -k config_file_change
 -a always,exit -F dir=$(find /etc/audit/ -name rules.d) -F perm=wa -k config_file_change
--a always,exit -F path=$(find / -name grub) -F perm=wa -k config_file_change
--a always,exit -F path=$(find / -name fstab) -F perm=wa -k config_file_change
--a always,exit -F path=$(find / -name hosts.deny) -F perm=wa -k config_file_change
--a always,exit -F path=$(find / -name login.defs) -F perm=wa -k config_file_change
+-a always,exit -F path=$(find /etc/ -name grub) -F perm=wa -k config_file_change
+-a always,exit -F path=$(find /etc/ -name fstab) -F perm=wa -k config_file_change
+-a always,exit -F path=$(find /etc/ -name hosts.deny) -F perm=wa -k config_file_change
+-a always,exit -F path=$(find /etc/ -name login.defs) -F perm=wa -k config_file_change
 -a always,exit -F dir=/etc/pam.d/ -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/profile -F perm=wa -k config_file_change
 -a always,exit -F dir=/etc/profile.d/ -F perm=wa -k config_file_change

@@ -7,9 +7,10 @@
 #
 # 12.10 Find SUID System Executables (Not Scored)
 #
+# set -e # One error, it's over, for some user to audit desktop evn  
 
-set -e # One error, it's over
-set -u # One variable unset, it's over
+# One variable unset, it's over
+set -u
 
 HARDENING_LEVEL=2
 
