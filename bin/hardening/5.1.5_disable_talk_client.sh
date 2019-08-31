@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -14,9 +15,13 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=2
 
 PACKAGES='talk inetutils-talk'
+PACKAGES_REDHAT='talk'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGES=$PACKAGES_REDHAT
+	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
@@ -29,12 +34,19 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGES=$PACKAGES_REDHAT
+	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
             warn "$PACKAGE is installed, purging"
-            apt-get purge $PACKAGE -y
-            apt-get autoremove
+			if [ $OS_RELEASE -eq 2 ]; then
+				yum remove $PACKAGE -y
+			else
+            	apt-get purge $PACKAGE -y
+            	apt-get autoremove
+			fi
         else
             ok "$PACKAGE is absent"
         fi

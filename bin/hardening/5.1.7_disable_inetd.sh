@@ -1,53 +1,56 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
-# 5.3 Ensure daytime is not enabled (Scored)
+# 5.1.7 Ensure xinetd is not enabled (Scored)
 #
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
-HARDENING_LEVEL=2
+HARDENING_LEVEL=3
 
-FILE='/etc/inetd.conf'
-PATTERN='^daytime'
+PACKAGES='openbsd-inetd xinetd rlinetd'
+PACKAGES_REDHAT='xinetd'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    does_file_exist $FILE
-    if [ $FNRET != 0 ]; then
-        ok "$FILE does not exist"
-    else
-        does_pattern_exist_in_file $FILE $PATTERN
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGES=$PACKAGES_REDHAT
+	fi
+    for PACKAGE in $PACKAGES; do 
+        is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
-            crit "$PATTERN exists, daytime service is enabled!"
+            crit "$PACKAGE is installed"
         else
-            ok "$PATTERN is not present in $FILE"
+            ok "$PACKAGE is absent"
         fi
-    fi
+    done
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    does_file_exist $FILE
-    if [ $FNRET != 0 ]; then
-        ok "$FILE does not exist"
-    else
-        info "$FILE exists, checking patterns"
-        does_pattern_exist_in_file $FILE $PATTERN
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGES=$PACKAGES_REDHAT
+	fi
+    for PACKAGE in $PACKAGES; do 
+        is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
-            warn "$PATTERN is present in $FILE, purging it"
-            backup_file $FILE
-            ESCAPED_PATTERN=$(sed "s/|\|(\|)/\\\&/g" <<< $PATTERN)
-            sed -ie "s/$ESCAPED_PATTERN/#&/g" $FILE
+            warn "$PACKAGE is installed, purging"
+			if [ $OS_RELEASE -eq 2 ]; then
+				yum remove $PACKAGE -y
+			else
+            	apt-get purge $PACKAGE -y
+            	apt-get autoremove
+			fi
         else
-            ok "$PATTERN is not present in $FILE"
+            ok "$PACKAGE is absent"
         fi
-    fi
+    done
 }
 
 # This function will check config parameters required

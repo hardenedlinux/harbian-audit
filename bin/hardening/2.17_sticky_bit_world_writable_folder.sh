@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
-#
+# harbian audit 7/8/9/10 or CentOS Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 
 #
 # 2.17 Set Sticky Bit on All World-Writable Directories (Scored)
@@ -24,6 +24,15 @@ audit () {
     else
         ok "All world writable directories have a sticky bit"
     fi
+	# Check sticky dir group-owned is root
+    RESULT=$(df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' $SUDO_CMD find '{}' -xdev -type d ! -group root \( -perm -0002 -a -perm -1000 \) -print 2>/dev/null)
+    if [ ! -z "$RESULT" ]; then
+        crit "Some world writable directories are sticky bit mode, but not group owned is root!"
+        FORMATTED_RESULT=$(sed "s/ /\n/g" <<< $RESULT | sort | uniq | tr '\n' ' ')
+        crit "$FORMATTED_RESULT"
+    else
+        ok "All world writable directories have a sticky bit, and group owner is root."
+    fi
 }
 
 # This function will be called if the script status is on enabled mode
@@ -33,6 +42,12 @@ apply () {
         df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 2>/dev/null | xargs chmod a+t
     else
         ok "All world writable directories have a sticky bit, nothing to apply"
+    fi
+    RESULT=$(df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' $SUDO_CMD find '{}' -xdev -type d ! -group root \( -perm -0002 -a -perm -1000 \) -print 2>/dev/null)
+    if [ ! -z "$RESULT" ]; then
+		df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' $SUDO_CMD find '{}' -xdev -type d ! -group root \( -perm -0002 -a -perm -1000 \) -print 2>/dev/null | xargs chgrp root 
+    else
+        ok "All world writable directories have a sticky bit, and group owner is root."
     fi
 }
 

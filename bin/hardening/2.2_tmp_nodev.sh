@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit Debian 7/8/9 Hardening
+# harbian audit Debian 7/8/9 or CentOS Hardening
 # Modify by: Samson-W (sccxboy@gmail.com)
 #
 
@@ -17,8 +17,9 @@ HARDENING_LEVEL=2
 # Quick factoring as many script use the same logic
 PARTITION="/tmp"
 OPTION="nodev"
-SERVICEPATH="/usr/share/systemd/tmp.mount"
 SERVICENAME="tmp.mount"
+SERVICEPATH="/usr/share/systemd/tmp.mount"
+REDHAT_SERVICEPATH="/usr/lib/systemd/system/tmp.mount"
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -45,8 +46,12 @@ audit () {
        fi
     else
         warn "$PARTITION is not partition in /etc/fstab, check tmp.mount service"
-        if [ -e $SERVICEPATH ]; then
-            has_mount_option_systemd $SERVICEPATH $OPTION 
+        if [ -e $SERVICEPATH -o -e $REDHAT_SERVICEPATH ]; then
+			if [ $OS_RELEASE -eq 2 ]; then
+				has_mount_option_systemd $REDHAT_SERVICEPATH $OPTION 
+			else
+				has_mount_option_systemd $SERVICEPATH $OPTION 
+			fi
             if [ $FNRET -gt 0 ]; then
                 crit "$PARTITION has no option $OPTION in systemd service!"
                 FNRET=3
@@ -62,7 +67,11 @@ audit () {
                 fi
             fi
         else
-            crit "$TMPMOUNTO is not exist!"
+			if [ $OS_RELEASE -eq 2 ]; then
+				crit "$REDHAT_SERVICEPATH is not exist!"	
+			else
+				crit "$SERVICEPATH is not exist!"
+			fi
             FNRET=2  
         fi
     fi
@@ -86,7 +95,11 @@ apply () {
         fi
     elif [ $FNRET = 3 ]; then
         info "Adding $OPTION to systemd"
-        add_option_to_systemd $SERVICEPATH $OPTION $SERVICENAME
+		if [ $OS_RELEASE -eq 2 ]; then
+			add_option_to_systemd $REDHAT_SERVICEPATH $OPTION $SERVICENAME
+		else
+			add_option_to_systemd $SERVICEPATH $OPTION $SERVICENAME
+		fi
         remount_partition_by_systemd $SERVICENAME $PARTITION
     elif [ $FNRET = 4 ]; then
         info "Remounting $PARTITION from fstab"

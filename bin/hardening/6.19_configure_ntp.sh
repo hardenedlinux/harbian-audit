@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
-#
+# harbian audit 7/8/9 or CentOS Hardening
+# todo base redhat7 v2r3 of STIG
 
 #
-# 6.5 Configure Network Time Protocol (NTP) (Scored)
+# 6.19 Configure Network Time Protocol (NTP) (Scored)
 # Modify Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 

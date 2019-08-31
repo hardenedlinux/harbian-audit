@@ -1,0 +1,78 @@
+# How to persistent nft rules with debian 10 
+
+## Test platform info 
+
+Debian  10.0   
+netfilter-persistent    1.0.11  
+nftables    0.9.0-2
+
+## Pre-Install 
+```
+$ sudo apt-get install -y nftables netfilter-persistent 
+```  
+
+## Uninstall iptables 
+```
+$ sudo apt purge --autoremove iptables 
+```
+
+## How to enable netfilter-persistent service
+
+netfilter-persistent service is auto running when netfilter-persistent was installed.
+
+Check service status:
+```
+$ sudo systemctl status netfilter-persistent
+```
+
+If netfilter-persistent service is not started, use the following command to enable netfilter-persistent service:
+```
+$ sudo systemctl start netfilter-persistent
+```
+
+## How to config for persistent nft rules  
+
+### Get nftables ruleset  
+```
+~$ wget https://raw.githubusercontent.com/hardenedlinux/harbian-audit/master/docs/configurations/etc.nftables.conf 
+~$ sudo mv etc.nftables.conf /etc/nftables.conf 
+``` 
+
+Note: Please replace ens33 to interface name of your device 
+
+### Get plugin of netfilter-persistent 
+```
+~$ wget https://raw.githubusercontent.com/hardenedlinux/harbian-audit/master/docs/configurations/usr.share.netfilter-persistent.plugins.d.15-nft
+~$ sudo mv usr.share.netfilter-persistent.plugins.d.15-nft /usr/share/netfilter-persistent/plugins.d/15-nft
+~$ sudo chmod 755 /usr/share/netfilter-persistent/plugins.d/15-nft 
+```
+
+## Well-done 
+Nft rules would auto restore nftables rules when Operation system restart, or manual to exec following command:
+```
+$ sudo netfilter-persistent start 
+run-parts: executing /usr/share/netfilter-persistent/plugins.d/15-nft start 
+```
+
+## Additional usage 
+### Flush nft rules 
+```
+$ sudo netfilter-persistent flush
+run-parts: executing /usr/share/netfilter-persistent/plugins.d/15-nft flush 
+```
+### Save nft rules 
+```
+$ sudo netfilter-persistent save 
+run-parts: executing /usr/share/netfilter-persistent/plugins.d/15-nft save 
+```
+
+### Restore nft rules 
+```
+$ sudo netfilter-persistent start
+run-parts: executing /usr/share/netfilter-persistent/plugins.d/15-nft start 
+```
+
+## Reference 
+[http://manpages.org/netfilter-persistent/8](http://manpages.org/netfilter-persistent/8)  
+
+

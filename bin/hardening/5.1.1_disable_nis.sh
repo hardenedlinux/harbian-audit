@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -14,10 +15,14 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 PACKAGE='nis'
+PACKAGE_REDHAT='ypserv'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    is_pkg_installed $PACKAGE
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE=$PACKAGE_REDHAT
+	fi
+	is_pkg_installed $PACKAGE
     if [ $FNRET = 0 ]; then
         crit "$PACKAGE is installed!"
     else
@@ -28,11 +33,18 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE=$PACKAGE_REDHAT
+	fi
     is_pkg_installed $PACKAGE
     if [ $FNRET = 0 ]; then
         crit "$PACKAGE is installed, purging it"
-        apt-get purge $PACKAGE -y
-        apt-get autoremove
+		if [ $OS_RELEASE -eq 2 ]; then
+			yum -y autoremove $PACKAGE
+		else
+        	apt-get purge $PACKAGE -y
+        	apt-get autoremove
+		fi
     else
         ok "$PACKAGE is absent"
     fi

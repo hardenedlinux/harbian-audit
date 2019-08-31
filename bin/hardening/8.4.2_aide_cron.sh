@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 9 Hardening
+# harbian audit 9/10 or CentOS Hardening
 #
 
 #

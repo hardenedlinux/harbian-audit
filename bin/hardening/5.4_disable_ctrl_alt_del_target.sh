@@ -1,11 +1,12 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 9 or CentOS Hardening
 #
 
 #
-# 5.5 Ensure discard is not enabled (Scored)
+# 5.4 Ensure ctrl-alt-del is disabled (Scored)
+# Author : Samson wen, Samson <sccxboy@gmail.com> 
 #
 
 set -e # One error, it's over
@@ -13,40 +14,35 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
 
-FILE='/etc/inetd.conf'
-PATTERN='^discard'
+TARGETNAME='ctrl-alt-del.target'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    does_file_exist $FILE
-    if [ $FNRET != 0 ]; then
-        ok "$FILE does not exist"
+    if [ $(find /lib/systemd/ /etc/systemd/ -name ctrl-alt-del.target -exec ls -l {} \; | grep -c "/dev/null") -ne $(find /lib/systemd/ /etc/systemd/ -name ctrl-alt-del.target -exec ls -l {} \; | wc -l) ]; then
+        crit "$TARGETNAME is enabled."
+        FNRET=1
     else
-        does_pattern_exist_in_file $FILE $PATTERN
-        if [ $FNRET = 0 ]; then
-            crit "$PATTERN exists, discard service is enabled!"
-        else
-            ok "$PATTERN is not present in $FILE"
-        fi
+        ok "$TARGETNAME is disabled."
+        FNRET=0
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    does_file_exist $FILE
-    if [ $FNRET != 0 ]; then
-        ok "$FILE does not exist"
+    if [ $FNRET = 0 ]; then
+        ok "$TARGETNAME is disabled."
     else
-        info "$FILE exists, checking patterns"
-        does_pattern_exist_in_file $FILE $PATTERN
-        if [ $FNRET = 0 ]; then
-            warn "$PATTERN is present in $FILE, purging it"
-            backup_file $FILE
-            ESCAPED_PATTERN=$(sed "s/|\|(\|)/\\\&/g" <<< $PATTERN)
-            sed -ie "s/$ESCAPED_PATTERN/#&/g" $FILE
-        else
-            ok "$PATTERN is not present in $FILE"
-        fi
+        TARGETS=$(find /lib/systemd/ /etc/systemd/ -name ctrl-alt-del.target -exec ls {} \;| grep -v "/dev/null" | awk '{print $NF}')
+        for TARGET in $TARGETS
+        do
+            warn "Disable $TARGET"
+            if [ $TARGET ==  "/etc/systemd/*" ]; then
+                systemctl mask $TARGET
+            else
+                rm $TARGET 
+            fi
+        done
+        systemctl daemon-reload
     fi
 }
 

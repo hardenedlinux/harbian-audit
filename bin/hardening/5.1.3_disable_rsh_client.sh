@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -18,28 +19,36 @@ PACKAGES='rsh-client rsh-redone-client heimdal-clients'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    for PACKAGE in $PACKAGES; do 
-        is_pkg_installed $PACKAGE
-        if [ $FNRET = 0 ]; then
-            crit "$PACKAGE is installed"
-        else
-            ok "$PACKAGE is absent"
-        fi
-    done
+	if [ $OS_RELEASE -eq 2 ]; then
+		ok "Redhat or CentOS does not have this check, so PASS"
+	else 
+    	for PACKAGE in $PACKAGES; do 
+        	is_pkg_installed $PACKAGE
+        	if [ $FNRET = 0 ]; then
+            	crit "$PACKAGE is installed"
+        	else
+            	ok "$PACKAGE is absent"
+        	fi
+    	done
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    for PACKAGE in $PACKAGES; do 
-        is_pkg_installed $PACKAGE
-        if [ $FNRET = 0 ]; then
-            warn "$PACKAGE is installed, purging"
-            apt-get purge $PACKAGE -y
-            apt-get autoremove
-        else
-            ok "$PACKAGE is absent"
-        fi
-    done
+	if [ $OS_RELEASE -eq 2 ]; then
+		ok "Redhat or CentOS does not have this check, so PASS"
+	else 
+    	for PACKAGE in $PACKAGES; do 
+        	is_pkg_installed $PACKAGE
+        	if [ $FNRET = 0 ]; then
+            	warn "$PACKAGE is installed, purging"
+            	apt-get purge $PACKAGE -y
+            	apt-get autoremove
+        	else
+            	ok "$PACKAGE is absent"
+        	fi
+    	done
+	fi
 }
 
 # This function will check config parameters required

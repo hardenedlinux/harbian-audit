@@ -1,11 +1,12 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
-#
+# harbian audit 7/8/9/10 or CentOS Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
+# todo: SELinux
 
 #
-# 4.5 Activate AppArmor (Scored)
+# 4.5 Activate AppArmor/SELinux (Scored)
 # Add by Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -20,8 +21,7 @@ PATTERN="apparmor=1[[:space:]]*security=apparmor"
 SETSTRING="apparmor=1 security=apparmor" 
 GRUBFILE='/etc/default/grub'
 
-# This function will be called if the script status is on enabled / audit mode
-audit () {
+audit_debian () {
     for PACKAGE in ${PACKAGES}
     do
         is_pkg_installed $PACKAGE
@@ -49,8 +49,24 @@ audit () {
     fi
 }
 
-# This function will be called if the script status is on enabled mode
-apply () {
+# Todo
+audit_redhat () {
+	:	
+}
+
+# This function will be called if the script status is on enabled / audit mode
+audit () {
+	if [ $OS_RELEASE -eq 1 ]; then
+        audit_debian
+    elif [ $OS_RELEASE -eq 2 ]; then
+        audit_redhat
+    else
+        crit "Current OS is not support!"
+        FNRET=44
+    fi
+}
+
+apply_debian () {
     if [ $FNRET = 0 ]; then
         ok "AppArmor profiles is enable in the system "
     elif [ $FNRET = 1 ]; then
@@ -66,6 +82,22 @@ apply () {
     elif [ $FNRET = 3 ]; then
         warn "Enable AppArmor profiles in the system "
         /usr/sbin/aa-enforce /etc/apparmor.d/*
+    fi
+}
+
+# Todo
+apply_redhat () {
+	:
+}
+
+# This function will be called if the script status is on enabled mode
+apply () {
+	if [ $OS_RELEASE -eq 1 ]; then
+        apply_debian
+    elif [ $OS_RELEASE -eq 2 ]; then
+        apply_redhat
+    else
+        crit "Current OS is not support!"
     fi
 }
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
 #
 
 #
@@ -19,6 +19,12 @@ PAMLIBNAME='pam_cracklib.so'
 PATTERN='^password.*pam_cracklib.so'
 FILE='/etc/pam.d/common-password'
 
+# Redhat/CentOS default use pam_pwquality
+PACKAGE_REDHAT='libpwquality'
+PAMLIBNAME_REDHAT='pam_pwquality.so'
+PATTERN_REDHAT='^password.*pam_pwquality.so'
+FILE_REDHAT='/etc/pam.d/system-auth'
+
 OPTIONNAME='retry'
 
 # condition 
@@ -26,6 +32,12 @@ CONDT_VAL=3
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE=$PACKAGE_REDHAT
+		PAMLIBNAME=$PAMLIBNAME_REDHAT
+		PATTERN=$PATTERN_REDHAT
+		FILE=$FILE_REDHAT
+	fi
     is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
         crit "$PACKAGE is not installed!"
@@ -37,9 +49,9 @@ audit () {
             ok "$PATTERN is present in $FILE"
             check_param_pair_by_pam $FILE $PAMLIBNAME $OPTIONNAME le $CONDT_VAL  
             if [ $FNRET = 0 ]; then
-                ok "$OPTIONNAME set condition is $CONDT_VAL"
+                ok "$OPTIONNAME set condition is less than or equal to $CONDT_VAL"
             else
-                crit "$OPTIONNAME set condition is $CONDT_VAL"
+                crit "$OPTIONNAME set condition is greater than $CONDT_VAL"
                 #FNRET=3
             fi
         else
@@ -51,11 +63,21 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE=$PACKAGE_REDHAT
+		PAMLIBNAME=$PAMLIBNAME_REDHAT
+		PATTERN=$PATTERN_REDHAT
+		FILE=$FILE_REDHAT
+	fi
     if [ $FNRET = 0 ]; then
         ok "$PACKAGE is installed"
     elif [ $FNRET = 1 ]; then
         crit "$PACKAGE is absent, installing it"
-        apt_install $PACKAGE
+		if [ $OS_RELEASE -eq 2 ]; then
+			yum install -y $PACKAGE
+		else
+			apt_install $PACKAGE
+		fi
     elif [ $FNRET = 2 ]; then
         crit "$PATTERN is not present in $FILE, add default config to $FILE"
         add_line_file_before_pattern $FILE "password    requisite           pam_cracklib.so retry=3 minlen=8 difok=3" "# pam-auth-update(8) for details."

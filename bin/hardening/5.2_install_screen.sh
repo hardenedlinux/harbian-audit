@@ -1,53 +1,44 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
 #
 
 #
-# 5.4 Ensure echo is not enabled (Scored)
+# 5.2 Install screen (Scored)
+# Author : Samson wen, Samson <sccxboy@gmail.com> 
 #
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
-HARDENING_LEVEL=2
+HARDENING_LEVEL=4
 
-FILE='/etc/inetd.conf'
-PATTERN='^echo'
+PACKAGE='screen'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    does_file_exist $FILE
+    is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
-        ok "$FILE does not exist"
+        crit "$PACKAGE is not installed!"
     else
-        does_pattern_exist_in_file $FILE $PATTERN
-        if [ $FNRET = 0 ]; then
-            crit "$PATTERN exists, echo service is enabled!"
-        else
-            ok "$PATTERN is not present in $FILE"
-        fi
+        ok "$PACKAGE is installed"
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    does_file_exist $FILE
-    if [ $FNRET != 0 ]; then
-        ok "$FILE does not exist"
-    else
-        info "$FILE exists, checking patterns"
-        does_pattern_exist_in_file $FILE $PATTERN
+        is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
-            warn "$PATTERN is present in $FILE, purging it"
-            backup_file $FILE
-            ESCAPED_PATTERN=$(sed "s/|\|(\|)/\\\&/g" <<< $PATTERN)
-            sed -ie "s/$ESCAPED_PATTERN/#&/g" $FILE
+            ok "$PACKAGE is installed"
         else
-            ok "$PATTERN is not present in $FILE"
+            warn "$PACKAGE is absent, installing it"
+			if [ $OS_RELEASE -eq 2 ]; then 
+				yum install -y $PACKAGE
+			else
+            	apt_install $PACKAGE
+			fi
         fi
-    fi
 }
 
 # This function will check config parameters required

@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -28,16 +29,26 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    is_pkg_installed $PACKAGE
-    if [ $FNRET = 0 ]; then
-        crit "$PACKAGE is installed, purging it"
-        /usr/sbin/prelink -ua
-        apt-get purge $PACKAGE -y
-        apt-get autoremove
-    else
-        ok "$PACKAGE is absent"
-    fi
-    :
+	if [ $OS_RELEASE -eq 2 ]; then 
+		if [ $FNRET = 0 ]; then
+        	crit "$PACKAGE is installed, purging it"
+			"$(which $PACKAGE)" -ua
+			yum autoremove $PACKAGE -y
+		else
+        	ok "$PACKAGE is absent"
+		fi
+	elif [ $OS_RELEASE -eq 1 ]; then
+		if [ $FNRET = 0 ]; then
+        	crit "$PACKAGE is installed, purging it"
+        	/usr/sbin/prelink -ua
+        	apt-get purge $PACKAGE -y
+        	apt-get autoremove
+    	else
+        	ok "$PACKAGE is absent"
+    	fi
+	else
+		crit "Current OS is not support!"
+	fi
 }
 
 # This function will check config parameters required

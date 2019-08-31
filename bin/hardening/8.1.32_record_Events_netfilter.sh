@@ -1,36 +1,37 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9/10 or CentOS Hardening
+# harbian audit 10 Hardening
 #
 
 #
-# 8.1.23  Recored Events that privileged-postfix command usage (Scored)
-# Author : Samson wen, Samson <sccxboy@gmail.com>
-#
+# 8.1.32 Record netfilter related Events (Scored)
+# Author: Samson-W (samson@hardenedlinux.org) author add this 
+# todo test for centos
 
+set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F path=$(which postdrop 2>/dev/null) -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-postfix
--a always,exit -F path=$(which postqueue 2>/dev/null) -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-postfix'
+AUDIT_PARAMS='-w /etc/nftables.conf -p wa -k nft_config_file_change
+-w /usr/share/netfilter-persistent/plugins.d/ -p wa -k nft_config_file_change
+-a always,exit -F path=/usr/sbin/netfilter-persistent -F perm=x -F auid>=1000 -F auid!=4294967295 -k nft_persistent_use
+-a always,exit -F path=/usr/sbin/nft -F perm=x -F auid>=1000 -F auid!=4294967295 -k nft_cmd_use'
 
-set -e # One error, it's over
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    # define custom IFS and save default one
-    d_IFS=$IFS
-    c_IFS=$'\n'
-    IFS=$c_IFS
-    for AUDIT_VALUE in $AUDIT_PARAMS; do
-		check_audit_path $AUDIT_VALUE 
-		if [ $FNRET -eq 1 ];then
-			crit "path is not exsit! Please check file path is exist!"
-			continue
-		else
+	is_debian_10
+	if [ $FNRET != 0 ]; then 
+		ok "OS not support nft, so pass"
+	else 
+    	# define custom IFS and save default one
+    	d_IFS=$IFS
+    	c_IFS=$'\n'
+    	IFS=$c_IFS
+    	for AUDIT_VALUE in $AUDIT_PARAMS; do
         	debug "$AUDIT_VALUE should be in file $FILE"
         	IFS=$d_IFS
         	does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
@@ -40,20 +41,19 @@ audit () {
         	else
             	ok "$AUDIT_VALUE is present in $FILE"
         	fi
-		fi
-    done
-    IFS=$d_IFS
+    	done
+    	IFS=$d_IFS
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    IFS=$'\n'
-    for AUDIT_VALUE in $AUDIT_PARAMS; do
-		check_audit_path $AUDIT_VALUE 
-		if [ $FNRET -eq 1 ];then
-			crit "path is not exsit! Please check file path is exist!"
-			continue
-		else
+	is_debian_10
+	if [ $FNRET != 0 ]; then 
+		ok "OS not support nft, so pass"
+	else 
+    	IFS=$'\n'
+    	for AUDIT_VALUE in $AUDIT_PARAMS; do
         	debug "$AUDIT_VALUE should be in file $FILE"
         	does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
         	if [ $FNRET != 0 ]; then
@@ -63,13 +63,13 @@ apply () {
         	else
             	ok "$AUDIT_VALUE is present in $FILE"
         	fi
-		fi
-    done
+    	done
+	fi
 }
 
 # This function will check config parameters required
 check_config() {
-    :
+	:
 }
 
 # Source Root Dir Parameter

@@ -2,7 +2,7 @@
 
 #
 # harbian audit 7/8/9  Hardening
-#
+# todo test for centos
 
 #
 # 6.17 Ensure virul scan Server is enabled (Scored)

@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
+#Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -17,9 +18,9 @@ LIMIT_FILE='/etc/security/limits.conf'
 LIMIT_PATTERN='^\*[[:space:]]*hard[[:space:]]*core[[:space:]]*0$'
 SYSCTL_PARAM='fs.suid_dumpable'
 SYSCTL_EXP_RESULT=0
+SERVICE_NAME='kdump'
 
-# This function will be called if the script status is on enabled / audit mode
-audit () {
+audit_debian () {
     does_pattern_exist_in_file $LIMIT_FILE $LIMIT_PATTERN
     if [ $FNRET != 0 ]; then
         crit "$LIMIT_PATTERN not present in $LIMIT_FILE"
@@ -36,8 +37,30 @@ audit () {
     fi
 }
 
-# This function will be called if the script status is on enabled mode
-apply () {
+audit_redhat () {
+	is_service_active $SERVICE_NAME
+	if [ $FNRET -eq 0 ]; then
+		crit "$SERVICE_NAME is actived"
+		FNRET=1
+	else
+		ok "$SERVICE_NAME is inactived"
+		FNRET=0
+	fi
+}
+
+# This function will be called if the script status is on enabled / audit mode
+audit () {
+	if [ $OS_RELEASE -eq 1 ]; then
+        audit_debian
+    elif [ $OS_RELEASE -eq 2 ]; then
+        audit_redhat
+    else
+        crit "Current OS is not support!"
+        FNRET=44
+    fi
+}
+
+apply_debian () {
     does_pattern_exist_in_file $LIMIT_FILE $LIMIT_PATTERN
     if [ $FNRET != 0 ]; then
         warn "$LIMIT_PATTERN not present in $LIMIT_FILE, adding at the end of  $LIMIT_FILE"
@@ -55,6 +78,27 @@ apply () {
         ok "$SYSCTL_PARAM correctly set to $SYSCTL_EXP_RESULT"
     fi 
 
+}
+
+apply_redhat () {
+	if [ $FNRET -eq 1 ]; then
+		info "Disabling $SERVICE_NAME"
+		systemctl stop $SERVICE_NAME
+		systemctl disable $SERVICE_NAME
+	else
+		ok "$SERVICE_NAME is disabled"
+	fi
+}
+
+# This function will be called if the script status is on enabled mode
+apply () {
+	if [ $OS_RELEASE -eq 1 ]; then
+        apply_debian
+    elif [ $OS_RELEASE -eq 2 ]; then
+        apply_redhat
+    else
+        crit "Current OS is not support!"
+    fi
 }
 
 # This function will check config parameters required

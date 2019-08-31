@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9 or CentOS Hardening
 #
 
 #
@@ -18,35 +18,43 @@ PACKAGES='snmpd'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    for PACKAGE in $PACKAGES; do
-        is_pkg_installed $PACKAGE
-        if [ $FNRET = 0 ]; then
-            if [ $ISEXCEPTION -eq 1 ]; then
-                warn "$PACKAGE is installed! But Exception is set to 1, so it's pass!"
-            else
-                crit "$PACKAGE is installed!"
-            fi
-        else
-            ok "$PACKAGE is absent"
-        fi
-    done
+	if [ $OS_RELEASE -eq 2 ]; then
+		ok "Redhat or CentOS does not have this check, so PASS"
+	else
+    	for PACKAGE in $PACKAGES; do
+        	is_pkg_installed $PACKAGE
+        	if [ $FNRET = 0 ]; then
+            	if [ $ISEXCEPTION -eq 1 ]; then
+                	warn "$PACKAGE is installed! But Exception is set to 1, so it's pass!"
+            	else
+                	crit "$PACKAGE is installed!"
+            	fi
+        	else
+            	ok "$PACKAGE is absent"
+        	fi
+    	done
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    for PACKAGE in $PACKAGES; do
-        is_pkg_installed $PACKAGE
-        if [ $FNRET = 0 ]; then
-            if [ $ISEXCEPTION -eq 1 ]; then
-                warn "$PACKAGE is installed! But the exception is set to true, so don't need any operate."
-            else
-                crit "$PACKAGE is installed, purging it"
-                apt-get purge $PACKAGE -y
-            fi
-        else
-            ok "$PACKAGE is absent"
-        fi
-    done
+	if [ $OS_RELEASE -eq 2 ]; then
+		ok "Redhat or CentOS does not have this check, so PASS"
+	else
+    	for PACKAGE in $PACKAGES; do
+        	is_pkg_installed $PACKAGE
+        	if [ $FNRET = 0 ]; then
+            	if [ $ISEXCEPTION -eq 1 ]; then
+                	warn "$PACKAGE is installed! But the exception is set to true, so don't need any operate."
+            	else
+                	crit "$PACKAGE is installed, purging it"
+                	apt-get purge $PACKAGE -y
+            	fi
+        	else
+            	ok "$PACKAGE is absent"
+        	fi
+    	done
+	fi
 }
 
 # This function will create the config file for this check with default values

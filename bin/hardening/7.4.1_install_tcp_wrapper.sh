@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -14,10 +15,14 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 PACKAGE='tcpd'
+PACKAGE_REDHAT='tcp_wrappers'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    is_pkg_installed $PACKAGE
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE=$PACKAGE_REDHAT
+	fi
+	is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
         crit "$PACKAGE is not installed!"
     else
@@ -27,13 +32,20 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-        is_pkg_installed $PACKAGE
-        if [ $FNRET = 0 ]; then
-            ok "$PACKAGE is installed"
-        else
-            crit "$PACKAGE is absent, installing it"
-            apt_install $PACKAGE
-        fi
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE=$PACKAGE_REDHAT
+	fi
+	is_pkg_installed $PACKAGE
+	if [ $FNRET = 0 ]; then
+		ok "$PACKAGE is installed"
+	else
+		crit "$PACKAGE is absent, installing it"
+		if [ $OS_RELEASE -eq 2 ]; then
+			yum install $PACKAGE -y 
+		else
+			apt_install $PACKAGE
+		fi
+	fi
 }
 
 # This function will check config parameters required

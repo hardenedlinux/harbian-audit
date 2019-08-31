@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
 #
 
 #
@@ -17,8 +17,15 @@ HARDENING_LEVEL=3
 PACKAGE="cron"
 SERVICE_NAME="cron"
 
+PACKAGE_REDHAT="cronie"
+SERVICE_NAME_REDHAT="crond"
+
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE=$PACKAGE_REDHAT	
+		SERVICE_NAME=$SERVICE_NAME_REDHAT
+	fi
     is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
         crit "$PACKAGE is not installed!"
@@ -35,17 +42,25 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE=$PACKAGE_REDHAT	
+		SERVICE_NAME=$SERVICE_NAME_REDHAT
+	fi
     is_pkg_installed $PACKAGE
     if [ $FNRET = 0 ]; then
         ok "$PACKAGE is installed"
     else
         crit "$PACKAGE is absent, installing it"
-        apt_install $PACKAGE
+		if [ $OS_RELEASE -eq 2 ]; then
+			yum install -y $PACKAGE
+		else
+        	apt_install $PACKAGE
+		fi
         is_service_enabled $SERVICE_NAME
         if [ $FNRET != 0 ]; then
             info "Enabling $SERVICE_NAME"
 			is_debian_9 
-			if [ $FNRET = 0 ]; then
+			if [ $FNRET = 0 -o $OS_RELEASE -eq 2 ]; then
             	systemctl enable $SERVICE_NAME > /dev/null 2>&1
 				systemctl start $SERVICE_NAME > /dev/null 2>&1
 			else

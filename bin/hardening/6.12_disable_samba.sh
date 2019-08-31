@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9 or CentOS Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -41,8 +42,12 @@ apply () {
                 warn "$PACKAGE is installed! But the exception is set to true, so don't need any operate."
             else
                 crit "$PACKAGE is installed, purging it"
-                apt-get purge $PACKAGE -y
-                apt-get autoremove
+				if [ $OS_RELEASE -eq 2 ]; then
+					yum autoremove $PACKAGE -y
+				else
+                	apt-get purge $PACKAGE -y
+                	apt-get autoremove
+				fi
             fi
         else
             ok "$PACKAGE is absent"

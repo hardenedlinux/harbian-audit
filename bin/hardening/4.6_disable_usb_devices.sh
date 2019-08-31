@@ -1,11 +1,13 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening /
+# harbian audit 7/8/9/10 or CentOS Hardening 
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
 # 4.6 Disable USB Devices
+# TODO test
 #
 
 set -e # One error, it's over
@@ -18,8 +20,11 @@ PATTERN='ACTION=="add", SUBSYSTEMS=="usb", TEST=="authorized_default", ATTR{auth
 FILES_TO_SEARCH='/etc/udev/rules.d'
 FILE='/etc/udev/rules.d/CIS_4.6_usb_devices.conf'
 
-# This function will be called if the script status is on enabled / audit mode
-audit () {
+BLACKRULEPATTERN='^blacklist[[:blank:]].*usb-storage'
+BLACKRULE='blacklist usb-storage'
+BLACKCONFILE='/etc/modprobe.d/blacklist.conf'
+
+audit_debian () {
     SEARCH_RES=0
     for FILE_SEARCHED in $FILES_TO_SEARCH; do
         if [ $SEARCH_RES = 1 ]; then break; fi
@@ -47,6 +52,22 @@ audit () {
     done
     if [ $SEARCH_RES = 0 ]; then
         crit "$PATTERN is not present in $FILES_TO_SEARCH"
+    fi
+}
+
+audit_redhat () {
+	:
+}
+
+# This function will be called if the script status is on enabled / audit mode
+audit () {
+	if [ $OS_RELEASE -eq 1 ]; then
+        audit_debian
+    elif [ $OS_RELEASE -eq 2 ]; then
+        audit_redhat
+    else
+        crit "Current OS is not support!"
+        FNRET=44
     fi
 }
 

@@ -6,6 +6,7 @@
 
 #
 # 8.6 Configure logrotate (Not Scored)
+# todo delete this or ...
 #
 
 set -e # One error, it's over

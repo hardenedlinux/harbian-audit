@@ -2,6 +2,7 @@
 
 #
 # harbian audit 7/8/9  Hardening
+# todo for centos
 #
 
 #

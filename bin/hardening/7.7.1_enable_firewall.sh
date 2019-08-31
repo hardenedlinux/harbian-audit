@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9/10 or CentOS Hardening
+# todo 7.7.* need test for CentOS
 #
 
 #
@@ -19,6 +20,7 @@ HARDENING_LEVEL=2
 # Do as you want, but this script does not handle this
 
 PACKAGES='iptables iptables-persistent'
+PACKAGES_REDHAT='iptables nftables firewalld'
 SERVICENAME='netfilter-persistent'
 
 # This function will be called if the script status is on enabled / audit mode

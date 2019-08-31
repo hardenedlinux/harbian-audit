@@ -23,48 +23,56 @@ NTP_POOL_CFG='pool 2.debian.pool.ntp.org iburst'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    is_pkg_installed $ANALOGONS_PKG
-    if [ $FNRET = 0 ]; then
-		ok "Analogons pagkage $ANALOGONS_PKG is installed. So pass check."
+	if [ $OS_RELEASE -eq 2 ]; then
+		ok "Redhat or CentOS does not have this check, so PASS"
 	else
-    	is_pkg_installed $PACKAGE
-    	if [ $FNRET != 0 ]; then
-        	crit "$PACKAGE is not installed!"
-    	else	
-        	ok "$PACKAGE is installed, checking configuration"
-        	does_pattern_exist_in_file $NTP_CONF_FILE $NTP_SERVER_PATTERN
-        	if [ $FNRET != 0 ]; then
-            	crit "$NTP_SERVER_PATTERN not found in $NTP_CONF_FILE"
-        	else
-            	ok "$NTP_SERVER_PATTERN found in $NTP_CONF_FILE"
-        	fi
-    	fi
+    	is_pkg_installed $ANALOGONS_PKG
+    	if [ $FNRET = 0 ]; then
+			ok "Analogons pagkage $ANALOGONS_PKG is installed. So pass check."
+		else
+    		is_pkg_installed $PACKAGE
+    		if [ $FNRET != 0 ]; then
+        		crit "$PACKAGE is not installed!"
+    		else	
+        		ok "$PACKAGE is installed, checking configuration"
+        		does_pattern_exist_in_file $NTP_CONF_FILE $NTP_SERVER_PATTERN
+        		if [ $FNRET != 0 ]; then
+            		crit "$NTP_SERVER_PATTERN not found in $NTP_CONF_FILE"
+        		else
+            		ok "$NTP_SERVER_PATTERN found in $NTP_CONF_FILE"
+        		fi
+    		fi
+		fi
 	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    is_pkg_installed $ANALOGONS_PKG
-    if [ $FNRET = 0 ]; then
-		ok "Analogons pagkage $ANALOGONS_PKG is installed. So pass check."
+	if [ $OS_RELEASE -eq 2 ]; then
+		ok "Redhat or CentOS does not have this check, so PASS"
 	else
-        is_pkg_installed $PACKAGE
-        if [ $FNRET = 0 ]; then
-            ok "$PACKAGE is installed"
-        else
-            crit "$PACKAGE is absent, installing it"
-            apt_install $PACKAGE
-            info "Checking $PACKAGE configuration"
-      		does_pattern_exist_in_file $NTP_CONF_FILE $NTP_SERVER_PATTERN
-        	if [ $FNRET != 0 ]; then
-            	warn "$NTP_SERVER_PATTERN not found in $NTP_CONF_FILE, adding it"
-            	backup_file $NTP_CONF_FILE
-            	add_end_of_file $NTP_CONF_FILE $NTP_POOL_CFG
+    	is_pkg_installed $ANALOGONS_PKG
+    	if [ $FNRET = 0 ]; then
+			ok "Analogons pagkage $ANALOGONS_PKG is installed. So pass check."
+		else
+        	is_pkg_installed $PACKAGE
+        	if [ $FNRET = 0 ]; then
+            	ok "$PACKAGE is installed"
         	else
-            	ok "$NTP_SERVER_PATTERN found in $NTP_CONF_FILE"
+            	crit "$PACKAGE is absent, installing it"
+            	apt_install $PACKAGE
+            	info "Checking $PACKAGE configuration"
+      			does_pattern_exist_in_file $NTP_CONF_FILE $NTP_SERVER_PATTERN
+        		if [ $FNRET != 0 ]; then
+            		warn "$NTP_SERVER_PATTERN not found in $NTP_CONF_FILE, adding it"
+            		backup_file $NTP_CONF_FILE
+            		add_end_of_file $NTP_CONF_FILE $NTP_POOL_CFG
+        		else
+            		ok "$NTP_SERVER_PATTERN found in $NTP_CONF_FILE"
+        		fi
+				exit 1
         	fi
-			exit 1
-        fi
+		fi
 	fi
 }
 

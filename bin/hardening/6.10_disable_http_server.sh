@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9 or CentOS Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -16,9 +17,13 @@ HARDENING_EXCEPTION=http
 
 # Based on aptitude search '~Phttpd'
 PACKAGES='nginx apache2 lighttpd micro-httpd mini-httpd yaws boa bozohttpd'
+PACKAGES_REDHAT='httpd pcp-pmda-nginx'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGES=$PACKAGES_REDHAT
+	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
@@ -35,6 +40,9 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGES=$PACKAGES_REDHAT
+	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
@@ -42,8 +50,12 @@ apply () {
                 warn "$PACKAGE is installed! But the exception is set to true, so don't need any operate."
             else
                 crit "$PACKAGE is installed, purging it"
-                apt-get purge $PACKAGE
-                apt-get autoremove
+				if [ $OS_RELEASE -eq 2 ]; then
+					yum autoremove $PACKAGE 
+				else
+                	apt-get purge $PACKAGE
+                	apt-get autoremove
+				fi
             fi
         else
             ok "$PACKAGE is absent"

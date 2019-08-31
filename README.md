@@ -34,6 +34,7 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 $ git clone https://github.com/hardenedlinux/harbian-audit.git && cd harbian-audit
 $ sudo cp debian/default /etc/default/cis-hardening
 $ sudo sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening
+$ sudo bin/hardening.sh --init
 $ sudo bin/hardening.sh --audit-all
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
 1.1_install_updates       [INFO] Working on 1.1_install_updates
@@ -70,9 +71,14 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 
 ### Pre-Install 
 
-If use Network install from a minimal CD to installed Debian GNU/Linux, need install bc package before use the hardening tool. 
+If use Network install from a minimal CD to installed Debian GNU/Linux, need install packages before use the hardening tool. 
 ```
-sudo apt-get install -y bc net-tools 
+sudo apt-get install -y bc net-tools pciutils network-manager 
+```
+
+Redhat/CentOS need install packages before use the hardening tool:
+```
+sudo yum install -y bc net-tools pciutils NetworkManager 
 ```
 
 ### Pre-Set 
@@ -155,8 +161,10 @@ This example only allows 192.168.1.[1-255] 192.168.5.[1-255] to access this syst
 # sed -i "/^root/a\test    ALL=(ALL:ALL) ALL" /etc/sudoers 
 ```
 
-4) Set basic iptables rules 
+4) Set basic firewall rules 
 Set the corresponding firewall rules according to the applications used. HardenedLinux community for Debian GNU/Linux basic firewall rules: 
+
+### Iptabels format rules:
 [etc.iptables.rules.v4.sh](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/etc.iptables.rules.v4.sh)
 to do the following:
 ```
@@ -166,6 +174,14 @@ $ sudo bash docs/configurations/etc.iptables.rules.v4.sh
 $ sudo -s
 # iptables-save > /etc/iptables/rules.v4 
 # ip6tables-save > /etc/iptables/rules.v6 
+```
+
+### nft format rules:
+[nftables.conf](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/etc.nftables.conf)
+to do the following(your network interfacename(Example eth0)):
+```
+$ sed -i 's/^define int_if = ens33/define int_if = eth0/g' etc.nftables.conf 
+$ sudo nft -f ./etc.nftables.conf 
 ```
 
 5) Use the passwd command to change the passwords of all users, and change the password to a secure and reliable password entry with the same password complexity set by the pam_cracklib module.
@@ -217,7 +233,9 @@ This document is a description of the additions to the sections not included in 
 ### Manual Operation docs 
 [How to config grub2 password protection](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_config_grub2_password_protection.mkd)  
 [How to persistent iptables rules with debian 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_persistent_iptables_rules_with_debian_9.mkd)  
-[How to deploy audisp-remote for auditd log](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_deploy_audisp_remote_for_audit_log.mkd)
+[How to deploy audisp-remote for auditd log](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_deploy_audisp_remote_for_audit_log.mkd)  
+[How to migrating from iptables to nftables in debian10](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_migrating_from_iptables_to_nftables_in_debian10.md)  
+[How to persistent nft rules with debian 10](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_persistent_nft_rules_with_debian_10.mkd)  
 
 ### Use case docs  
 [Nodejs + redis + mysql demo](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/use-cases/nodejs-redis-mysql-usecase/README.md)  

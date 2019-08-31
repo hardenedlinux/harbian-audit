@@ -7,24 +7,34 @@
 
 is_debian_9()
 {
-    if $(cat /etc/debian_version | grep -q "^9.[0-9]"); then
-        debug "Debian version is 9.*."
-        FNRET=0
-    else
-        debug "Debian version is not 9.*."
-        FNRET=1
-    fi
+	if [ -r /etc/debian_version ]; then
+    	if $(cat /etc/debian_version | grep -q "^9.[0-9]"); then
+        	debug "Debian version is 9.*."
+        	FNRET=0
+    	else
+        	debug "Debian version is not 9.*."
+        	FNRET=1
+    	fi
+	else
+		debug "Current OS is not Debian."
+		FNRET=2
+	fi
 }
 
 is_debian_10()
 {
-    if $(cat /etc/debian_version | grep -q "^10.[0-9]"); then
-        debug "Debian version is buster/10."
-        FNRET=0
-    else
-        debug "Debian version is not buster/10."
-        FNRET=1
-    fi
+	if [ -r /etc/debian_version ]; then
+    	if $(cat /etc/debian_version | grep -q "^10.[0-9]"); then
+       		debug "Debian version is buster/10."
+        	FNRET=0
+    	else
+        	debug "Debian version is not buster/10."
+        	FNRET=1
+    	fi
+	else
+		debug "Current OS is not Debian."
+		FNRET=2
+	fi
 }
 
 is_64bit_arch()
@@ -239,11 +249,41 @@ does_group_exist() {
 # Service Boot Checks
 #
 
+is_service_active() {
+    local SERVICE=$1
+	if [ $OS_RELEASE -eq 2 ]; then
+		FNRET=0
+	else
+    	is_debian_9
+	fi
+    if [ $FNRET = 0 ]; then
+        if [ $(systemctl is-active $SERVICE | grep -c "^active") -eq 1 ]; then
+            debug "Service $SERVICE is actived"
+            FNRET=0
+        else
+            debug "Service $SERVICE is inactived"
+            FNRET=1
+        fi
+    else
+        if [ $($SUDO_CMD find /etc/rc?.d/ -name "S*$SERVICE" -print | wc -l) -gt 0 ]; then
+            debug "Service $SERVICE is enabled"
+            FNRET=0
+        else
+            debug "Service $SERVICE is disabled"
+            FNRET=1
+        fi
+    fi
+}
+
 is_service_enabled() {
     local SERVICE=$1
-    is_debian_9
+	if [ $OS_RELEASE -eq 2 ]; then
+		FNRET=0
+	else
+    	is_debian_9
+	fi
     if [ $FNRET = 0 ]; then
-        if [ $(systemctl is-enabled $SERVICE | grep -wc "^enabled") -eq 1 ]; then
+        if [ $(systemctl is-enabled $SERVICE | grep -c "^enabled") -eq 1 ]; then
             debug "Service $SERVICE is enabled"
             FNRET=0
         else
@@ -493,26 +533,88 @@ apt_install()
 is_pkg_installed()
 {
     PKG_NAME=$1
-    if $(dpkg -s $PKG_NAME 2> /dev/null | grep -q '^Status: install ') ; then
-        debug "$PKG_NAME is installed"
-        FNRET=0
-    else
-        debug "$PKG_NAME is not installed"
-        FNRET=1
-    fi
+	if [ $OS_RELEASE -eq 2 ]; then
+		if [ $(rpm -qa | grep -c $PKG_NAME) -gt 0 ]; then
+			debug "$PKG_NAME is installed"
+			FNRET=0
+		else
+			debug "$PKG_NAME is not installed"
+			FNRET=1
+		fi
+	else
+		if $(dpkg -s $PKG_NAME 2> /dev/null | grep -q '^Status: install ') ; then
+			debug "$PKG_NAME is installed"
+			FNRET=0
+		else
+			debug "$PKG_NAME is not installed"
+			FNRET=1
+		fi
+	fi
 }
 
 
 verify_integrity_all_packages()
 {
-	dpkg -V > /dev/shm/dpkg_verify_ret
-    if [ $(cat /dev/shm/dpkg_verify_ret | wc -l) -gt 0 ]; then
-        debug "Verify integrity all packages is fail"
-		cat /dev/shm/dpkg_verify_ret
-        FNRET=1
+	if [ $OS_RELEASE -eq 2 ]; then
+		rpm -Va > /dev/shm/yum_verify_ret
+		COUNT=$(cat /dev/shm/yum_verify_ret | wc -l ) 
+    		if [ $COUNT -gt 0 ]; then
+			debug "Verify integrity all packages is fail"
+			cat /dev/shm/yum_verify_ret
+			rm /dev/shm/yum_verify_ret
+        		FNRET=1
+    		else
+        		debug "Verify integrity all packages is OK"
+        		FNRET=0
+    		fi
+	else
+		dpkg -V > /dev/shm/dpkg_verify_ret
+    		if [ $(cat /dev/shm/dpkg_verify_ret | wc -l) -gt 0 ]; then
+        		debug "Verify integrity all packages is fail"
+			cat /dev/shm/dpkg_verify_ret
+        		FNRET=1
+    		else
+        		debug "Verify integrity all packages is OK"
+       	 		FNRET=0
+    		fi
+	fi
+}
+
+# Check paramer with value 
+# example : minlen = 9
+# ruturn: 0  1  2  3 
+check_param_pair_by_value ()
+{   
+	FILENAME=$1
+	OPTION=$2
+	COMPARE=$3
+	OP_VALUE=$4
+
+    #Example:
+    # FILENAME="/etc/security/pwquality.conf"
+    # OPTION="minlen"
+	# COMPARE="ge"
+    # OP_VALUE=15
+
+	if [ -f "$FILENAME" ];then
+		COUNT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILENAME | grep "^$OPTION[[:space:]]=[[:space:]]" | wc -l)
+		if [ $COUNT -eq 1 ]; then
+	        debug "$OPTION is conf"
+			RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILENAME | grep "^$OPTION[[:space:]]=[[:space:]]")
+			if [ "$(echo $RESULT | awk -F'= ' '{print $2}')" "-$COMPARE" "$OP_VALUE" ]; then 
+				debug "$OPTION conf is right."
+				FNRET=0
+			else
+				debug "$OPTION conf is not right."
+				FNRET=1
+			fi
+       	else
+            debug "$OPTION is not conf of $FILENAME"
+            FNRET=2
+        fi
     else
-        debug "Verify integrity all packages is OK"
-        FNRET=0
+        debug "$FILENAME is not exist"
+        FNRET=3   
     fi
 }
 
@@ -539,6 +641,9 @@ check_param_pair_by_pam()
             if [ "$cndt_value" "-$COMPARE" "$CONDITION" ]; then
                 debug "$cndt_value -$COMPARE  $CONDITION is ok"
                 FNRET=0
+            elif [ "$cndt_value" -eq 0 ]; then
+                debug "$cndt_value -eq 0, is not ok"
+                FNRET=5
             else
                 debug "$cndt_value -$COMPARE  $CONDITION is not ok"
                 FNRET=5
@@ -880,3 +985,39 @@ check_auditd_is_immutable_mode()
 		eval $(pkill -HUP -P 1 auditd)
 	fi
 }
+
+
+#
+# yum
+#
+
+# FNRET values:
+# 100: need update
+# 0: not need update
+# 1: error
+yum_check_updates() 
+{
+	FNRET=$($SUDO_CMD yum check-update > /dev/null; echo $?)
+	if [ $FNRET -eq 100 ]; then 
+		# update too old, refresh database
+		$SUDO_CMD yum makecache >/dev/null 2>/dev/null
+    fi
+}
+
+# Check path of audit rule is exist, return 0 if path string is not NULL, else return 1 
+# Example: 
+# Process only the following format:
+# AUDITRULE="-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd"
+check_audit_path ()
+{
+	AUDITRULE=$1
+	RESULT=$(echo $AUDITRULE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
+	if [ -z $(eval echo $RESULT) ]; then
+		debug "Result is NULL"
+		FNRET=1
+	else
+		debug "Result is not NULL"
+		FNRET=0
+	fi
+}
+
