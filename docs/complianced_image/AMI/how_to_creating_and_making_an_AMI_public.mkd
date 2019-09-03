@@ -48,10 +48,11 @@ admin@ip:/opt/harbian-audit-master# passwd admin
 ```
 admin@ip:/opt/harbian-audit-master$ sudo cp debian/default /etc/default/cis-hardening
 admin@ip:/opt/harbian-audit-master$ sudo sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening 
+admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --init
 admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --audit-all 
 admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --set-hardening-level 5 
 admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=disabled/' etc/conf.d/7.4.4_hosts_deny.cfg 
-admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=disabled/' etc/conf.d/10.1.7_remove_nopasswd_sudoers.cfg
+admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=disabled/' etc/conf.d/10.1.6_remove_nopasswd_sudoers.cfg
 admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply 
 admin@ip:/opt/harbian-audit-master$ sudo sed -i "/^root/a\admin    ALL=(ALL:ALL) ALL" /etc/sudoers 
 admin@ip:/opt/harbian-audit-master$ sudo reboot 
