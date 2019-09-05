@@ -16,7 +16,10 @@ HARDENING_LEVEL=2
 
 # Quick factoring as many script use the same logic
 PARTITION="/tmp"
-TMPMOUNTNAME="tmp.mount"
+SERVICENAME="tmp.mount"
+SERVICEPATH_DEBIAN="/usr/share/systemd/tmp.mount"
+REDHAT_SERVICEPATH="/usr/lib/systemd/system/tmp.mount"
+DEBIAN_SERVICEPATH="/lib/systemd/system/tmp.mount"
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -36,19 +39,12 @@ audit () {
 		fi
 	else
     	warn "$PARTITION is not partition in /etc/fstab, check tmp.mount service"
-		if [ $(systemctl | grep -c "tmp.mount[[:space:]]*loaded[[:space:]]active[[:space:]]mounted") -eq 1 ]; then
-	 		ok "$TMPMOUNTNAME service is active!"
-       		is_mounted "$PARTITION"
-			if [ $FNRET -gt 0 ]; then
-       			warn "$PARTITION is not mounted"
-           		FNRET=3
-        	else
-       			ok "$PARTITION is mounted"
-          		FNRET=0
-			fi
+		is_service_active $SERVICENAME
+		if [ $FNRET -eq 0 ]; then
+	 		ok "$SERVICENAME service is active!"
 		else
-    		crit "$TMPMOUNTNAME service is not active!"
-			FNRET=4			
+    		crit "$SERVICENAME service is inactive!"
+			FNRET=3			
 		fi
 	fi
 }
@@ -63,12 +59,30 @@ apply () {
 		warn "mounting $PARTITION"
         mount $PARTITION
 	elif [ $FNRET = 3 ]; then
-        $SUDO_CMD systemctl daemon-reload
-        $SUDO_CMD systemctl start "$TMPMOUNTNAME"
-	elif [ $FNRET = 4 ]; then
-        $SUDO_CMD systemctl enable "$TMPMOUNTNAME"
-	    $SUDO_CMD systemctl daemon-reload 
-	    $SUDO_CMD systemctl start "$TMPMOUNTNAME"
+		if [ $OS_RELEASE -eq 1 ]; then 
+			if [ -e $DEBIAN_SERVICEPATH ]; then
+				$SUDO_CMD systemctl enable "$SERVICENAME"
+				$SUDO_CMD systemctl daemon-reload
+				$SUDO_CMD systemctl start "$SERVICENAME"
+			else
+				if [ -e $SERVICEPATH_DEBIAN ]; then
+					cp $SERVICEPATH_DEBIAN $DEBIAN_SERVICEPATH
+					$SUDO_CMD systemctl enable "$SERVICENAME"
+					$SUDO_CMD systemctl daemon-reload
+					$SUDO_CMD systemctl start "$SERVICENAME"
+				else
+					crit "System unit file $DEBIAN_SERVICEPATH is not exist!"
+				fi
+			fi
+		elif [ $OS_RELEASE -eq 2 ]; then 
+			if [ -e $REDHAT_SERVICEPATH ]; then
+				$SUDO_CMD systemctl enable "$SERVICENAME"
+				$SUDO_CMD systemctl daemon-reload
+				$SUDO_CMD systemctl start "$SERVICENAME"
+			else
+					crit "System unit file $REDHAT_SERVICEPATH is not exist!"
+			fi
+		fi
 	fi
 }
 
