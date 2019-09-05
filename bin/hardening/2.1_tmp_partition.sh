@@ -80,7 +80,7 @@ apply () {
 				$SUDO_CMD systemctl daemon-reload
 				$SUDO_CMD systemctl start "$SERVICENAME"
 			else
-					crit "System unit file $REDHAT_SERVICEPATH is not exist!"
+				crit "System unit file $REDHAT_SERVICEPATH is not exist!"
 			fi
 		fi
 	fi
