@@ -15,7 +15,7 @@ HARDENING_LEVEL=4
 
 AUDIT_PARAMS='-a always,exit -F path=$(find /etc/ -name audisp-remote.conf) -F perm=wa -k config_file_change
 -a always,exit -F path=$(find /etc/ -name auditd.conf) -F perm=wa -k config_file_change
--a always,exit -F dir=$(find /etc/audit/ -name rules.d) -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/audit/rules.d/ -F perm=wa -k config_file_change
 -a always,exit -F path=$(find /etc/ -name grub) -F perm=wa -k config_file_change
 -a always,exit -F path=$(find /etc/ -name fstab) -F perm=wa -k config_file_change
 -a always,exit -F path=$(find /etc/ -name hosts.deny) -F perm=wa -k config_file_change
@@ -39,7 +39,7 @@ audit () {
     for AUDIT_VALUE in $AUDIT_PARAMS; do
 		check_audit_path $AUDIT_VALUE 
 		if [ $FNRET -eq 1 ];then
-			crit "path is not exsit! Please check file path is exist!"
+			crit "path is not exsit! Please check file path is exist! Rule: $AUDIT_VALUE"
 			continue
 		else
         	debug "$AUDIT_VALUE should be in file $FILE"
