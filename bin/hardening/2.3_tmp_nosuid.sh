@@ -48,57 +48,44 @@ audit () {
     else
 		warn "$PARTITION is not partition in /etc/fstab, check tmp.mount service"
 		if [ $OS_RELEASE -eq 1 ]; then
-			if [ -e $DEBIAN_SERVICEPATH ]; then
-				has_mount_option_systemd $DEBIAN_SERVICEPATH $OPTION 
-				if [ $FNRET -gt 0 ]; then
-					crit "$PARTITION has no option $OPTION in systemd service!"
-					FNRET=3
-				else
-					ok "$PARTITION has $OPTION in systemd service"
-					has_mounted_option $PARTITION $OPTION
-					if [ $FNRET -gt 0 ]; then
-						warn "$PARTITION is not mounted with $OPTION at runtime"
-						FNRET=5
-					else
-						ok "$PARTITION mounted with $OPTION"
-						FNRET=0
-					fi
-				fi
-			else
-				crit "$DEBIAN_SERVICEPATH is not exist! Please apply 2.1 first!"
-				FNRET=2  
-			fi
+			UNITSERVICEPATH=$DEBIAN_SERVICEPATH
 		elif [ $OS_RELEASE -eq 2 ]; then
-			if [ -e $REDHAT_SERVICEPATH ]; then
-				has_mount_option_systemd $REDHAT_SERVICEPATH $OPTION 
-				if [ $FNRET -gt 0 ]; then
-					crit "$PARTITION has no option $OPTION in systemd service!"
-					FNRET=3
-				else
-					ok "$PARTITION has $OPTION in systemd service"
-					has_mounted_option $PARTITION $OPTION
-					if [ $FNRET -gt 0 ]; then
-						warn "$PARTITION is not mounted with $OPTION at runtime"
-						FNRET=5
-					else
-						ok "$PARTITION mounted with $OPTION"
-						FNRET=0
-					fi
-				fi
+			UNITSERVICEPATH=$REDHAT_SERVICEPATH
+		fi
+		if [ -e $UNITSERVICEPATH ]; then
+			has_mount_option_systemd $UNITSERVICEPATH $OPTION 
+			if [ $FNRET -gt 0 ]; then
+				crit "$PARTITION has no option $OPTION in systemd service!"
+				FNRET=3
 			else
-				crit "$REDHAT_SERVICEPATH is not exist! Please apply 2.1 first!"
-				FNRET=2  
+				ok "$PARTITION has $OPTION in systemd service"
+				has_mounted_option $PARTITION $OPTION
+				if [ $FNRET -gt 0 ]; then
+					warn "$PARTITION is not mounted with $OPTION at runtime"
+					FNRET=5
+				else
+					ok "$PARTITION mounted with $OPTION"
+					FNRET=0
+				fi
 			fi
+		else
+			crit "$UNITSERVICEPATH is not exist! Please apply 2.1 first!"
+			FNRET=2  
 		fi
 	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
+	if [ $OS_RELEASE -eq 1 ]; then
+		UNITSERVICEPATH=$DEBIAN_SERVICEPATH		
+	elif [ $OS_RELEASE -eq 2 ]; then
+		UNITSERVICEPATH=$REDHAT_SERVICEPATH
+	fi
     if [ $FNRET = 0 ]; then
         ok "$PARTITION is correctly set"
     elif [ $FNRET = 2 ]; then
-        crit "System unit $SERVICENAME is not exist! Please apply 2.1 first!"
+        crit "System unit $UNITSERVICEPATH is not exist! Please apply 2.1 first!"
     elif [ $FNRET = 1 ]; then
         info "Adding $OPTION to fstab"
         add_option_to_fstab $PARTITION $OPTION
@@ -111,11 +98,7 @@ apply () {
         fi
     elif [ $FNRET = 3 ]; then
         info "Adding $OPTION to systemd"
-		if [ $OS_RELEASE -eq 2 ]; then
-			add_option_to_systemd $REDHAT_SERVICEPATH $OPTION $SERVICENAME
-        else
-			add_option_to_systemd $DEBIAN_SERVICEPATH $OPTION $SERVICENAME
-		fi
+		add_option_to_systemd $UNITSERVICEPATH $OPTION $SERVICENAME
         remount_partition_by_systemd $SERVICENAME $PARTITION
     elif [ $FNRET = 4 ]; then
         info "Remounting $PARTITION from fstab"
