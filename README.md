@@ -188,14 +188,12 @@ $ sudo nft -f ./etc.nftables.conf
 Some check items check a variety of situations and are interdependent, they must be applied (fix) multiple times, and the OS must be a reboot after each applies (fix). 
 
 ### Items that must be applied after the first application(reboot after is better)
-```
 8.1.32  Because this item is set, the audit rules will not be added. 
-```
 
 ### Items that must be applied after all application is ok
-```
-8.4.1  8.4.2  These are all related to the aide. It is best to fix all the items after they have been fixed to fix the integrity of the database in the system.
-``` 
+8.4.1   
+8.4.2   
+These are all related to the aide. It is best to fix all the items after they have been fixed to fix the integrity of the database in the system. 
 
 ### Items that need to be fix twice  
 8.1.1.2  
