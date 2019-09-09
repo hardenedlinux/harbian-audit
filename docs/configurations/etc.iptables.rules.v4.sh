@@ -1,6 +1,15 @@
 #!/bin/bash
 IPT="/sbin/iptables"
- 
+PUB_IFS="ens33"
+
+if [ $# -lt 1 ]; then
+	echo "Must be set to greater than or equal to a public network interface. usage: $0 eth0, or $0 eth0 eth1"
+	exit 1
+else
+	PUB_IFS="$@"
+	echo "Public interface is $PUB_IFS"
+fi
+
  echo "Starting IPv4 Wall..."
  $IPT -F
  $IPT -X
@@ -11,7 +20,6 @@ IPT="/sbin/iptables"
  $IPT -N LOGDROP
  modprobe ip_conntrack
   
-PUB_IFS="ens33"
    
 #unlimited 
 $IPT -A INPUT -i lo -j ACCEPT
