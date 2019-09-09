@@ -151,7 +151,8 @@ EXCEPTIONS=""
 4) 设置基本的iptables防火墙规则 
 根据实现场景进行防火墙规则的配置，可参考HardenedLinux社区归纳的基于Debian GNU/Linux的防火墙规则的基本规则：
 [etc.iptables.rules.v4.sh](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/etc.iptables.rules.v4.sh)
-执行如下的命令进行部署:
+
+基于iptables的部署:
 ```
 $ INTERFACENAME="your network interfacename(Example eth0)"
 $ sudo bash docs/configurations/etc.iptables.rules.v4.sh $INTERFACENAME
@@ -159,25 +160,36 @@ $ sudo -s
 # iptables-save > /etc/iptables/rules.v4 
 # ip6tables-save > /etc/iptables/rules.v6 
 ```
+基于nft的部署：
+按照以下命令修改nftables.conf(你的对外网口的名称，例如：eth0):
+```
+$ sed -i 's/^define int_if = ens33/define int_if = eth0/g' etc.nftables.conf 
+$ sudo nft -f ./etc.nftables.conf 
+```
 5) 使用passwd命令改变所有用户的密码，以满足pam_cracklib模块配置的密码复杂度及健壮性。
 
-6) 必须在第一次修复应用后进行修复的项
+## 特别注意 
+
+### 必须在第一次修复应用后进行修复的项  
 ```
 8.1.32  因为此项一旦设置，审计规则将不能够再进行添加。
 ```
-7） 必须在所有项都修复应用后进行修复的项
+### 必须在所有项都修复应用后进行修复的项  
 ```
 8.4.1  8.4.2 这都是与aide检测文件完整性相关的项，最好是在所有项都修复好后再进行修复，以修复好的系统中的文件进行完整性的数据库的初始化。
 ```
-
-## 特别注意 
-一些检查项需要依赖多次修复，且操作系统需要多次重启。需要进行两次修复的项有： 
+### 一些检查项需要依赖多次修复，且操作系统需要多次重启 
+#### 需要进行两次修复的项  
+```
 8.1.1.2  
 8.1.1.3  
 8.1.12  
+```
 
-需要修复3次的项： 
+#### 需要修复3次的项
+``` 
 4.5  
+```
 
 ## 玩（如何添加检查项）
 

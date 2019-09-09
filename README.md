@@ -175,18 +175,6 @@ $ sudo -s
 # ip6tables-save > /etc/iptables/rules.v6 
 ```
 
-5) Use the passwd command to change the passwords of all users to apply the password complexity and robustness of the pam_cracklib module configuration.
-
-6) Items that must be applied after the first application(reboot after is better)
-```
-8.1.32  Because this item is set, the audit rules will not be added. 
-```
-
-7) Items that must be applied after all application is ok
-```
-8.4.1  8.4.2  These are all related to the aide. It is best to fix all the items after they have been fixed to fix the integrity of the database in the system.
-``` 
-
 ### nft format rules:
 [nftables.conf](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/etc.nftables.conf)
 to do the following(your network interfacename(Example eth0)):
@@ -194,18 +182,27 @@ to do the following(your network interfacename(Example eth0)):
 $ sed -i 's/^define int_if = ens33/define int_if = eth0/g' etc.nftables.conf 
 $ sudo nft -f ./etc.nftables.conf 
 ```
-
-5) Use the passwd command to change the passwords of all users, and change the password to a secure and reliable password entry with the same password complexity set by the pam_cracklib module.
+5) Use the passwd command to change the passwords of all users to apply the password complexity and robustness of the pam_cracklib module configuration.
 
 ## Special Note 
 Some check items check a variety of situations and are interdependent, they must be applied (fix) multiple times, and the OS must be a reboot after each applies (fix). 
 
-Items that need to be fix twice:  
+### Items that must be applied after the first application(reboot after is better)
+```
+8.1.32  Because this item is set, the audit rules will not be added. 
+```
+
+### Items that must be applied after all application is ok
+```
+8.4.1  8.4.2  These are all related to the aide. It is best to fix all the items after they have been fixed to fix the integrity of the database in the system.
+``` 
+
+### Items that need to be fix twice  
 8.1.1.2  
 8.1.1.3  
 8.1.12  
 
-Items that need to be fix three times:   
+### Items that need to be fix three times:   
 4.5  
 
 ## Hacking
