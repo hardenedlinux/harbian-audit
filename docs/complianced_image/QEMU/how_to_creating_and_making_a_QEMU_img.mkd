@@ -42,14 +42,14 @@ Then follow the wizard to install step by step.
 
 ### Pre-Install  
 ```
-root@harbian:/home/harbian-audit# apt update && apt install -y bc net-tools vim unzip
+root@harbian:/home/harbian-audit# apt update && apt install -y bc net-tools vim unzip pciutils network-manager
 ```
 
 ### Get harbian-audit project 
 ```
 $ cd /opt
 root@harbian:/opt# wget https://github.com/hardenedlinux/harbian-audit/archive/master.zip 
-root@harbian:/opt# sudo unzip master.zip 
+root@harbian:/opt# unzip master.zip 
 root@harbian:/opt# cd harbian-audit-master/ 
 ``` 
 
@@ -59,7 +59,8 @@ root@harbian:/opt# cd harbian-audit-master/
 ```
 root@harbian:/opt/harbian-audit-master# cp debian/default /etc/default/cis-hardening 
 root@harbian:/opt/harbian-audit-master# sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening  
-root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --audit-all 
+root@harbian:/opt/harbian-audit-master#  bash bin/hardening.sh --init  
+root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --audit-all  
 root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --set-hardening-level 5 
 root@harbian:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/7.4.4_hosts_deny.cfg 
 root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --apply 
@@ -84,7 +85,7 @@ $ sudo sed -i "s/Debian GNU\/Linux 9/harbian-audit complianced for Debian GNU\/L
 
 ### Set grub passwd   
 superusers: harbiansuper   
-passwd: harbian_AUDIT,12@)  
+passwd: harbian_AUDIT,09)(  
 
 Related how to config grub2 password protection, please reference:   
 [how_to_config_grub2_password_protection.mkd](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_config_grub2_password_protection.mkd)   

@@ -154,13 +154,21 @@ EXCEPTIONS=""
 执行如下的命令进行部署:
 ```
 $ INTERFACENAME="your network interfacename(Example eth0)"
-$ sed -i "s/PUB_IFS=.*/PUB_IFS=\"$INTERFACENAME\"/g" docs/configurations/etc.iptables.rules.v4.sh 
-$ sudo bash docs/configurations/etc.iptables.rules.v4.sh 
+$ sudo bash docs/configurations/etc.iptables.rules.v4.sh $INTERFACENAME
 $ sudo -s
 # iptables-save > /etc/iptables/rules.v4 
 # ip6tables-save > /etc/iptables/rules.v6 
 ```
 5) 使用passwd命令改变所有用户的密码，以满足pam_cracklib模块配置的密码复杂度及健壮性。
+
+6) 必须在第一次修复应用后进行修复的项
+```
+8.1.32  因为此项一旦设置，审计规则将不能够再进行添加。
+```
+7） 必须在所有项都修复应用后进行修复的项
+```
+8.4.1  8.4.2 这都是与aide检测文件完整性相关的项，最好是在所有项都修复好后再进行修复，以修复好的系统中的文件进行完整性的数据库的初始化。
+```
 
 ## 特别注意 
 一些检查项需要依赖多次修复，且操作系统需要多次重启。需要进行两次修复的项有： 

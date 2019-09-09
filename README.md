@@ -169,12 +169,23 @@ Set the corresponding firewall rules according to the applications used. Hardene
 to do the following:
 ```
 $ INTERFACENAME="your network interfacename(Example eth0)"
-$ sed -i "s/PUB_IFS=.*/PUB_IFS=\"$INTERFACENAME\"/g" docs/configurations/etc.iptables.rules.v4.sh 
-$ sudo bash docs/configurations/etc.iptables.rules.v4.sh 
+$ sudo bash docs/configurations/etc.iptables.rules.v4.sh $INTERFACENAME
 $ sudo -s
 # iptables-save > /etc/iptables/rules.v4 
 # ip6tables-save > /etc/iptables/rules.v6 
 ```
+
+5) Use the passwd command to change the passwords of all users to apply the password complexity and robustness of the pam_cracklib module configuration.
+
+6) Items that must be applied after the first application(reboot after is better)
+```
+8.1.32  Because this item is set, the audit rules will not be added. 
+```
+
+7) Items that must be applied after all application is ok
+```
+8.4.1  8.4.2  These are all related to the aide. It is best to fix all the items after they have been fixed to fix the integrity of the database in the system.
+``` 
 
 ### nft format rules:
 [nftables.conf](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/etc.nftables.conf)
