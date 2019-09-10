@@ -41,7 +41,9 @@ apply () {
 	else
 		warn  "Permissions of all log files are not correctly configured! Set it"
 		chmod -R $PERMISS_SET $LOGDIR/*
-		rm $ERRPERFILELIST
+		if [ -r $ERRPERFILELIST ]; then
+			rm $ERRPERFILELIST
+		fi
 	fi
 }
 

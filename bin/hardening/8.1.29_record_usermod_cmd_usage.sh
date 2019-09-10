@@ -10,13 +10,16 @@
 #
 
 set -u # One variable unset, it's over
+set -e # One error, it's over
+FILE='/etc/audit/rules.d/audit.rules'
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F path=$(which usermod 2>/dev/null) -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-usermod'
-
-set -e # One error, it's over
-FILE='/etc/audit/rules.d/audit.rules'
+if [ $OS_RELEASE -eq 1 ]; then
+AUDIT_PARAMS='-a always,exit -F path=/usr/sbin/usermod -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-usermod'
+elif [ $OS_RELEASE -eq 2 ]; then
+AUDIT_PARAMS='-a always,exit -F path=/sbin/usermod -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-usermod'
+fi
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {

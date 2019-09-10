@@ -8,16 +8,16 @@
 # 8.1.28  Recored Events that privileged-acl command usage (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
+# todo to ensure path in debian 
 
 set -u # One variable unset, it's over
+set -e # One error, it's over
+FILE='/etc/audit/rules.d/audit.rules'
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F path=$(which setfacl 2>/dev/null) -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
--a always,exit -F path=$(which chacl 2>/dev/null) -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng'
-
-set -e # One error, it's over
-FILE='/etc/audit/rules.d/audit.rules'
+AUDIT_PARAMS='-a always,exit -F path=/usr/bin/setfacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F path=/usr/bin/chacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {

@@ -10,14 +10,17 @@
 #
 
 set -u # One variable unset, it's over
+set -e # One error, it's over
 
 HARDENING_LEVEL=4
 
-
-AUDIT_PARAMS="-a always,exit -F path=$(find /usr/ -name "ssh-keysign") -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
--a always,exit -F path=$(which ssh-agent 2>/dev/null) -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh"
-
-set -e # One error, it's over
+if [ $OS_RELEASE -eq 1 ]; then 
+AUDIT_PARAMS="-a always,exit -F path=/usr/lib/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
+-a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh"
+elif [ $OS_RELEASE -eq 2 ]; then
+AUDIT_PARAMS="-a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
+-a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh"
+fi
 
 FILE='/etc/audit/rules.d/audit.rules'
 

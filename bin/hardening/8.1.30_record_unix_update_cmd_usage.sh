@@ -10,13 +10,12 @@
 #
 
 set -u # One variable unset, it's over
+set -e # One error, it's over
+FILE='/etc/audit/rules.d/audit.rules'
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F path=$(which unix_update 2>/dev/null) -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-unix-update'
-
-set -e # One error, it's over
-FILE='/etc/audit/rules.d/audit.rules'
+AUDIT_PARAMS='-a always,exit -F path=/sbin/unix_update -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-unix-update'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {

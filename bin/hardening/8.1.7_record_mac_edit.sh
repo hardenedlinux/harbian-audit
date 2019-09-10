@@ -11,6 +11,7 @@
 # todo test for centos
 
 set -u # One variable unset, it's over
+set -e # One error, it's over
 
 HARDENING_LEVEL=4
 
@@ -19,17 +20,16 @@ SELINUX_PKG_REDHAT="selinux-policy"
 
 SE_AUDIT_PARAMS="-a always,exit -F dir=/etc/selinux/ -F perm=wa -k MAC-policy
 -a always,exit -F dir=/usr/share/selinux/ -F perm=wa -k MAC-policy
--a always,exit -F path=$(which chcon 2>/dev/null) -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
--a always,exit -F path=$(which semanage 2>/dev/null) -F auid>=1000 -F auid!=4294967295 -k perm_chng
--a always,exit -F path=$(which setsebool 2>/dev/null) -F auid>=1000 -F auid!=4294967295 -k perm_chng
--a always,exit -F path=$(which setfiles 2>/dev/null) -F auid>=1000 -F auid!=4294967295 -k perm_chng"
+-a always,exit -F path=/usr/bin/chcon -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F path=/usr/sbin/semanage -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F path=/usr/sbin/setsebool -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F path=/usr/sbin/setfiles -F auid>=1000 -F auid!=4294967295 -k perm_chng"
 
 APPARMOR_PKG="apparmor"
 AA_AUDIT_PARAMS='-w /etc/apparmor/ -p wa -k MAC-policy
 -w /etc/apparmor.d/ -p wa -k MAC-policy
 -a always,exit -F path=/sbin/apparmor_parser -F perm=x -F auid>=1000 -F auid!=4294967295 -k MAC-policy'
 
-set -e # One error, it's over
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
