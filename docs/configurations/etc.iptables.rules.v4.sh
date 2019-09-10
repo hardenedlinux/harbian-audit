@@ -3,7 +3,8 @@ IPT="/sbin/iptables"
 PUB_IFS="ens33"
 
 if [ $# -lt 1 ]; then
-	echo "Must be set to greater than or equal to a public network interface. usage: $0 eth0, or $0 eth0 eth1"
+	echo "Must be set to greater than or equal to a public network interface. "
+	echo "usage: $0 eth0, or $0 eth0 eth1"
 	exit 1
 else
 	PUB_IFS="$@"
