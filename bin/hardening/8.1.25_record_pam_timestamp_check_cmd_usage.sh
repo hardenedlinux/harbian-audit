@@ -14,11 +14,10 @@ set -e # One error, it's over
 
 HARDENING_LEVEL=4
 FILE='/etc/audit/rules.d/audit.rules'
-if [ $OS_RELEASE -eq 1 ]; then
-AUDIT_PARAMS='-a always,exit -F path=/usr/sbin/pam_timestamp_check -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged-pam'
-elif [ $OS_RELEASE -eq 2 ]; then
-AUDIT_PARAMS='-a always,exit -F path=/sbin/pam_timestamp_check -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged-pam'
-fi
+
+AUDIT_PARAMS_DEBIAN='-a always,exit -F path=/usr/sbin/pam_timestamp_check -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged-pam'
+AUDIT_PARAMS_REDHAT='-a always,exit -F path=/sbin/pam_timestamp_check -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged-pam'
+AUDIT_PARAMS=""
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -70,7 +69,11 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $OS_RELEASE -eq 1 ]; then
+		AUDIT_PARAMS=$AUDIT_PARAMS_DEBIAN
+	elif [ $OS_RELEASE -eq 2 ]; then
+		AUDIT_PARAMS=$AUDIT_PARAMS_REDHAT
+	fi
 }
 
 # Source Root Dir Parameter
