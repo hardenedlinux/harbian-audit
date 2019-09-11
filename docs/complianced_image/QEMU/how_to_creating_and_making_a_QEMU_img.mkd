@@ -157,6 +157,11 @@ $ sudo -s
 # echo > /var/log/wtmp 
 ```
 
+#### AIDE RE-INIT  
+```
+$ sudo aideinit -y -f  
+``` 
+
 #### Clear bash hostory  
 ```
 # echo > ~/.bash_history 
@@ -164,11 +169,6 @@ $ sudo -s
 $ echo > ~/.bash_history 
 $ history -cw 
 $ sudo poweroff 
-``` 
-
-#### AIDE RE-INIT  
-```
-$ sudo aideinit -y -f  
 ``` 
 
 ## sign QEMU image 
