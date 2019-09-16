@@ -1,17 +1,15 @@
 #!/bin/bash
-IPT="/sbin/iptables"
+IPT="/sbin/ip6tables"
 PUB_IFS="ens33"
-
 if [ $# -lt 1 ]; then
-	echo "Must be set to greater than or equal to a public network interface. "
-	echo "usage: $0 eth0, or $0 eth0 eth1"
+	echo "Must be set to greater than or equal to a public network interface. usage: $0 eth0, or $0 eth0 eth1"
 	exit 1
 else
 	PUB_IFS="$@"
 	echo "Public interface is $PUB_IFS"
 fi
 
- echo "Starting IPv4 Wall..."
+ echo "Starting IPv6 Wall..."
  $IPT -F
  $IPT -X
  $IPT -t nat -F
@@ -32,7 +30,7 @@ $IPT -P FORWARD DROP
 
 $IPT -A INPUT -i lo -j ACCEPT
 $IPT -A OUTPUT -o lo -j ACCEPT
-$IPT -A INPUT -s 127.0.0.0/8 -j DROP
+$IPT -A INPUT -s fe80::/64 -j DROP
 
 $IPT -A OUTPUT -p tcp -m state --state NEW,ESTABLISHED -j ACCEPT
 $IPT -A OUTPUT -p udp -m state --state NEW,ESTABLISHED -j ACCEPT
@@ -54,8 +52,8 @@ do
     $IPT -A INPUT -i ${PUB_IF} -p tcp ! --syn -m state --state NEW -j DROP
            
 # Fragments
-    $IPT -A INPUT -i ${PUB_IF} -f  -m limit --limit 5/m --limit-burst 7 -j LOG --log-level 4 --log-prefix "Fragments Packets"
-    $IPT -A INPUT -i ${PUB_IF} -f -j DROP
+    $IPT -A INPUT -i ${PUB_IF} -m limit --limit 5/m --limit-burst 7 -j LOG --log-level 4 --log-prefix "Fragments Packets"
+    $IPT -A INPUT -i ${PUB_IF} -j DROP
             
              
 # block bad stuff
@@ -82,19 +80,19 @@ do
     $IPT -I INPUT -p tcp --dport 22 -i ${PUB_IF} -m state --state NEW -m recent  --update --seconds 60 --hitcount 4 -j LOGDROP
  done
     # Allow full outgoing connection but no incomming stuff
-    $IPT -A INPUT -p icmp -m icmp --icmp-type 4 -j ACCEPT
-    $IPT -A OUTPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
+    $IPT -A INPUT -p ipv6-icmp -m ipv6-icmp  --icmpv6-type 4 -j ACCEPT
+    $IPT -A OUTPUT -p ipv6-icmp -m ipv6-icmp --icmpv6-type 8 -j ACCEPT
 
     # allow ssh/ntp/dhclint/http/https only
     $IPT -A INPUT -p tcp --dport 22 -m state --state NEW -j ACCEPT
     $IPT -A INPUT -p udp --dport 123 -m state --state NEW -j ACCEPT
-    $IPT -A INPUT -p udp --dport 68 -m state --state NEW -j ACCEPT
+    $IPT -A INPUT -d fe80::/64 -p udp -m udp --dport 546 -m conntrack --ctstate NEW -j ACCEPT
 #    $IPT -A INPUT -p tcp --dport 80 -m state --state NEW -j ACCEPT
 #    $IPT -A INPUT -p tcp --dport 443 -m state --state NEW -j ACCEPT
  
     # allow incoming ICMP ping pong stuff
-    $IPT -A INPUT -p icmp --icmp-type 8 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
-    $IPT -A OUTPUT -p icmp --icmp-type 0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+    $IPT -A INPUT -p ipv6-icmp -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+    $IPT -A OUTPUT -p ipv6-icmp -m state --state ESTABLISHED,RELATED -j ACCEPT
      
     # prevent ssh brute force attack
     $IPT -A LOGDROP -j LOG
