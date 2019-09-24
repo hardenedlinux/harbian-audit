@@ -33,11 +33,11 @@ $LONG_SCRIPT_NAME <RUN_MODE> [OPTIONS], where RUN_MODE is one of:
     --help -h
         Show this help
 	
-	--init 
-		Initialize the global configuration file(/etc/default/cis-hardening) based 
-		on the release version number.
+    --init 
+        Initialize the global configuration file(/etc/default/cis-hardening) based 
+        on the release version number.
     
-	--apply
+    --apply
         Apply hardening for enabled scripts.
         Beware that NO confirmation is asked whatsoever, which is why you're warmly
         advised to use --audit before, which can be regarded as a dry-run mode.
@@ -82,13 +82,13 @@ $LONG_SCRIPT_NAME <RUN_MODE> [OPTIONS], where RUN_MODE is one of:
         as http, mail, etc. Can be specified multiple times to allow multiple services.
         Use --allow-service-list to get a list of supported services.
         Example: 
-            bin/hardening.sh --set-hardening-level 5 --allow-service dns,http
-	
-	--final 
-		The final action that needs to be done when all repairs are completed. The action items are:
-		1. Use passwd to change the password of the regular and root user to update the user 
-		password strength and robustness;
-		2. Aide reinitializes.
+            bin/hardening.sh --set-hardening-level 5 --allow-service dns,http	
+
+    --final 
+        The final action that needs to be done when all repairs are completed. The action items are:
+        1. Use passwd to change the password of the regular and root user to update the user 
+           password strength and robustness;
+        2. Aide reinitializes.
 
 OPTIONS:
 
