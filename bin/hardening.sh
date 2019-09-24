@@ -155,8 +155,9 @@ while [[ $# > 0 ]]; do
 		--init)
 			INIT_G_CONFIG=1
 		;;
-		--final
+		--final)
 			FINAL_G_CONFIG=1
+		;;
         *)
             usage
         ;;
@@ -231,7 +232,7 @@ if [ $FINAL_G_CONFIG -eq 1 ]; then
 		aide --init
         mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
 	fi
-
+	exit 0
 fi
 
 # If --allow-service-list is specified, don't run anything, just list the supported services
