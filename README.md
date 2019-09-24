@@ -182,7 +182,12 @@ to do the following(your network interfacename(Example eth0)):
 $ sed -i 's/^define int_if = ens33/define int_if = eth0/g' etc.nftables.conf 
 $ sudo nft -f ./etc.nftables.conf 
 ```
-5) Use the passwd command to change the passwords of all users to apply the password complexity and robustness of the pam_cracklib module configuration.
+5) When all repairs are completed. --final method will:
+   1. Use passwd command to change the password of the regular and root user to apply the password complexity and robustness of the pam_cracklib module configuration.
+   2. Aide reinitializes.
+```
+$ sudo bin/hardening.sh --final
+```
 
 ## Special Note 
 Some check items check a variety of situations and are interdependent, they must be applied (fix) multiple times, and the OS must be a reboot after each applies (fix). 

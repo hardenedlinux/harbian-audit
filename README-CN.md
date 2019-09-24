@@ -166,7 +166,12 @@ $ sudo -s
 $ sed -i 's/^define int_if = ens33/define int_if = eth0/g' etc.nftables.conf 
 $ sudo nft -f ./etc.nftables.conf 
 ```
-5) 使用passwd命令改变所有用户的密码，以满足pam_cracklib模块配置的密码复杂度及健壮性。
+5) 当所有安全基线项都修复完成后，使用--final方法将完成以下的最终的工作：
+   1.使用passwd命令去重新设置常规用户及root用户的密码，以满足pam_cracklib模块配置的密码强度和健壮性。
+   2. 重新初始化aide工具的数据库。
+```
+$ sudo bin/hardening.sh --final
+```
 
 ## 特别注意 
 
