@@ -39,7 +39,7 @@ audit () {
 			if [ "$PROTO_TYPE" == 'udp6' ]; then
 				PROTO_TYPE="udp"
 			fi
-			LISTEN_PORT=$(echo ${LISTENING} | awk '{print $4}' | awk -F: '{print $4}')
+			LISTEN_PORT=$(echo ${LISTENING} | awk '{print $4}' | awk -F: '{print $NF}')
 			if [ $($IPS6 -S | grep "^\-A INPUT \-p $PROTO_TYPE" | grep -c "\-\-dport $LISTEN_PORT \-m state \-\-state NEW \-j ACCEPT") -ge 1 ]; then
         		info "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT was set ipv6 firewall rules."
 			else	
