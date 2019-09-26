@@ -77,11 +77,11 @@ admin@ip:/opt/harbian-audit-master# exit
 
 Apply need to apply twice items and that items of must apply after first apply:
 ```
-admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.1.32_freeze_auditd_conf.cfg 
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 8.1.32 
 admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 8.1.1.2
 admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 8.1.1.3
 admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 8.1.12
+admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.1.32_freeze_auditd_conf.cfg 
+admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 8.1.32 
 admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 4.5
 admin@ip:/opt/harbian-audit-master$ sudo reboot 
 ```
