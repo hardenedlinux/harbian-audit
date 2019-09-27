@@ -260,15 +260,15 @@ This document is a description of the additions to the sections not included in 
 The HardenedLinux community has created public AMI images for three different regions.
 
 Destination region: US East(Ohio)   
-AMI ID: ami-0459b7f679f8941a4   
+AMI ID: ami-091d37e9d358aaa84   
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 Destination region: EU(Frankfurt)  
-AMI ID: ami-022f30970530a0c5b   
+AMI ID: ami-073725a8c2cf45418  
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 Destination region: Asia Pacific(Tokyo)  
-AMI ID: ami-003de0c48c2711265   
+AMI ID: ami-06c0adb6ee5e7d417   
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 #### Docs  
