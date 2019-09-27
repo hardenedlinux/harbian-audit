@@ -89,7 +89,6 @@ admin@ip:/opt/harbian-audit-master$ sudo reboot
 ##### Third apply(after reboot)  
 Apply need to apply three times items:
 ```
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 4.5
 admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.1_install_aide.cfg 
 admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.2_aide_cron.cfg
 admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 8.4.1
@@ -116,14 +115,9 @@ $ sudo rm /opt/harbian-audit-master/tmp/backups/*
 $ sudo rm /opt/harbian-audit-master/etc/conf.d/*.cfg 
 ```
 
-#### Final apply
-Reset password for all users and reinit aide database: 
-```
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --final 
-```
 #### Uninstall 
 ```
-$ sudo apt-get purge --autoremove unzip 
+$ sudo apt-get purge --autoremove unzip -y 
 ```
 
 #### Clear the current log:
@@ -145,6 +139,13 @@ $ sudo -s
 # echo > /var/log/tallylog 
 # echo > /var/log/lastlog 
 # echo > /var/log/wtmp 
+# echo > /var/log/sudo.log
+```
+
+#### Final apply
+Reset password for all users and reinit aide database: 
+```
+admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --final 
 ```
 
 #### Clear bash hostory 

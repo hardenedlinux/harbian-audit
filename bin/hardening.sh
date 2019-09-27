@@ -211,16 +211,16 @@ if [ $FINAL_G_CONFIG -eq 1 ]; then
 	USERSNAME=$(cat /etc/passwd | awk -F':' '{if($3>=1000 && $3<65534) {print $1}}')
 	for USER in $USERSNAME; do
 		RESETCONTIN="n"
-		read -p "Will password of $USER be reset, are you sure to continue?(Y/n)"  RESETCONTIN
-		if [ "$RESETCONTIN" == "Y" ]; then
-			sudo -u $USER passwd
+		read -p "Will password of $USER be reset, are you sure to continue?(y/N)"  RESETCONTIN
+		if [ "$RESETCONTIN" == "y" ]; then
+			passwd $USER 
 		else
 			continue
 		fi
 	done
 	RESETCONTIN="n"
-	read -p "Will password of root be reset, are you sure to continue?(Y/n)"  RESETCONTIN
-	if [ "$RESETCONTIN" == "Y" ]; then
+	read -p "Will password of root be reset, are you sure to continue?(y/N)"  RESETCONTIN
+	if [ "$RESETCONTIN" == "y" ]; then
 		passwd
 	fi
 
