@@ -204,8 +204,6 @@ These are all related to the aide. It is best to fix all the items after they ha
 8.1.1.2  
 8.1.1.3  
 8.1.12  
-
-### Items that need to be fix three times:   
 4.5  
 
 ## Hacking
