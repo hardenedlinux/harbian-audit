@@ -152,12 +152,15 @@ has_file_correct_ownership() {
 has_file_correct_permissions() {
     local FILE=$1
     local PERMISSIONS=$2
-    
-    if [ $($SUDO_CMD stat -L -c "%a" $1) = "$PERMISSIONS" ]; then
-        FNRET=0
-    else
+    if [ -e $FILE ]; then
+    	if [ $($SUDO_CMD stat -L -c "%a" $1) = "$PERMISSIONS" ]; then
+        	FNRET=0
+    	else
+        	FNRET=1
+    	fi 
+	else
         FNRET=1
-    fi 
+	fi
 }
 
 does_pattern_exist_in_file() {
