@@ -16,8 +16,7 @@ HARDENING_LEVEL=4
 CLAMAVCONF_DIR='/etc/clamav/clamd.conf'
 UPDATE_SERVER='clamav-freshclam'
 
-# This function will be called if the script status is on enabled / audit mode
-audit () {
+audit_debian () {
 	UPDATE_DIR=$(grep -i databasedirectory "$CLAMAVCONF_DIR" | awk '{print $2}')
 	if [ -d $UPDATE_DIR -a -e $CLAMAVCONF_DIR ]; then
 		NOWTIME=$(date +"%s")
@@ -37,8 +36,23 @@ audit () {
 	fi
 }
 
-# This function will be called if the script status is on enabled mode
-apply () {
+# todo
+audit_redhat () {
+	:
+}
+
+# This function will be called if the script status is on enabled / audit mode
+audit () {
+	if [ $OS_RELEASE -eq 1 ]; then
+		audit_debian
+	elif [ $OS_RELEASE -eq 1 ]; then
+		audit_redhat
+	else
+		crit "Current OS is not support!"
+	fi
+}
+
+apply_debian () {
     if [ $FNRET = 0 ]; then
         ok "Clamav database file has a date less than seven days from the current date"
     elif [ $FNRET = 2 ]; then
@@ -48,6 +62,22 @@ apply () {
         apt-get install -y $UPDATE_SERVER
         systemctl start $UPDATE_SERVER
     fi
+}
+
+# todo
+apply_redhat () {
+	:
+}
+
+# This function will be called if the script status is on enabled mode
+apply () {
+	if [ $OS_RELEASE -eq 1 ]; then
+		apply_debian
+	elif [ $OS_RELEASE -eq 1 ]; then
+		apply_redhat
+	else
+		crit "Current OS is not support!"
+	fi
 }
 
 # This function will check config parameters required

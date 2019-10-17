@@ -160,6 +160,7 @@ has_file_correct_permissions() {
     	fi 
 	else
         FNRET=1
+		info "$FILE is not exist!" 
 	fi
 }
 
