@@ -5,6 +5,22 @@
 # debian version check 
 #
 
+is_debian_ge_9()
+{
+	if [ -r /etc/debian_version ]; then
+    	if [ $(cat /etc/debian_version | awk -F"." '{print $1}') -ge 9 ]; then
+        	debug "Debian version is greater than or equal to 9"
+        	FNRET=0
+    	else
+        	debug "Debian version is less than 9"
+        	FNRET=1
+    	fi
+	else
+		debug "Current OS is not Debian."
+		FNRET=2
+	fi
+}
+
 is_debian_9()
 {
 	if [ -r /etc/debian_version ]; then
@@ -136,12 +152,16 @@ has_file_correct_ownership() {
 has_file_correct_permissions() {
     local FILE=$1
     local PERMISSIONS=$2
-    
-    if [ $($SUDO_CMD stat -L -c "%a" $1) = "$PERMISSIONS" ]; then
-        FNRET=0
-    else
+    if [ -e $FILE ]; then
+    	if [ $($SUDO_CMD stat -L -c "%a" $1) = "$PERMISSIONS" ]; then
+        	FNRET=0
+    	else
+        	FNRET=1
+    	fi 
+	else
         FNRET=1
-    fi 
+		info "$FILE is not exist!" 
+	fi
 }
 
 does_pattern_exist_in_file() {
@@ -254,7 +274,7 @@ is_service_active() {
 	if [ $OS_RELEASE -eq 2 ]; then
 		FNRET=0
 	else
-    	is_debian_9
+		is_debian_ge_9
 	fi
     if [ $FNRET = 0 ]; then
         if [ $(systemctl is-active $SERVICE | grep -c "^active") -eq 1 ]; then

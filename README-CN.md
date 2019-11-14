@@ -151,24 +151,41 @@ EXCEPTIONS=""
 4) 设置基本的iptables防火墙规则 
 根据实现场景进行防火墙规则的配置，可参考HardenedLinux社区归纳的基于Debian GNU/Linux的防火墙规则的基本规则：
 [etc.iptables.rules.v4.sh](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/etc.iptables.rules.v4.sh)
-执行如下的命令进行部署:
+
+基于iptables的部署:
 ```
 $ INTERFACENAME="your network interfacename(Example eth0)"
-$ sed -i "s/PUB_IFS=.*/PUB_IFS=\"$INTERFACENAME\"/g" docs/configurations/etc.iptables.rules.v4.sh 
-$ sudo bash docs/configurations/etc.iptables.rules.v4.sh 
+$ sudo bash docs/configurations/etc.iptables.rules.v4.sh $INTERFACENAME
 $ sudo -s
 # iptables-save > /etc/iptables/rules.v4 
 # ip6tables-save > /etc/iptables/rules.v6 
 ```
-5) 使用passwd命令改变所有用户的密码，以满足pam_cracklib模块配置的密码复杂度及健壮性。
+基于nft的部署：
+按照以下命令修改nftables.conf(你的对外网口的名称，例如：eth0):
+```
+$ sed -i 's/^define int_if = ens33/define int_if = eth0/g' etc.nftables.conf 
+$ sudo nft -f ./etc.nftables.conf 
+```
+5) 当所有安全基线项都修复完成后，使用--final方法将完成以下的最终的工作：
+   1.使用passwd命令去重新设置常规用户及root用户的密码，以满足pam_cracklib模块配置的密码强度和健壮性。
+   2. 重新初始化aide工具的数据库。
+```
+$ sudo bin/hardening.sh --final
+```
 
 ## 特别注意 
-一些检查项需要依赖多次修复，且操作系统需要多次重启。需要进行两次修复的项有： 
+
+### 必须在第一次修复应用后进行修复的项  
+8.1.32  因为此项一旦设置，审计规则将不能够再进行添加。
+
+### 必须在所有项都修复应用后进行修复的项  
+8.4.1  8.4.2 这都是与aide检测文件完整性相关的项，最好是在所有项都修复好后再进行修复，以修复好的系统中的文件进行完整性的数据库的初始化。
+
+### 一些检查项需要依赖多次修复，且操作系统需要多次重启 
+#### 需要进行两次修复的项  
 8.1.1.2  
 8.1.1.3  
 8.1.12  
-
-需要修复3次的项： 
 4.5  
 
 ## 玩（如何添加检查项）
@@ -219,15 +236,15 @@ This document is a description of the additions to the sections not included in 
 The HardenedLinux community has created public AMI images for three different regions.
 
 Destination region: US East(Ohio)   
-AMI ID: ami-0459b7f679f8941a4   
+AMI ID: ami-091d37e9d358aaa84   
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 Destination region: EU(Frankfurt)  
-AMI ID: ami-022f30970530a0c5b   
+AMI ID: ami-073725a8c2cf45418   
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 Destination region: Asia Pacific(Tokyo)  
-AMI ID: ami-003de0c48c2711265   
+AMI ID: ami-06c0adb6ee5e7d417   
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 #### 相关文档  

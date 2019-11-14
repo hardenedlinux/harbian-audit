@@ -1,5 +1,9 @@
 # How to creating and making a QEMU image of harbian-audit complianced Debian GNU/Linux 9
 
+In the following context, deploy with the following name:  
+Network interface: eth0   
+username: harbian-audit   
+
 ## Pre-work  
 
 In the example below, the vul-manager visual tool will be used to remotely connect to the QEMU server for operation.  
@@ -42,14 +46,14 @@ Then follow the wizard to install step by step.
 
 ### Pre-Install  
 ```
-root@harbian:/home/harbian-audit# apt update && apt install -y bc net-tools vim unzip
+root@harbian:/home/harbian-audit# apt update && apt install -y bc net-tools vim unzip pciutils network-manager
 ```
 
 ### Get harbian-audit project 
 ```
 $ cd /opt
 root@harbian:/opt# wget https://github.com/hardenedlinux/harbian-audit/archive/master.zip 
-root@harbian:/opt# sudo unzip master.zip 
+root@harbian:/opt# unzip master.zip 
 root@harbian:/opt# cd harbian-audit-master/ 
 ``` 
 
@@ -59,17 +63,21 @@ root@harbian:/opt# cd harbian-audit-master/
 ```
 root@harbian:/opt/harbian-audit-master# cp debian/default /etc/default/cis-hardening 
 root@harbian:/opt/harbian-audit-master# sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening  
-root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --audit-all 
+root@harbian:/opt/harbian-audit-master#  bash bin/hardening.sh --init  
+root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --audit-all  
 root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --set-hardening-level 5 
 root@harbian:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/7.4.4_hosts_deny.cfg 
+root@harbian:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/8.1.32_freeze_auditd_conf.cfg 
+root@harbian:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/8.4.1_install_aide.cfg 
+root@harbian:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/8.4.2_aide_cron.cfg 
 root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --apply 
 root@harbian:/opt/harbian-audit-master# sed -i "/^root/a\harbian-audit    ALL=(ALL:ALL) ALL" /etc/sudoers
 root@harbian:/opt/harbian-audit-master# reboot  
 ```
 
-After reboot: 
+After reboot:
 ```
-harbian-audit@harbian:/opt/harbian-audit-master$ sudo bash ./docs/configurations/etc.iptables.rules.v4.sh   
+harbian-audit@harbian:/opt/harbian-audit-master$ sudo bash ./docs/configurations/etc.iptables.rules.v4.sh  eth0
 harbian-audit@harbian:/opt/harbian-audit-master$ sudo -s   
 root@harbian:/opt/harbian-audit-master# iptables-save > /etc/iptables/rules.v4   
 root@harbian:/opt/harbian-audit-master# ip6tables-save > /etc/iptables/rules.v6  
@@ -84,7 +92,7 @@ $ sudo sed -i "s/Debian GNU\/Linux 9/harbian-audit complianced for Debian GNU\/L
 
 ### Set grub passwd   
 superusers: harbiansuper   
-passwd: harbian_AUDIT,12@)  
+passwd: harbian_AUDIT,09!)
 
 Related how to config grub2 password protection, please reference:   
 [how_to_config_grub2_password_protection.mkd](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_config_grub2_password_protection.mkd)   
@@ -102,17 +110,31 @@ If need adds a project on AMI, add the project on such as /opt, /usr/local/bin d
 
 ### Clean up  
 
+#### Uninstall   
+```
+$ sudo apt-get purge --autoremove unzip -y   
+```
+
 #### Clean harbian-audit temp file and conf  
 ```
 $ sudo rm /opt/master.zip 
 $ sudo rm /opt/harbian-audit-master/tmp/backups/*
-$ sudo rm /opt/harbian-audit-master/etc/conf.d/*.cfg 
+$ cd /opt/harbian-audit-master/etc/conf.d
+$ sudo rm -f !(8.1.32_freeze_auditd_conf.cfg|8.4.1_install_aide.cfg|8.4.2_aide_cron.cfg) 
 ```
 
-#### AIDE RE-INIT  
+#### Final fix  
 ```
-$ sudo aideinit -y -f  
-```  
+$ cd /opt/harbian-audit-master 
+$ sudo sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.1.32_freeze_auditd_conf.cfg
+$ sudo sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.1_install_aide.cfg 
+$ sudo sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.2_aide_cron.cfg 
+$ sudo bash bin/hardening.sh --apply --only 8.1.32
+$ sudo bash bin/hardening.sh --apply --only 8.4.1
+$ sudo bash bin/hardening.sh --apply --only 8.4.2
+$ sudo rm /opt/harbian-audit-master/tmp/backups/*
+$ sudo rm /opt/harbian-audit-master/etc/conf.d/*
+``` 
 
 #### Clear the current log   
 ```
@@ -135,6 +157,11 @@ $ sudo -s
 # echo > /var/log/wtmp 
 ```
 
+#### AIDE RE-INIT  
+```
+$ sudo aideinit -y -f  
+``` 
+
 #### Clear bash hostory  
 ```
 # echo > ~/.bash_history 
@@ -147,6 +174,6 @@ $ sudo poweroff
 ## sign QEMU image 
 ssh to QEMU server, find QEMU image dir, sign the QEMU image: 
 ```
-root@debian-9:/opt/images# gpg -b harbian-audit_Debian_9.qcow2 
+root@debian-9:/opt/images# gpg -u Samson -b debian9.9-harbian-0910.qcow2
 ```
 

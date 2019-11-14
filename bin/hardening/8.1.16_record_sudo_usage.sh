@@ -14,7 +14,6 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-SUDOLOG='/var/log/sudo.log' 
 AUDIT_VALUE='-w /var/log/sudo.log -p wa -k sudoaction'
 FILE='/etc/audit/rules.d/audit.rules'
 
@@ -23,18 +22,12 @@ audit () {
     # define custom IFS and save default one
     d_IFS=$IFS
     IFS=$'\n'
-	if [ -f $SUDOLOG ]; then
-		debug "$AUDIT_VALUE should be in file $FILE"
-		does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
-		if [ $FNRET != 0 ]; then
-			crit "$AUDIT_VALUE is not in file $FILE"
-			FNRET=2
-		else 
-			ok "$AUDIT_VALUE is present in $FILE"
-		fi
-	else
-		crit "file $SUDOLOG is not exist!"
+	does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
+	if [ $FNRET != 0 ]; then
+		crit "$AUDIT_VALUE is not in file $FILE"
 		FNRET=1
+	else 
+		ok "$AUDIT_VALUE is present in $FILE"
 	fi
 	IFS=$d_IFS
 }
@@ -45,15 +38,6 @@ apply () {
     d_IFS=$IFS
     IFS=$'\n'
 	if [ $FNRET = 1 ]; then
-		warn "file $SUDOLOG is not exist! Set default logfile path in /etc/sudoers."
-		sed -i '$aDefaults	logfile="/var/log/sudo.log"' /etc/sudoers
-		does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
-		if [ $FNRET != 0 ]; then
-			warn "$AUDIT_VALUE is not in file $FILE, adding it"
-            add_end_of_file $FILE $AUDIT_VALUE
-			check_auditd_is_immutable_mode
-		fi
-	elif [ $FNRET = 2 ]; then
 		warn "$AUDIT_VALUE is not in file $FILE, adding it"
 		add_end_of_file $FILE $AUDIT_VALUE
 		check_auditd_is_immutable_mode

@@ -169,8 +169,7 @@ Set the corresponding firewall rules according to the applications used. Hardene
 to do the following:
 ```
 $ INTERFACENAME="your network interfacename(Example eth0)"
-$ sed -i "s/PUB_IFS=.*/PUB_IFS=\"$INTERFACENAME\"/g" docs/configurations/etc.iptables.rules.v4.sh 
-$ sudo bash docs/configurations/etc.iptables.rules.v4.sh 
+$ sudo bash docs/configurations/etc.iptables.rules.v4.sh $INTERFACENAME
 $ sudo -s
 # iptables-save > /etc/iptables/rules.v4 
 # ip6tables-save > /etc/iptables/rules.v6 
@@ -183,18 +182,28 @@ to do the following(your network interfacename(Example eth0)):
 $ sed -i 's/^define int_if = ens33/define int_if = eth0/g' etc.nftables.conf 
 $ sudo nft -f ./etc.nftables.conf 
 ```
-
-5) Use the passwd command to change the passwords of all users, and change the password to a secure and reliable password entry with the same password complexity set by the pam_cracklib module.
+5) When all repairs are completed. --final method will:
+   1. Use passwd command to change the password of the regular and root user to apply the password complexity and robustness of the pam_cracklib module configuration.
+   2. Aide reinitializes.
+```
+$ sudo bin/hardening.sh --final
+```
 
 ## Special Note 
 Some check items check a variety of situations and are interdependent, they must be applied (fix) multiple times, and the OS must be a reboot after each applies (fix). 
 
-Items that need to be fix twice:  
+### Items that must be applied after the first application(reboot after is better)
+8.1.32  Because this item is set, the audit rules will not be added. 
+
+### Items that must be applied after all application is ok
+8.4.1   
+8.4.2   
+These are all related to the aide. It is best to fix all the items after they have been fixed to fix the integrity of the database in the system. 
+
+### Items that need to be fix twice  
 8.1.1.2  
 8.1.1.3  
 8.1.12  
-
-Items that need to be fix three times:   
 4.5  
 
 ## Hacking
@@ -249,15 +258,15 @@ This document is a description of the additions to the sections not included in 
 The HardenedLinux community has created public AMI images for three different regions.
 
 Destination region: US East(Ohio)   
-AMI ID: ami-0459b7f679f8941a4   
+AMI ID: ami-091d37e9d358aaa84   
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 Destination region: EU(Frankfurt)  
-AMI ID: ami-022f30970530a0c5b   
+AMI ID: ami-073725a8c2cf45418  
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 Destination region: Asia Pacific(Tokyo)  
-AMI ID: ami-003de0c48c2711265   
+AMI ID: ami-06c0adb6ee5e7d417   
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 #### Docs  

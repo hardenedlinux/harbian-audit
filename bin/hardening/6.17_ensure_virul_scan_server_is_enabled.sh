@@ -17,31 +17,53 @@ VIRULSERVER='clamav-daemon'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(dpkg -l  | grep -c $VIRULSERVER) -ge 1 ]; then
-        if [ $(systemctl | grep  $VIRULSERVER | grep -c "active running") -ne 1 ]; then
-            crit "$VIRULSERVER is not runing"
-            FNRET=2
-        else
-            ok "$VIRULSERVER is enable"
-            FNRET=0
-        fi
-    else
-        crit "$VIRULSERVER is not installed"
-        FNRET=1
-    fi
+	if [ $OS_RELEASE -eq 1 ]; then
+    	if [ $(dpkg -l  | grep -c $VIRULSERVER) -ge 1 ]; then
+        	if [ $(systemctl | grep  $VIRULSERVER | grep -c "active running") -ne 1 ]; then
+            	crit "$VIRULSERVER is not runing"
+            	FNRET=2
+        	else
+            	ok "$VIRULSERVER is enable"
+            	FNRET=0
+        	fi
+    	else
+        	crit "$VIRULSERVER is not installed"
+        	FNRET=1
+    	fi
+	elif [ $OS_RELEASE -eq 2 ]; then
+		if [ $(rpm -qa | grep -c clamd) -ge 1 ]; then
+			ok "Clamav is installed"
+		else
+			crit "Clamav is not install"
+		fi
+	else 
+		crit "Current OS is not support!"
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    if [ $FNRET = 0 ]; then
-        ok "$VIRULSERVER is enable"
-    elif [ $FNRET = 1 ]; then
-        warn "Install $VIRULSERVER"
-        apt-get install -y $VIRULSERVER
-    else
-        warn "Start server $VIRULSERVER"
-        systemctl start $VIRULSERVER
-    fi
+	if [ $OS_RELEASE -eq 1 ]; then
+		if [ $FNRET = 0 ]; then
+			ok "$VIRULSERVER is enable"
+		elif [ $FNRET = 1 ]; then
+        	warn "Install $VIRULSERVER"
+        	apt-get install -y $VIRULSERVER
+    	else
+        	warn "Start server $VIRULSERVER"
+        	systemctl start $VIRULSERVER
+    	fi
+	elif [ $OS_RELEASE -eq 2 ]; then
+    	if [ $FNRET = 0 ]; then
+        	ok "$VIRULSERVER is enable"
+    	elif [ $FNRET = 1 ]; then
+        	warn "Install $VIRULSERVER"
+        	yum install -y $VIRULSERVER
+    	else
+        	warn "Start server $VIRULSERVER"
+        	systemctl start $VIRULSERVER
+    	fi
+	fi
 }
 
 # This function will check config parameters required

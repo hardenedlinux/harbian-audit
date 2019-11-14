@@ -24,6 +24,7 @@ ALLOW_SERVICE_LIST=0
 SET_HARDENING_LEVEL=0
 SUDO_MODE=''
 INIT_G_CONFIG=0
+FINAL_G_CONFIG=0
 
 usage() {
     cat << EOF
@@ -32,11 +33,11 @@ $LONG_SCRIPT_NAME <RUN_MODE> [OPTIONS], where RUN_MODE is one of:
     --help -h
         Show this help
 	
-	--init 
-		Initialize the global configuration file(/etc/default/cis-hardening) based 
-		on the release version number.
+    --init 
+        Initialize the global configuration file(/etc/default/cis-hardening) based 
+        on the release version number.
     
-	--apply
+    --apply
         Apply hardening for enabled scripts.
         Beware that NO confirmation is asked whatsoever, which is why you're warmly
         advised to use --audit before, which can be regarded as a dry-run mode.
@@ -81,7 +82,13 @@ $LONG_SCRIPT_NAME <RUN_MODE> [OPTIONS], where RUN_MODE is one of:
         as http, mail, etc. Can be specified multiple times to allow multiple services.
         Use --allow-service-list to get a list of supported services.
         Example: 
-            bin/hardening.sh --set-hardening-level 5 --allow-service dns,http
+            bin/hardening.sh --set-hardening-level 5 --allow-service dns,http	
+
+    --final 
+        The final action that needs to be done when all repairs are completed. The action items are:
+        1. Use passwd to change the password of the regular and root user to update the user 
+           password strength and robustness;
+        2. Aide reinitializes.
 
 OPTIONS:
 
@@ -148,6 +155,9 @@ while [[ $# > 0 ]]; do
 		--init)
 			INIT_G_CONFIG=1
 		;;
+		--final)
+			FINAL_G_CONFIG=1
+		;;
         *)
             usage
         ;;
@@ -170,6 +180,7 @@ fi
 [ -r $CIS_ROOT_DIR/lib/common.sh     ] && . $CIS_ROOT_DIR/lib/common.sh
 [ -r $CIS_ROOT_DIR/lib/utils.sh      ] && . $CIS_ROOT_DIR/lib/utils.sh
 
+# For --init
 if [ $INIT_G_CONFIG -eq 1 ]; then
 	if [ -r /etc/redhat-release ]; then
 		info "This OS is redhat/CentOS."
@@ -192,6 +203,36 @@ elif [ $OS_RELEASE -eq 2 ]; then
 else
 	crit "This OS not support!"
 	exit 128
+fi
+
+# For --final 
+if [ $FINAL_G_CONFIG -eq 1 ]; then
+	# Reset passwd for regular and root user 
+	USERSNAME=$(cat /etc/passwd | awk -F':' '{if($3>=1000 && $3<65534) {print $1}}')
+	for USER in $USERSNAME; do
+		RESETCONTIN="n"
+		read -p "Will password of $USER be reset, are you sure to continue?(y/N)"  RESETCONTIN
+		if [ "$RESETCONTIN" == "y" ]; then
+			passwd $USER 
+		else
+			continue
+		fi
+	done
+	RESETCONTIN="n"
+	read -p "Will password of root be reset, are you sure to continue?(y/N)"  RESETCONTIN
+	if [ "$RESETCONTIN" == "y" ]; then
+		passwd
+	fi
+
+	# Reinit aide database 
+	info "Will reinitialize the AIDE database"
+	if [ $OS_RELEASE -eq 1 ]; then
+		aideinit
+	elif [ $OS_RELEASE -eq 2 ]; then
+		aide --init
+        mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+	fi
+	exit 0
 fi
 
 # If --allow-service-list is specified, don't run anything, just list the supported services

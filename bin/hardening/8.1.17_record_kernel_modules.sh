@@ -14,13 +14,13 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-ARCH64_AUDIT_PARAMS='-w /sbin/insmod -p x -k modules 
+ARCH64_AUDIT_PARAMS='-w /sbin/insmod -p x -k modules
 -w /sbin/rmmod -p x -k modules
 -w /sbin/modprobe -p x -k modules
 -w /bin/kmod -p x -k modules
 -a always,exit -F arch=b32 -S init_module -S delete_module -S create_module -S finit_module -k modules
 -a always,exit -F arch=b64 -S init_module -S delete_module -S create_module -S finit_module -k modules'
-ARCH32_AUDIT_PARAMS='-w /sbin/insmod -p x -k modules 
+ARCH32_AUDIT_PARAMS='-w /sbin/insmod -p x -k modules
 -w /sbin/rmmod -p x -k modules
 -w /sbin/modprobe -p x -k modules
 -w /bin/kmod -p x -k modules
@@ -34,8 +34,8 @@ audit () {
     d_IFS=$IFS
     IFS=$'\n'
 	is_64bit_arch
-	if [ $FNRET=0 ]; then 
-		AUDIT_PARAMS=$ARCH64_AUDIT_PARAMS			
+	if [ $FNRET=0 ]; then
+		AUDIT_PARAMS=$ARCH64_AUDIT_PARAMS
 	else
 		AUDIT_PARAMS=$ARCH32_AUDIT_PARAMS
 	fi

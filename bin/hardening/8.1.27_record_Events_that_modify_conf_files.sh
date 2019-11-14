@@ -10,16 +10,17 @@
 #
 
 set -u # One variable unset, it's over
+set -e # One error, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F path=$(find /etc/ -name audisp-remote.conf) -F perm=wa -k config_file_change
--a always,exit -F path=$(find /etc/ -name auditd.conf) -F perm=wa -k config_file_change
--a always,exit -F dir=$(find /etc/audit/ -name rules.d) -F perm=wa -k config_file_change
--a always,exit -F path=$(find /etc/ -name grub) -F perm=wa -k config_file_change
--a always,exit -F path=$(find /etc/ -name fstab) -F perm=wa -k config_file_change
--a always,exit -F path=$(find /etc/ -name hosts.deny) -F perm=wa -k config_file_change
--a always,exit -F path=$(find /etc/ -name login.defs) -F perm=wa -k config_file_change
+AUDIT_PARAMS='-a always,exit -F path=/etc/audisp/audisp-remote.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/audit/auditd.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/default/grub -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/fstab -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/hosts.deny -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/login.defs -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/audit/rules.d/ -F perm=wa -k config_file_change
 -a always,exit -F dir=/etc/pam.d/ -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/profile -F perm=wa -k config_file_change
 -a always,exit -F dir=/etc/profile.d/ -F perm=wa -k config_file_change
@@ -27,7 +28,6 @@ AUDIT_PARAMS='-a always,exit -F path=$(find /etc/ -name audisp-remote.conf) -F p
 -a always,exit -F dir=/etc/iptables/ -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/sysctl.conf -F perm=wa -k config_file_change'
 
-set -e # One error, it's over
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
@@ -39,7 +39,7 @@ audit () {
     for AUDIT_VALUE in $AUDIT_PARAMS; do
 		check_audit_path $AUDIT_VALUE 
 		if [ $FNRET -eq 1 ];then
-			crit "path is not exsit! Please check file path is exist!"
+			crit "path is not exsit! Please check file path is exist! Rule: $AUDIT_VALUE"
 			continue
 		else
         	debug "$AUDIT_VALUE should be in file $FILE"
