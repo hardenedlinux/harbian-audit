@@ -310,9 +310,10 @@ Additionally, quoting the License:
 
 ## Reference
 
-- **Center for Internet Security**: https://www.cisecurity.org/
-- **STIG V1R4**: https://iasecontent.disa.mil/stigs/zip/U_Red_Hat_Enterprise_Linux_7_V1R4_STIG.zip 
-- **Firewall Rules**: https://github.com/citypw/arsenal-4-sec-testing/blob/master/bt5_firewall/debian_fw
+- **Center for Internet Security**: [https://www.cisecurity.org](https://www.cisecurity.org)
+- **STIG V1R4**: [https://iasecontent.disa.mil/stigs/zip/U_Red_Hat_Enterprise_Linux_7_V1R4_STIG.zip](https://iasecontent.disa.mil/stigs/zip/U_Red_Hat_Enterprise_Linux_7_V1R4_STIG.zip) 
+- **Firewall Rules**: [https://github.com/citypw/arsenal-4-sec-testing/blob/master/bt5_firewall/debian_fw](https://github.com/citypw/arsenal-4-sec-testing/blob/master/bt5_firewall/debian_fw)
+
 
 
 
