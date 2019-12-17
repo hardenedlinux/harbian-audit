@@ -17,7 +17,7 @@ HARDENING_LEVEL=3
 NOAUTH='!authenticate'
 AUTHENTICATE='authenticate'
 FILE='/etc/sudoers'
-INCLUDFILE='/etc/sudoers.d/*'
+INCLUDFILE='/etc/sudoers.d/'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () 
@@ -33,12 +33,12 @@ audit ()
         	FNRET=1
     	else
         	ok "$NOAUTH is not set on $FILE, it's ok"
-        	if [ $(grep $NOAUTH $INCLUDFILE | wc -l) -gt 0 ]; then 
-            	crit "$NOAUTH is set on $INCLUDFILE, it's error conf"
-            	FNRET=1
+        	if [ $(grep $NOAUTH $INCLUDFILE -rh | wc -l) -gt 0 ]; then 
+            		crit "$NOAUTH is set on $INCLUDFILE, it's error conf"
+            		FNRET=1
         	else
-            	ok "$NOAUTH is not set on $INCLUDFILE, it's ok"
-            	FNRET=0
+            		ok "$NOAUTH is not set on $INCLUDFILE, it's ok"
+            		FNRET=0
         	fi
     	fi
 	fi
@@ -50,8 +50,8 @@ apply () {
         ok "APPLY: $NOAUTH is not set on $FILE, it's ok"
     elif [ $FNRET = 1 ]; then
         info "$NOAUTH is set on the $FILE or $INCLUDFILE, need remove"
-        backup_file $FILE $INCLUDFILE
-        chmod 640 $FILE $INCLUDFILE &&  sed -i -e "s/$NOAUTH/$AUTHENTICATE/g" $FILE $INCLUDFILE && chmod 440 $FILE $INCLUDFILE
+        backup_file $FILE ${INCLUDFILE}/*
+		chmod 640 $FILE ${INCLUDFILE}/* &&  sed -i -e "s/$NOAUTH/$AUTHENTICATE/g" $FILE ${INCLUDFILE}/* && chmod 440 $FILE ${INCLUDFILE}/*
     elif [ $FNRET = 1 ]; then
 		warn "$FILE is not exist! Maybe sudo package not installed."
     fi
