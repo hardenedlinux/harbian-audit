@@ -79,7 +79,7 @@ sudo apt-get install -y bc net-tools pciutils
 ```
 如果系统是Redhat/CentOS，在使用此项目前，需要安装如下的软件包：
 ```
-sudo yum install -y bc net-tools pciutils NetworkManager 
+sudo yum install -y bc net-tools pciutils NetworkManager epel-release 
 ```
 
 ### 需要预先进行的配置 

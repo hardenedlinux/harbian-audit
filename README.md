@@ -78,7 +78,7 @@ sudo apt-get install -y bc net-tools pciutils network-manager
 
 Redhat/CentOS need install packages before use the hardening tool:
 ```
-sudo yum install -y bc net-tools pciutils NetworkManager 
+sudo yum install -y bc net-tools pciutils NetworkManager epel-release 
 ```
 
 ### Pre-Set 
