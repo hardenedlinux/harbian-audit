@@ -20,7 +20,14 @@ PACKAGE_REDHAT='tcp_wrappers'
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGE=$PACKAGE_REDHAT
+		is_centos_8
+		if [ $FNRET == 0 ]; then
+			warn "The package(tcp_wrappers) has been deprecated in RHEL 7 and therefore it will not be avaliable in RHEL 8 or later RHEL release."
+			ok "So PASS."
+			return 0
+		else
+			PACKAGE=$PACKAGE_REDHAT
+		fi
 	fi
 	is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
@@ -33,7 +40,14 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGE=$PACKAGE_REDHAT
+		is_centos_8
+		if [ $FNRET == 0 ]; then
+			warn "The package(tcp_wrappers) has been deprecated in RHEL 7 and therefore it will not be avaliable in RHEL 8 or later RHEL release."
+			ok "So PASS."
+			return 0
+		else
+			PACKAGE=$PACKAGE_REDHAT
+		fi
 	fi
 	is_pkg_installed $PACKAGE
 	if [ $FNRET = 0 ]; then

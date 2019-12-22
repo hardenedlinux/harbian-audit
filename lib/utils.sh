@@ -5,6 +5,19 @@
 # debian version check 
 #
 
+is_centos_8()
+{
+	if [ -r /etc/redhat-release ]; then
+		if [ $(grep -c "^CentOS.*8.[0-9].*" /etc/redhat-release) -eq 1 ]; then
+        		debug "CentOS version is equal to 8"
+        		FNRET=0
+    		else
+        		debug "CentOS version is less than 8"
+        		FNRET=1
+		fi
+	fi
+}
+
 is_debian_ge_9()
 {
 	if [ -r /etc/debian_version ]; then

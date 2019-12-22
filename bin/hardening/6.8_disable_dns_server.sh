@@ -16,7 +16,7 @@ HARDENING_LEVEL=3
 HARDENING_EXCEPTION=dns
 
 PACKAGES='bind9 unbound'
-PACKAGES_REDHAT='bind unbound'
+PACKAGES_REDHAT='bind unbound bind-utils'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
