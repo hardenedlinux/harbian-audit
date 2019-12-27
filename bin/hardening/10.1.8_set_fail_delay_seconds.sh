@@ -55,7 +55,7 @@ apply () {
         ok "$PACKAGE is installed"
     elif [ $FNRET = 1 ]; then
         crit "$PACKAGE is absent, installing it"
-        apt_install $PACKAGE
+        install_package $PACKAGE
     elif [ $FNRET = 2 ]; then
         crit "$PATTERN is not present in $FILE, add default config to $FILE"
         add_line_file_before_pattern $FILE "auth       optional   pam_faildelay.so  delay=4000000" "# Outputs an issue file prior to each login prompt (Replaces the"

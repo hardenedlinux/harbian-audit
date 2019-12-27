@@ -51,7 +51,7 @@ apply () {
         ok "$PACKAGE is installed"
     elif [ $FNRET = 1 ]; then
         crit "$PACKAGE is absent, installing it"
-        apt_install $PACKAGE
+        install_package $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "$PATTERN is not present in $FILE"
         add_line_file_before_pattern $FILE "password required pam_pwhistory.so remember=5" "# pam-auth-update(8) for details."

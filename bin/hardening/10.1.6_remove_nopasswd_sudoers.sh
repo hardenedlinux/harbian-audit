@@ -50,8 +50,12 @@ apply () {
         ok "APPLY: $NOPASSWD is not set on $FILE, it's ok"
     elif [ $FNRET = 1 ]; then
         info "$NOPASSWD is set on the $FILE or $INCLUDFILE, need remove"
-        backup_file $FILE $INCLUDFILE
-        chmod 640 $FILE $INCLUDFILE &&  sed -i -e "s/$NOPASSWD/$PASSWD/g" $FILE $INCLUDFILE && chmod 440 $FILE $INCLUDFILE
+        backup_file $FILE
+        chmod 640 $FILE &&  sed -i -e "s/$NOPASSWD/$PASSWD/g" $FILE && chmod 440 $FILE 
+		if [ $(ls $(dirname $INCLUDFILE) | wc -l) -gt 0 ]; then
+			backup_file $INCLUDFILE
+			chmod 640 $INCLUDFILE &&  sed -i -e "s/$NOPASSWD/$PASSWD/g" $INCLUDFILE && chmod 440 $INCLUDFILE
+		fi
     elif [ $FNRET = 2 ]; then
 		warn "$FILE is not exist! Maybe sudo package not installed."
     fi

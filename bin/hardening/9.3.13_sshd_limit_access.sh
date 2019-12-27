@@ -46,7 +46,7 @@ apply () {
         ok "$PACKAGE is installed"
     else
         crit "$PACKAGE is absent, installing it"
-        apt_install $PACKAGE
+        install_package $PACKAGE
     fi
     for SSH_OPTION in $OPTIONS; do
             SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
@@ -65,7 +65,7 @@ apply () {
                     info "Parameter $SSH_PARAM is present but with the wrong value -- Fixing"
                     replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SSH_VALUE"
                 fi
-                /etc/init.d/ssh reload
+				systemctl reload sshd
             fi
     done
 }

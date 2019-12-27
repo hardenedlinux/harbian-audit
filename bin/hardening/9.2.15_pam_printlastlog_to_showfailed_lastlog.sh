@@ -50,7 +50,7 @@ apply () {
         ok "$PACKAGE is installed"
     elif [ $FNRET = 1 ]; then
         warn "$PACKAGE is absent, installing it"
-        apt_install $PACKAGE
+        install_package $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "$PATTERN is not present in $FILE"
         add_line_file_before_pattern $FILE "session optional pam_lastlog.so showfailed" "# pam-auth-update(8) for details."

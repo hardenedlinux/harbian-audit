@@ -5,7 +5,7 @@
 #
 
 #
-# 9.3.27 Ensure SSH access is limited (Scored)
+# 9.3.26 Ensure SSH access is limited (Scored)
 # Auther: Samson-W (sccxboy@gmail.com)
 #
 
@@ -68,7 +68,7 @@ apply () {
         ok "$PACKAGE is installed"
     else
         crit "$PACKAGE is absent, installing it"
-        apt_install $PACKAGE
+        install_package $PACKAGE
     fi
 	if [ $ALLOWUSER_RET -eq 1 ]; then
 		warn "AllowUsers is not set! Need manual operation set it."

@@ -1,22 +1,22 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 9 Hardening
 #
 
 #
-# 9.3.22 Set SSHD MACs to hmac-sha2-256,hmac-sha2-512 (Scored)
-# Author : Samson wen, Samson <sccxboy@gmail.com>
+# 9.3.25 Ensure SSH LoginGraceTime is set to one minute or less (Scored)
+# Auther: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
-HARDENING_LEVEL=2
+HARDENING_LEVEL=3
 
 PACKAGE='openssh-server'
-OPTIONS='MACs=hmac-sha2-256,hmac-sha2-512'
 FILE='/etc/ssh/sshd_config'
+OPTIONS='LoginGraceTime=60'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -46,7 +46,7 @@ apply () {
         ok "$PACKAGE is installed"
     else
         crit "$PACKAGE is absent, installing it"
-        apt_install $PACKAGE
+        install_package $PACKAGE
     fi
     for SSH_OPTION in $OPTIONS; do
             SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
@@ -64,14 +64,14 @@ apply () {
                     info "Parameter $SSH_PARAM is present but with the wrong value -- Fixing"
                     replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SSH_VALUE"
                 fi
-                /etc/init.d/ssh reload > /dev/null 2>&1
+				systemctl reload sshd
             fi
     done
 }
 
 # This function will check config parameters required
 check_config() {
-    :
+	:
 }
 
 # Source Root Dir Parameter

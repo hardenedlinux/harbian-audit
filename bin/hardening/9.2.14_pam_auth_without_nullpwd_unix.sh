@@ -53,7 +53,7 @@ apply () {
         ok "$PACKAGE is installed"
     elif [ $FNRET = 1 ]; then
         crit "$PACKAGE is absent, installing it"
-        apt_install $PACKAGE
+        install_package $PACKAGE
     elif [ $FNRET = 2 ]; then
         ok "$PATTERN is not present in $FILE, not need add"
     elif [ $FNRET = 3 ]; then

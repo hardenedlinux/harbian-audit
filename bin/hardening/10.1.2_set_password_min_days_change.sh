@@ -51,7 +51,7 @@ apply () {
         ok "$PACKAGE is installed"
     else
         crit "$PACKAGE is absent, installing it"
-        apt_install $PACKAGE
+        install_package $PACKAGE
     fi
 	SSH_PARAM=$(echo $OPTIONS | cut -d= -f 1)
 	SSH_VALUE=$(echo $OPTIONS | cut -d= -f 2)

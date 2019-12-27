@@ -59,7 +59,7 @@ apply () {
         ok "$PACKAGE is installed"
     elif [ $FNRET = 1 ]; then
         warn "$PACKAGE is not installed, need install."
-        apt_install $PACKAGE
+        install_package $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "$FILE is not exist, need manual check."
     elif [ $FNRET = 3 ]; then

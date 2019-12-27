@@ -56,7 +56,7 @@ apply () {
         ok "$PACKAGE is installed"
     elif [ $FNRET = 1 ]; then
         warn "Apply:$PACKAGE is absent, installing it"
-        apt_install $PACKAGE
+        install_package $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "Apply:$AUTHPATTERN is not present in $AUTHFILE"
         add_line_file_after_pattern "$AUTHFILE" "$AUTHRULE" "$ADDPATTERNLINE"

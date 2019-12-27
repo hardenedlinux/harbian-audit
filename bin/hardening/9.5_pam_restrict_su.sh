@@ -14,11 +14,17 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 PACKAGE='login'
+PACKAGE_REDHAT='util-linux'
 PATTERN='^auth[[:space:]]*required[[:space:]]*pam_wheel.so'
 FILE='/etc/pam.d/su'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	if [ OS_RELEASE -eq 2 ]; then
+		PACKAGE=$PACKAGE_REDHAT
+	else
+		:
+	fi
     is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
         crit "$PACKAGE is not installed!"
@@ -40,7 +46,7 @@ apply () {
         ok "$PACKAGE is installed"
     else
         crit "$PACKAGE is absent, installing it"
-        apt_install $PACKAGE
+        install_package $PACKAGE
     fi
     does_pattern_exist_in_file $FILE $PATTERN
     if [ $FNRET = 0 ]; then

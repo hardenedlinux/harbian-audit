@@ -5,7 +5,7 @@
 #
 
 #
-# 9.3.23 Check SSH public host key permission (Scored)
+# 9.3.23 Check SSH private host key permission (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -16,8 +16,7 @@ HARDENING_LEVEL=2
 
 USER='root'
 GROUP='root'
-PERMISSIONS='0644'
-
+PERMISSIONS='0600'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -26,7 +25,7 @@ audit () {
 	else
 		ok "There are file has correct ownership"
 	fi
-    if [ $(find /etc/ssh/ -name "*.pub" -perm /133 | wc -l) -gt 0 ]; then
+    if [ $(find /etc/ssh/ -name "*ssh_host*key" -perm /177 | wc -l) -gt 0 ]; then
         crit "There are file file has a mode more permissive than $PERMISSIONS"
     else
         ok "Not any file has a mode more permissive than $PERMISSIONS"
@@ -41,11 +40,11 @@ apply () {
 	else
 		ok "There are file has correct ownership"
 	fi
-    if [ $(find /etc/ssh/ -name "*.pub" -perm /133 | wc -l) -gt 0 ]; then
-        warn "Set ssh public host key permission to $PERMISSIONS"
-        find /etc/ssh/ -name "*.pub" -perm /133 -exec chmod $PERMISSIONS {} \;
+    if [ $(find /etc/ssh/ -name "*ssh_host*key" -perm /177 | wc -l) -gt 0 ]; then
+        warn "Set ssh private host key permission to 0600"
+        find /etc/ssh/ -name "*ssh_host*key" -perm /177 -exec chmod $PERMISSIONS {} \;
     else
-        ok "Any file has a mode more permissive than $PERMISSIONS"
+        ok "any file has a mode more permissive than "0600""
     fi
 }
 
