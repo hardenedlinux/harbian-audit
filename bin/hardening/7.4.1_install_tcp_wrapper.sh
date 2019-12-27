@@ -22,7 +22,7 @@ audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
 		is_centos_8
 		if [ $FNRET == 0 ]; then
-			warn "The package(tcp_wrappers) has been deprecated in RHEL 7 and therefore it will not be avaliable in RHEL 8 or later RHEL release."
+			tcp_wrappers_warn
 			ok "So PASS."
 			return 0
 		else
@@ -42,7 +42,7 @@ apply () {
 	if [ $OS_RELEASE -eq 2 ]; then
 		is_centos_8
 		if [ $FNRET == 0 ]; then
-			warn "The package(tcp_wrappers) has been deprecated in RHEL 7 and therefore it will not be avaliable in RHEL 8 or later RHEL release."
+			tcp_wrappers_warn
 			ok "So PASS."
 			return 0
 		else

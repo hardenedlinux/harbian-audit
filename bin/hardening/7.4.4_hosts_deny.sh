@@ -18,37 +18,51 @@ PATTERN='ALL: ALL'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    does_file_exist $FILE
-    if [ $FNRET != 0 ]; then
-        crit "$FILE does not exist"
-    else
-        ok "$FILE exists, checking configuration"
-        does_pattern_exist_in_file $FILE "$PATTERN"
-        if [ $FNRET != 0 ]; then
-            crit "$PATTERN is not present in $FILE, we have to deny everything"
-        else
-            ok "$PATTERN is present in $FILE"
-        fi
-    fi
+	is_centos_8
+	if [ $FNRET == 0 ]; then
+		tcp_wrappers_warn			
+		ok "So PASS."
+		return 0
+	else
+    	does_file_exist $FILE
+    	if [ $FNRET != 0 ]; then
+        	crit "$FILE does not exist"
+    	else
+        	ok "$FILE exists, checking configuration"
+        	does_pattern_exist_in_file $FILE "$PATTERN"
+        	if [ $FNRET != 0 ]; then
+            	crit "$PATTERN is not present in $FILE, we have to deny everything"
+        	else	
+            	ok "$PATTERN is present in $FILE"
+        	fi
+    	fi
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    does_file_exist $FILE
-    if [ $FNRET != 0 ]; then
-        warn "$FILE does not exist, creating it"
-        touch $FILE
-    else
-        ok "$FILE exists"
-    fi
-    does_pattern_exist_in_file $FILE "$PATTERN"
-    if [ $FNRET != 0 ]; then
-        crit "$PATTERN is not present in $FILE, we have to deny everything"
-        add_end_of_file $FILE "$PATTERN"
-        warn "YOU MAY HAVE CUT YOUR ACCESS, CHECK BEFORE DISCONNECTING"
-    else
-        ok "$PATTERN is present in $FILE"
-    fi
+	is_centos_8
+	if [ $FNRET == 0 ]; then
+		tcp_wrappers_warn			
+		ok "So PASS."
+		return 0
+	else
+    	does_file_exist $FILE
+    	if [ $FNRET != 0 ]; then
+        	warn "$FILE does not exist, creating it"
+        	touch $FILE
+    	else
+        	ok "$FILE exists"
+    	fi
+    	does_pattern_exist_in_file $FILE "$PATTERN"
+    	if [ $FNRET != 0 ]; then
+        	crit "$PATTERN is not present in $FILE, we have to deny everything"
+        	add_end_of_file $FILE "$PATTERN"
+        	warn "YOU MAY HAVE CUT YOUR ACCESS, CHECK BEFORE DISCONNECTING"
+    	else
+        	ok "$PATTERN is present in $FILE"
+    	fi
+	fi
 }
 
 # This function will check config parameters required

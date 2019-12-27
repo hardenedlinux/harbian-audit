@@ -1054,3 +1054,10 @@ check_audit_path ()
 	fi
 }
 
+# For CentOS 8 
+# Reference: https://access.redhat.com/solutions/3906701 
+tcp_wrappers_warn ()
+{
+	warn "The package(tcp_wrappers) has been deprecated in RHEL 7 and therefore it will not be avaliable in RHEL 8 or later RHEL release."
+}
+
