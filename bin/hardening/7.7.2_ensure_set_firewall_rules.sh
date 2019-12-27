@@ -27,7 +27,7 @@ audit () {
         crit "Iptables/Ip6tables is not set rule!"
         FNRET=1
     else
-        ok "Ip4tables rules are set!"
+        ok "Iptables/Ip6tables rules are set!"
         FNRET=0
     fi
 }

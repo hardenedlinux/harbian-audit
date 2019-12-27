@@ -565,6 +565,20 @@ yum_install()
     FNRET=0
 }
 
+install_package()
+{
+	if [ $OS_RELEASE -eq 1 ]; then
+		local PACKAGE=$1
+		apt_install $PACKAGE
+	elif [ $OS_RELEASE -eq 2 ]; then
+		local PACKAGE=$1
+		yum_install $PACKAGE
+	else
+		warn "Current OS is not support!"
+	fi
+    FNRET=0
+}
+
 #
 #   Returns if a package is installed
 #

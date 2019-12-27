@@ -56,7 +56,7 @@ apply () {
         ok "$PATTERN is present in $FILE"
     elif [ $FNRET = 1 ]; then
         warn "$PACKAGE is not installed, need install."
-        apt_install $PACKAGE
+        install_package $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "$FILE is not exist, please manual check."
     elif [ $FNRET = 3 ]; then

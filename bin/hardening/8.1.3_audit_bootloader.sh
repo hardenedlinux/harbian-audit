@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9 or CentOS8 Hardening
 # Modify author:
 # Samson-W (sccxboy@gmail.com)
 #
@@ -55,11 +55,19 @@ apply () {
     elif [ $FNRET = 2 ]; then
         warn "$OPTION is not present in $FILE, add it to $KEYWORD line, need to reboot the system  after setting it"
         sed -i "s;\(${KEYWORD}=\)\(\".*\)\(\"\);\1\2 ${OPTION}=${SETVAL}\3;" $FILE
-        /usr/sbin/update-grub2 
+		if [ OS_RELEASE -eq 1 ]; then
+        	usr/sbin/update-grub2 
+		elif [ OS_RELEASE -eq 2 ]; then
+			grub2-mkconfig –o /boot/grub2/grub.cfg
+		fi
     elif [ $FNRET = 3 ]; then
         warn "Parameter $OPTION is present but with the wrong value -- Fixing, need to reboot the system after setting it"
         sed -i "s/${OPTION}=./${OPTION}=${SETVAL}/" $FILE 
-        /usr/sbin/update-grub2
+		if [ OS_RELEASE -eq 1 ]; then
+        	usr/sbin/update-grub2 
+		elif [ OS_RELEASE -eq 2 ]; then
+			grub2-mkconfig –o /boot/grub2/grub.cfg
+		fi
     fi
 }
 
