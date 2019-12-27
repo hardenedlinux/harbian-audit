@@ -20,11 +20,11 @@ HARDENING_LEVEL=2
 # Do as you want, but this script does not handle this
 
 PACKAGES='iptables iptables-persistent'
-PACKAGES_REDHAT='iptables nftables firewalld'
+PACKAGES_REDHAT='iptables iptables-services nftables firewalld'
 SERVICENAME='netfilter-persistent'
+SERVICENAME_REDHAT='iptables ip6tables'
 
-# This function will be called if the script status is on enabled / audit mode
-audit () {
+audit_debian () {
     for PACKAGE in $PACKAGES
     do
         is_pkg_installed $PACKAGE
@@ -48,8 +48,46 @@ audit () {
     fi
 }
 
-# This function will be called if the script status is on enabled mode
-apply () {
+audit_redhat () {
+    for PACKAGE in $PACKAGES_REDHAT
+    do
+        is_pkg_installed $PACKAGE
+        if [ $FNRET != 0 ]; then
+            crit "$PACKAGE is not installed!"
+            FNRET=1
+            break 
+        else
+            ok "$PACKAGE is installed"
+            FNRET=0
+        fi
+    done
+    if [ $FNRET = 0 ]; then
+		for SERVICENAME in $SERVICENAME_REDHAT
+		do
+	    	if [ $(systemctl status ${SERVICENAME}  | grep -c "Active:.active") -ne 1 ]; then
+            	crit "${SERVICENAME} service is not actived"
+            	FNRET=2
+        	else
+            	ok "${SERVICENAME} service is actived"
+            	FNRET=0
+        	fi
+		done
+    fi
+}
+
+# This function will be called if the script status is on enabled / audit mode
+audit () {
+	if [ $OS_RELEASE -eq 1 ]; then
+		audit_debian
+	elif [ $OS_RELEASE -eq 2 ]; then
+		audit_redhat
+	else
+		crit "Current OS is not support!"
+		FNRET=44
+	fi
+}
+
+apply_debian () {
         if [ $FNRET = 0 ]; then
             ok "$PACKAGES is installed"
         elif [ $FNRET = 1 ]; then
@@ -60,8 +98,52 @@ apply () {
             done
         elif [ $FNRET = 2 ]; then
             warn "Enable ${SERVICENAME} service to actived"
+			is_service_enabled ${SERVICENAME}
+			if [ $FNRET = 1 ]; then
+				systemctl enable ${SERVICENAME}
+				systemctl daemon-reload ${SERVICENAME}
+			else
+				:
+			fi
             systemctl start ${SERVICENAME}
         fi
+}
+
+apply_redhat () {
+        if [ $FNRET = 0 ]; then
+            ok "$PACKAGES_REDHAT is installed"
+        elif [ $FNRET = 1 ]; then
+            for PACKAGE in $PACKAGES_REDHAT
+            do
+                warn "$PACKAGE is absent, installing it"
+                yum_install $PACKAGE
+            done
+        elif [ $FNRET = 2 ]; then
+            warn "Enable ${SERVICENAME_REDHAT} service to actived"
+			for SERVICENAME in ${SERVICENAME_REDHAT}
+			do 
+				is_service_enabled ${SERVICENAME}
+				if [ $FNRET = 1 ]; then
+					systemctl enable ${SERVICENAME}
+					systemctl daemon-reload ${SERVICENAME}
+				else
+					:
+				fi
+            	systemctl start ${SERVICENAME}
+			done
+        fi
+}
+
+# This function will be called if the script status is on enabled mode
+apply () {
+	if [ $OS_RELEASE -eq 1 ]; then
+		apply_debian
+	elif [ $OS_RELEASE -eq 2 ]; then
+		apply_redhat
+	else
+		crit "Current OS is not support!"
+		FNRET=44
+	fi
 }
 
 # This function will check config parameters required

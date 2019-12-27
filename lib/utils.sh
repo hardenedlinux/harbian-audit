@@ -558,6 +558,12 @@ apt_install()
     FNRET=0
 }
 
+yum_install() 
+{
+    local PACKAGE=$1
+    yum install -y $PACKAGE
+    FNRET=0
+}
 
 #
 #   Returns if a package is installed

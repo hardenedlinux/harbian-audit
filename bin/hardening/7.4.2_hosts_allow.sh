@@ -17,12 +17,19 @@ FILE='/etc/hosts.allow'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    does_file_exist $FILE
-    if [ $FNRET != 0 ]; then
-        crit "$FILE does not exist"
-    else
-        ok "$FILE exist"
-    fi
+	is_centos_8
+	if [ $FNRET == 0 ]; then
+		tcp_wrappers_warn			
+		ok "So PASS."
+		return 0
+	else
+    	does_file_exist $FILE
+    	if [ $FNRET != 0 ]; then
+        	crit "$FILE does not exist"
+    	else
+        	ok "$FILE exist"
+    	fi
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
