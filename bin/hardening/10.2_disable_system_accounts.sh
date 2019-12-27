@@ -20,7 +20,7 @@ RESULT=''
 # This function will be called if the script status is on enabled / audit mode
 audit () {
     info "Checking if admin accounts have a login shell different than $SHELL"
-    RESULT=$(egrep -v "^\+" $FILE | awk -F: '($1!="root" && $1!="sync" && $1!="shutdown" && $1!="halt" && $3<1000 && $7!="/usr/sbin/nologin" && $7!="/bin/false") {print}')
+    RESULT=$(egrep -v "^\+" $FILE | awk -F: '($1!="root" && $1!="sync" && $1!="shutdown" && $1!="halt" && $3<1000 && $7!="/usr/sbin/nologin" && $7!="/bin/false" && $7!="/sbin/nologin") {print}')
     IFS=$'\n'
     for LINE in $RESULT; do
         debug "line : $LINE"

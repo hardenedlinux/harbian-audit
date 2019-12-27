@@ -62,7 +62,11 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    warn "Editing items from PATH may seriously harm your system, report only here, need a manual fix."
+    if [ $ERRORS = 0 ]; then
+        ok "root PATH is secure"
+	else
+    	warn "Editing items from PATH may seriously harm your system, report only here, need a manual fix."
+	fi
 }
 
 # This function will check config parameters required

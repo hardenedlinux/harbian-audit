@@ -16,11 +16,19 @@ HARDENING_LEVEL=1
 
 FILE='/etc/shadow-'
 PERMISSIONS='600'
+PERMISSIONS_REDHAT='0000'
 USER='root'
 GROUP='shadow'
+GROUP_REDHAT='root'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PERMISSIONS=$PERMISSIONS_REDHAT
+		GROUP=$GROUP_REDHAT
+	else
+		:
+	fi
 	has_file_correct_ownership $FILE $USER $GROUP
 	if [ $FNRET = 0 ]; then
 		ok "$FILE has correct ownership"
@@ -37,6 +45,12 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		PERMISSIONS=$PERMISSIONS_REDHAT
+		GROUP=$GROUP_REDHAT
+	else
+		:
+	fi
 	has_file_correct_ownership $FILE $USER $GROUP
 	if [ $FNRET = 0 ]; then
 		ok "$FILE has correct ownership"

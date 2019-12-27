@@ -14,7 +14,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 FILES='/etc/motd /etc/issue /etc/issue.net'
-PATTERN='(\\v|\\r|\\m|\\s|Debian)'
+PATTERN='(\\v|\\r|\\m|\\s|Debian|CentOS)'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {

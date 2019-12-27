@@ -28,14 +28,20 @@ audit () {
         crit "Some suid files are present"
         FORMATTED_RESULT=$(sed "s/ /\n/g" <<< $RESULT | sort | uniq | tr '\n' ' ')
         crit "$FORMATTED_RESULT"
+		FNRET=1
     else
         ok "No unknown suid files found"
+		FNRET=0
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-	warn "Removing suid on valid binary may seriously harm your system, report only here, need a manual fix."
+	if [ $FNRET = 1 ]; then
+		warn "Removing suid on valid binary may seriously harm your system, report only here, need a manual fix."
+	else
+        ok "No unknown suid files found"
+	fi
 }
 
 # This function will create the config file for this check with default values

@@ -29,14 +29,20 @@ audit () {
         crit "Some sgid files are present"
         FORMATTED_RESULT=$(sed "s/ /\n/g" <<< $RESULT | sort | uniq | tr '\n' ' ')
         crit "$FORMATTED_RESULT"
+		FNRET=1
     else
         ok "No unknown sgid files found"
+		FNRET=0
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    info "Removing sgid on valid binary may seriously harm your system, report only here"
+	if [ $FNRET = 1 ]; then
+    	warn "Removing sgid on valid binary may seriously harm your system, report only here"
+	else
+        ok "No unknown sgid files found"
+	fi
 }
 
 # This function will create the config file for this check with default values
