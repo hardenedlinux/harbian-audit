@@ -2,7 +2,6 @@
 
 #
 # harbian audit 7/8/9/10 or CentOS Hardening
-# todo 7.7.* need test for CentOS
 #
 
 #
@@ -101,7 +100,7 @@ apply_debian () {
 			is_service_enabled ${SERVICENAME}
 			if [ $FNRET = 1 ]; then
 				systemctl enable ${SERVICENAME}
-				systemctl daemon-reload ${SERVICENAME}
+				systemctl daemon-reload
 			else
 				:
 			fi
@@ -125,7 +124,7 @@ apply_redhat () {
 				is_service_enabled ${SERVICENAME}
 				if [ $FNRET = 1 ]; then
 					systemctl enable ${SERVICENAME}
-					systemctl daemon-reload ${SERVICENAME}
+					systemctl daemon-reload
 				else
 					:
 				fi
