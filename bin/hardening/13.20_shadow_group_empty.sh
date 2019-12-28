@@ -19,33 +19,49 @@ PATTERN='^shadow:x:[[:digit:]]+:'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    does_pattern_exist_in_file $FILEGROUP $PATTERN
-    if [ $FNRET = 0 ]; then
-        info "shadow group exists"
-        RESULT=$(grep -E "$PATTERN" $FILEGROUP | cut -d: -f4)
-        GROUPID=$(getent group shadow | cut -d: -f3)
-        debug "$RESULT $GROUPID"
-        if [ ! -z "$RESULT" ]; then
-            crit "Some users belong to shadow group: $RESULT"
-        else
-            ok "No user belongs to shadow group"
-        fi
+	if [ $OS_RELEASE -eq 1 ]; then
+    	does_pattern_exist_in_file $FILEGROUP $PATTERN
+    	if [ $FNRET = 0 ]; then
+        	info "shadow group exists"
+        	RESULT=$(grep -E "$PATTERN" $FILEGROUP | cut -d: -f4)
+        	GROUPID=$(getent group shadow | cut -d: -f3)
+        	debug "$RESULT $GROUPID"
+        	if [ ! -z "$RESULT" ]; then
+            	crit "Some users belong to shadow group: $RESULT"
+				FNRET=1
+        	else
+            	ok "No user belongs to shadow group"
+				FNRET=0
+        	fi
 
-        info "Checking if a user has $GROUPID as primary group"
-        RESULT=$(awk -F: '($4 == shadowid) { print $1 }' shadowid=$GROUPID /etc/passwd)
-        if [ ! -z "$RESULT" ]; then
-            crit "Some users have shadow id as their primary group: $RESULT"
-        else
-            ok "No user has shadow id as their primary group"
-        fi
-    else
-        crit "shadow group doesn't exist"
-    fi
+        	info "Checking if a user has $GROUPID as primary group"
+        	RESULT=$(awk -F: '($4 == shadowid) { print $1 }' shadowid=$GROUPID /etc/passwd)
+        	if [ ! -z "$RESULT" ]; then
+            	crit "Some users have shadow id as their primary group: $RESULT"
+				FNRET=2
+        	else
+            	ok "No user has shadow id as their primary group"
+				FNRET=0
+        	fi
+    	else
+        	crit "shadow group doesn't exist"
+			FNRET=3
+    	fi
+	elif [ $OS_RELEASE -eq 2 ]; then
+		ok "shadow group doesn't exist in CentOS8"
+		FNRET=0
+	else
+		:
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    info "Editing automatically users/groups may seriously harm your system, report only here"
+	if [ $FNRET = 0 ]; then
+		ok "Pass."
+	else 
+    	warn "Editing automatically users/groups may seriously harm your system, report only here"
+	fi
 }
 
 # This function will check config parameters required

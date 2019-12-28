@@ -23,7 +23,7 @@ audit () {
         USER=$(awk -F: {'print $1'} <<< $LINE)
         USERID=$(awk -F: {'print $2'} <<< $LINE)
         DIR=$(awk -F: {'print $3'} <<< $LINE)    
-        if [ $USERID -ge 500 -a -d "$DIR" -a $USER != "nfsnobody" ]; then
+        if [ $USERID -ge 500 -a -d "$DIR" -a $USER != "nfsnobody" -a "$DIR" != '/' ]; then
             OWNER=$(stat -L -c "%U" "$DIR")
             if [ "$OWNER" != "$USER" ]; then
                 crit "The home directory ($DIR) of user $USER is owned by $OWNER."
@@ -40,7 +40,7 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
     cat /etc/passwd | awk -F: '{ print $1 " " $3 " " $6 }' | while read USER USERID DIR; do
-        if [ $USERID -ge 500 -a -d "$DIR" -a $USER != "nfsnobody" ]; then
+        if [ $USERID -ge 500 -a -d "$DIR" -a $USER != "nfsnobody" -a "$DIR" != '/' ]; then
             OWNER=$(stat -L -c "%U" "$DIR")
             if [ "$OWNER" != "$USER" ]; then
                 warn "The home directory ($DIR) of user $USER is owned by $OWNER."
