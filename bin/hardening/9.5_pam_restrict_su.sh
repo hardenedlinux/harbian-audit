@@ -20,7 +20,7 @@ FILE='/etc/pam.d/su'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-	if [ OS_RELEASE -eq 2 ]; then
+	if [ $OS_RELEASE -eq 2 ]; then
 		PACKAGE=$PACKAGE_REDHAT
 	else
 		:
