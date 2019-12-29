@@ -48,10 +48,11 @@ apply () {
             	info "Disabling $SERVICE_NAME"
             	systemctl stop $SERVICE_NAME
             	systemctl disable $SERVICE_NAME
-				if [ $OS_RELEASE -eq 2 ]; then
-					yum -y autoremove $SERVICE_NAME
+				is_pkg_installed $SERVICE_NAME
+				if [ $FNRET = 0 ]; then 
+					uninstall_pkg $SERVICE_NAME
 				else
-            		apt-get -y purge --autoremove $SERVICE_NAME
+					:
 				fi
         	else
             	info "Disabling $SERVICE_NAME"
@@ -59,12 +60,14 @@ apply () {
         	fi
     	else
         	ok "$SERVICE_NAME is disabled"
-			if [ $OS_RELEASE -eq 2 ]; then
-				yum -y autoremove $SERVICE_NAME
+			is_pkg_installed $SERVICE_NAME
+			if [ $FNRET = 0 ]; then 
+				uninstall_pkg $SERVICE_NAME
 			else
-           		apt-get -y purge --autoremove $SERVICE_NAME				
+				:
 			fi
     	fi
+		
 	else
         ok "$SERVICE_NAME is not installed"
 	fi

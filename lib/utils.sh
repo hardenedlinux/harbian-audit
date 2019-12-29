@@ -587,7 +587,7 @@ is_pkg_installed()
 {
     PKG_NAME=$1
 	if [ $OS_RELEASE -eq 2 ]; then
-		if [ $(rpm -qa | grep -c $PKG_NAME) -gt 0 ]; then
+		if [ $(rpm -qa | grep -wc $PKG_NAME) -gt 0 ]; then
 			debug "$PKG_NAME is installed"
 			FNRET=0
 		else
@@ -1079,5 +1079,16 @@ check_audit_path ()
 tcp_wrappers_warn ()
 {
 	warn "The package(tcp_wrappers) has been deprecated in RHEL 7 and therefore it will not be avaliable in RHEL 8 or later RHEL release."
+}
+
+
+uninstall_pkg ()
+{
+	PKGNAME=$1
+	if [ $OS_RELEASE -eq 1 ]; then
+		apt-get -y purge --autoremove $PKGNAME
+	elif [ $OS_RELEASE -eq 2 ]; then
+		yum -y autoremove $PKGNAME
+	fi
 }
 
