@@ -33,13 +33,15 @@ audit ()
         	FNRET=1
     	else
         	ok "$NOPASSWD is not set on $FILE, it's ok"
-        	if [ $(grep $NOPASSWD $INCLUDFILE | wc -l) -gt 0 ]; then 
-            	crit "$NOPASSWD is set on $INCLUDFILE, it's error conf"
-            	FNRET=1
-        	else
-            	ok "$NOPASSWD is not set on $INCLUDFILE, it's ok"
-            	FNRET=0
-        	fi
+			if [ $(ls $(dirname $INCLUDFILE) | wc -l) -gt 0 ]; then
+        		if [ $(grep $NOPASSWD $INCLUDFILE | wc -l) -gt 0 ]; then 
+            		crit "$NOPASSWD is set on $INCLUDFILE, it's error conf"
+            		FNRET=1
+        		else
+            		ok "$NOPASSWD is not set on $INCLUDFILE, it's ok"
+            		FNRET=0
+        		fi
+			fi
     	fi
 	fi
 }
