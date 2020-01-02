@@ -580,14 +580,14 @@ install_package()
 }
 
 #
-#   Returns if a package is installed
+#   Return 0 if a package is installed
 #
 
 is_pkg_installed()
 {
     PKG_NAME=$1
 	if [ $OS_RELEASE -eq 2 ]; then
-		if [ $(rpm -qa | grep -wc $PKG_NAME) -gt 0 ]; then
+		if [ $(yum list installed | grep -c "^$PKG_NAME\.") -gt 0 ]; then
 			debug "$PKG_NAME is installed"
 			FNRET=0
 		else
