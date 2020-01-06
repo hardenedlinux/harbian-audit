@@ -14,19 +14,6 @@ set -e # One error, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F path=/etc/audisp/audisp-remote.conf -F perm=wa -k config_file_change
--a always,exit -F path=/etc/audit/auditd.conf -F perm=wa -k config_file_change
--a always,exit -F path=/etc/default/grub -F perm=wa -k config_file_change
--a always,exit -F path=/etc/fstab -F perm=wa -k config_file_change
--a always,exit -F path=/etc/hosts.deny -F perm=wa -k config_file_change
--a always,exit -F path=/etc/login.defs -F perm=wa -k config_file_change
--a always,exit -F dir=/etc/audit/rules.d/ -F perm=wa -k config_file_change
--a always,exit -F dir=/etc/pam.d/ -F perm=wa -k config_file_change
--a always,exit -F path=/etc/profile -F perm=wa -k config_file_change
--a always,exit -F dir=/etc/profile.d/ -F perm=wa -k config_file_change
--a always,exit -F dir=/etc/security/ -F perm=wa -k config_file_change
--a always,exit -F dir=/etc/iptables/ -F perm=wa -k config_file_change
--a always,exit -F path=/etc/sysctl.conf -F perm=wa -k config_file_change'
 
 FILE='/etc/audit/rules.d/audit.rules'
 
@@ -80,7 +67,40 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	# CentOS8
+	if [ $OS_RELEASE -eq 2 ]; then
+		AUDIT_PARAMS='-a always,exit -F path=/etc/audisp/audisp-remote.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/audit/auditd.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/default/grub -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/fstab -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/hosts.deny -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/login.defs -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/audit/rules.d/ -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/pam.d/ -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/profile -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/profile.d/ -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/security/ -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/sysconfig/iptables -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/sysconfig/ip6tables -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/sysconfig/ip6tables-config -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/sysconfig/iptables-config -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/sysctl.conf -F perm=wa -k config_file_change'
+	# Debian
+	else
+		AUDIT_PARAMS='-a always,exit -F path=/etc/audisp/audisp-remote.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/audit/auditd.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/default/grub -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/fstab -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/hosts.deny -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/login.defs -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/audit/rules.d/ -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/pam.d/ -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/profile -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/profile.d/ -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/security/ -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/iptables/ -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/sysctl.conf -F perm=wa -k config_file_change'
+	fi
 }
 
 # Source Root Dir Parameter
