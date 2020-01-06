@@ -1065,12 +1065,12 @@ check_audit_path ()
 {
 	AUDITRULE=$1
 	RESULT=$(echo $AUDITRULE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
-	if [ -z $(eval echo $RESULT) ]; then
-		debug "Result is NULL"
-		FNRET=1
-	else
+	if [ -f $(eval echo $RESULT)  -o -d $(eval echo $RESULT) ]; then
 		debug "Result is not NULL"
 		FNRET=0
+	else
+		debug "Result is NULL"
+		FNRET=1
 	fi
 }
 
