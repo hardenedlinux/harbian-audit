@@ -1,7 +1,7 @@
 # harbian-audit审计与加固
 
 ## 简介 
-此项目是一个Debian GNU/Linux加固发行版本审计工具。主要的测试环境是基于Debian GNU/Linux 9，其它版本未充分测试。此项目主要是针对的Debian GNU/Linux服务器版本，对桌面版本及SELinux相关的项没有实现。
+此项目是一个Debian GNU/Linux加固发行版本审计工具。主要的测试环境是基于Debian GNU/Linux 9/10，其它版本未充分测试。此项目主要是针对的Debian GNU/Linux服务器版本，对桌面版本及SELinux相关的项没有实现。
 此项目的框架基于[OVH-debian-cis](https://github.com/ovh/debian-cis)，根据Debian GNU/Linux 9的一些特性进行了优化，并根据安全部署合规STIG（[STIG Redhat V1R4](https://iasecontent.disa.mil/stigs/zip/U_Red_Hat_Enterprise_Linux_7_V1R4_STIG.zip)及[STIG Ubuntu V1R2](https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_Canonical_Ubuntu_16-04_LTS_V1R2_STIG.zip)）及CIS（[cisecurity.org](https://www.cisecurity.org/)）进行了安全检查项的添加，同时也根据HardenedLinux社区就具体生产环境添加了一些安全检查项的审计功能的实现。此项目不仅具有安全项的审计功能，同时也有自动修改的功能。
 
 审计功能的使用示例： 
