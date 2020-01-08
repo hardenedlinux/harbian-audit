@@ -72,7 +72,11 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGES='openssh-server openssh-clients'
+	else
+		:
+	fi
 }
 
 # Source Root Dir Parameter
