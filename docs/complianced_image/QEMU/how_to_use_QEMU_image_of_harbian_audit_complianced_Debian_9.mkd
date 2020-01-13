@@ -22,11 +22,11 @@ passwd: 2wsx#EDC4rfv%TGB6yhn
 
 ### Verify  
 ```
-$ wget https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/QEMU/debian9.9-harbian-0910.qcow2.sig  
-$ wget https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/QEMU/signature/debian9.9-harbian-0910.qcow2.tar.gz.sig 
-$ gpg -u Samson --verify debian9.9-harbian-0910.qcow2.tar.gz.sig debian9.9-harbian-0910.qcow2.tar.gz
+$ wget https://github.com/hardenedlinux/harbian-audit/raw/master/docs/complianced_image/QEMU/signature/debian9.9-harbian-0910.qcow2.sig  
+$ wget https://github.com/hardenedlinux/harbian-audit/raw/master/docs/complianced_image/QEMU/signature/debian9.9-harbian-0910.qcow2.tar.gz.sig 
+$ gpg --verify debian9.9-harbian-0910.qcow2.tar.gz.sig debian9.9-harbian-0910.qcow2.tar.gz
 $ tar -xzvf debian9.9-harbian-0910.qcow2.tar.gz   
-$ gpg -u Samson --verify debian9.9-harbian-0910.qcow2.sig debian9.9-harbian-0910.qcow2  
+$ gpg --verify debian9.9-harbian-0910.qcow2.sig debian9.9-harbian-0910.qcow2  
 ```
 
 ## Use the QEMU image to create virtual machine  
