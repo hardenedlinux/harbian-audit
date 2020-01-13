@@ -1,8 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
-# todo for centos
+# harbian audit 7/8/9 or CentOS8 Hardening
 #
 
 #
@@ -21,7 +20,7 @@ PACKAGE='libpam-modules-bin'
 PAMLIBNAME='pam_tally2.so'
 AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_tally2.so'
 AUTHFILE='/etc/pam.d/common-auth'
-AUTHRULE='auth required pam_tally2.so deny=3 even_deny_root unlock_time=900'
+AUTHRULE='auth    required pam_tally2.so deny=3 even_deny_root unlock_time=900'
 ADDPATTERNLINE='# pam-auth-update(8) for details.'
 DENYOPTION='deny'
 DENY_VAL=3
@@ -39,7 +38,7 @@ audit () {
                 ok "$AUTHPATTERN is present in $AUTHFILE."
                 check_param_pair_by_pam $AUTHFILE $PAMLIBNAME $DENYOPTION le $DENY_VAL
                 if [ $FNRET = 0 ]; then
-                    ok "$DENYOPTION set condition is $DENY_VAL"
+                    ok "$DENYOPTION set condition is less-than-or-equal-to $DENY_VAL"
                 else
                     crit "$DENYOPTION set condition is not $DENY_VAL"
                 fi
@@ -53,13 +52,17 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "$PACKAGE is installed"
+		ok "$DENYOPTION set condition is less-than-or-equal-to $DENY_VAL"
     elif [ $FNRET = 1 ]; then
         warn "Apply:$PACKAGE is absent, installing it"
         install_package $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "Apply:$AUTHPATTERN is not present in $AUTHFILE"
-        add_line_file_after_pattern "$AUTHFILE" "$AUTHRULE" "$ADDPATTERNLINE"
+		if [ $OS_RELEASE -eq 2 ]; then
+			add_line_file_after_pattern_lastline "$AUTHFILE" "$AUTHRULE" "$ADDPATTERNLINE"
+		else
+			add_line_file_after_pattern "$AUTHFILE" "$AUTHRULE" "$ADDPATTERNLINE"
+		fi
     elif [ $FNRET = 3 ]; then
         crit "$AUTHFILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
@@ -73,7 +76,16 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE='pam'
+		PAMLIBNAME='pam_failloc.so'
+		AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_failloc.so'
+		AUTHFILE='/etc/pam.d/password-auth'
+		AUTHRULE='auth    required pam_failloc.so deny=3 even_deny_root unlock_time=900'
+		ADDPATTERNLINE='auth[[:space:]]*required'
+	else
+    	:
+	fi
 }
 
 # Source Root Dir Parameter

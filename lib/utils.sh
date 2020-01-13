@@ -231,6 +231,26 @@ add_line_file_after_pattern() {
     FNRET=0
 }
 
+add_line_file_after_pattern_lastline() {
+    local FILE=$1
+    local LINE=$2
+    local PATTERN=$3
+    local LASTLINE=-1
+
+    backup_file "$FILE"
+    debug "Inserting $LINE after $PATTERN in $FILE"
+    PATTERN=$(sed 's@/@\\\/@g' <<< $PATTERN)
+    if [ $(grep "^$PATTERN" $FILE -c) -gt 0 ]; then
+		LASTLINE=$(grep "$PATTERN" $FILE -n | sed -n '$p' | awk -F: '{print $1}')
+		debug "sed -i '$LASTLINE a $LINE' $FILE"
+		sed -i "$LASTLINE a $LINE" $FILE
+		FNRET=0
+	else
+		crit "$PATTERN is not exist in $FILE"
+		FNRET=1
+	fi
+}
+
 replace_in_file() {
     local FILE=$1
     local SOURCE=$2
