@@ -21,8 +21,7 @@ KEYWORD='pam_unix.so'
 OPTIONNAME1='nullok'
 OPTIONNAME2='nullok_secure'
 
-# This function will be called if the script status is on enabled / audit mode
-audit () {
+audit_debian () {
     is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
         crit "$PACKAGE is not installed!"
@@ -47,8 +46,31 @@ audit () {
     fi
 }
 
-# This function will be called if the script status is on enabled mode
-apply () {
+audit_redhat () {
+	for FILE in $FILES; do
+        does_pattern_exist_in_file $FILE $PATTERN
+        if [ $FNRET = 0 ]; then
+			crit "$OPTIONNAME is configured in $FILE"
+			FNRET=1
+		else
+			ok "$OPTIONNAME is not configured in $FILE"
+			FNRET=0
+		fi
+	done
+}
+
+# This function will be called if the script status is on enabled / audit mode
+audit () {
+	if [ $OS_RELEASE -eq 1 ]; then
+		audit_debian	
+	elif [ $OS_RELEASE -eq 1 ]; then
+		audit_redhat
+	else
+		crit "Current OS is not support!"
+	fi
+}
+
+apply_debian () {
     if [ $FNRET = 0 ]; then
         ok "$PACKAGE is installed"
     elif [ $FNRET = 1 ]; then
@@ -67,9 +89,39 @@ apply () {
     fi 
 }
 
+apply_redhat () {
+	for FILE in $FILES; do
+        does_pattern_exist_in_file $FILE $OPTIONNAME
+        if [ $FNRET = 0 ]; then
+			crit "$OPTIONNAME is configured in $FILE"
+			info "Delete option $OPTIONNAME from $FILE"
+			sed -i "s/$OPTIONNAME//" $FILE
+		else
+			ok "$OPTIONNAME is not configured in $FILE"
+		fi
+	done
+}
+
+# This function will be called if the script status is on enabled mode
+apply () {
+	if [ $OS_RELEASE -eq 1 ]; then
+		apply_debian	
+	elif [ $OS_RELEASE -eq 1 ]; then
+		apply_redhat
+	else
+		crit "Current OS is not support!"
+	fi
+}
+
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE='pam'
+		FILES='/etc/pam.d/system-auth /etc/pam.d/password-auth'
+		OPTIONNAME='nullok'
+	else
+		:
+	fi
 }
 
 # Source Root Dir Parameter
