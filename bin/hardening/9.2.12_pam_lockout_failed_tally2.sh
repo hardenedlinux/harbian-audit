@@ -1,12 +1,11 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
-# todo centos
+# harbian audit 7/8/9 or CentOS8 Hardening
 #
 
 #
-# 9.2.16 Set Lockout for Failed Password Attempts (Scored)
+# 9.2.12 Set Lockout for Failed Password Attempts (Scored)
 # for login and ssh service
 #
 
@@ -19,7 +18,7 @@ PACKAGE='libpam-modules-bin'
 PAMLIBNAME='pam_tally2.so'
 AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_tally2.so'
 AUTHFILE='/etc/pam.d/common-auth'
-AUTHRULE='auth required pam_tally2.so deny=3 even_deny_root unlock_time=900'
+AUTHRULE='auth    required pam_tally2.so deny=3 even_deny_root unlock_time=900'
 ADDPATTERNLINE='# pam-auth-update(8) for details.'
 UNLOCKOPTION='unlock_time'
 UNLOCK_VAL=900
@@ -37,7 +36,7 @@ audit () {
                 ok "$AUTHPATTERN is present in $AUTHFILE."
                 check_param_pair_by_pam $AUTHFILE $PAMLIBNAME $UNLOCKOPTION ge $UNLOCK_VAL
                 if [ $FNRET = 0 ]; then
-                    ok "$UNLOCKOPTION set condition is $UNLOCK_VAL"
+                    ok "$UNLOCKOPTION set condition is greater-than-or-equal-to $UNLOCK_VAL"
                 else
                     crit "$UNLOCKOPTION set condition is not $UNLOCK_VAL"
                 fi
@@ -51,13 +50,17 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "$PACKAGE is installed"
+		ok "$UNLOCKOPTION set condition is greater-than-or-equal-to $UNLOCK_VAL"
     elif [ $FNRET = 1 ]; then
         warn "Apply:$PACKAGE is absent, installing it"
         install_package $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "Apply:$AUTHPATTERN is not present in $AUTHFILE"
-        add_line_file_after_pattern "$AUTHFILE" "$AUTHRULE" "$ADDPATTERNLINE"
+		if [ $OS_RELEASE -eq 2 ]; then
+        	add_line_file_after_pattern_lastline "$AUTHFILE" "$AUTHRULE" "$ADDPATTERNLINE"
+		else
+			add_line_file_after_pattern "$AUTHFILE" "$AUTHRULE" "$ADDPATTERNLINE"
+		fi
     elif [ $FNRET = 3 ]; then
         crit "$AUTHFILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
@@ -71,7 +74,16 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE='pam'
+		PAMLIBNAME='pam_failloc.so'
+		AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_failloc.so'
+		AUTHFILE='/etc/pam.d/password-auth'
+		AUTHRULE='auth    required pam_failloc.so deny=3 even_deny_root unlock_time=900'
+		ADDPATTERNLINE='auth[[:space:]]*required'
+	else
+		:
+	fi
 }
 
 # Source Root Dir Parameter
