@@ -48,7 +48,7 @@ audit_debian () {
 
 audit_redhat () {
 	for FILE in $FILES; do
-        does_pattern_exist_in_file $FILE $PATTERN
+        does_pattern_exist_in_file $FILE $OPTIONNAME
         if [ $FNRET = 0 ]; then
 			crit "$OPTIONNAME is configured in $FILE"
 			FNRET=1
