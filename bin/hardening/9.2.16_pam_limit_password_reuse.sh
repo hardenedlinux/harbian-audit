@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9 or CentOS8 Hardening
 #
 
 #
-# 9.2.12 Limit Password Reuse (Scored)
+# 9.2.16 Limit Password Reuse (Scored)
 # The number in the original document is 9.2.3
 #
 
@@ -16,8 +16,10 @@ HARDENING_LEVEL=3
 
 PACKAGE='libpam-modules'
 PATTERN='^password.*pam_pwhistory.so'
-FILE='/etc/pam.d/common-password'
+FILES='/etc/pam.d/common-password'
 KEYWORD='pam_pwhistory.so'
+ADDPATTERNLINE='# pam-auth-update(8) for details.'
+AUTHRULE='password required pam_pwhistory.so remember=5'
 OPTIONNAME='remember'
 CONDT_VAL=5
 
@@ -29,32 +31,39 @@ audit () {
         FNRET=1
     else
         ok "$PACKAGE is installed"
-        does_pattern_exist_in_file $FILE $PATTERN
-        if [ $FNRET = 0 ]; then
-            ok "$PATTERN is present in $FILE"
-            check_param_pair_by_pam $FILE $KEYWORD $OPTIONNAME ge $CONDT_VAL
-            if [ $FNRET = 0 ]; then
-                ok "$OPTIONNAME set condition to $CONDT_VAL is ok"
-            else
-                crit "$OPTIONNAME set condition to $CONDT_VAL is error"
-            fi
-        else
-            crit "$PATTERN is not present in $FILE"
-            FNRET=2
-        fi
+		for FILE in $FILES; do
+        	does_pattern_exist_in_file $FILE $PATTERN
+        	if [ $FNRET = 0 ]; then
+            	ok "$PATTERN is present in $FILE"
+            	check_param_pair_by_pam $FILE $KEYWORD $OPTIONNAME ge $CONDT_VAL
+            	if [ $FNRET = 0 ]; thena
+					ok "$OPTIONNAME set condition is less-than-or-equal-to $CONDT_VAL"
+					reset_ok
+					return
+            	else
+                	crit "$OPTIONNAME set condition is not less-than-or-equal-to $CONDT_VAL"
+            	fi
+        	else
+            	crit "$PATTERN is not present in $FILE"
+            	FNRET=2
+        	fi
+		done
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "$PACKAGE is installed"
+		ok "$OPTIONNAME set condition is less-than-or-equal-to $CONDT_VAL"
     elif [ $FNRET = 1 ]; then
         crit "$PACKAGE is absent, installing it"
         install_package $PACKAGE
     elif [ $FNRET = 2 ]; then
-        warn "$PATTERN is not present in $FILE"
-        add_line_file_before_pattern $FILE "password required pam_pwhistory.so remember=5" "# pam-auth-update(8) for details."
+		if [ $OS_RELEASE -eq 2 ]; then
+			add_line_file_after_pattern_lastline  "$FILE" "$AUTHRULE" "$ADDPATTERNLINE"
+		else
+			add_line_file_before_pattern $FILE "$AUTHRULE" "$ADDPATTERNLINE"
+		fi
     elif [ $FNRET = 3 ]; then
         crit "$FILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
@@ -62,13 +71,20 @@ apply () {
         add_option_to_password_check $FILE $KEYWORD "$OPTIONNAME=$CONDT_VAL"
     elif [ $FNRET = 5 ]; then
         reset_option_to_password_check $FILE $KEYWORD $OPTIONNAME $CONDT_VAL 
-        crit "$OPTIONNAME set is not match legally, reset it to $CONDT_VAL"
+		crit "$OPTIONNAME set is not less-than-or-equal-to $CONDT_VAL, reset it to $CONDT_VAL"
     fi 
 }
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $OS_RELEASE -eq 2 ]; then  
+		PACKAGE='pam'
+		FILES='/etc/pam.d/system-auth /etc/pam.d/password-auth'
+		AUTHRULE='password    requisite     pam_pwhistory.so use_authtok remember=5 retry=3'
+		ADDPATTERNLINE='password[[:space:]]*requisite'
+	else
+		:
+	fi
 }
 
 # Source Root Dir Parameter

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9 or CentOS8 Hardening
 #
 
 #
@@ -64,7 +64,15 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE='pam'
+		PATTERN='^session.*pam_lastlog.so'
+		FILE='/etc/pam.d/postlogin'
+		KEYWORD='pam_lastlog.so'
+		OPTIONNAME='showfailed'
+	else
+		:
+	fi
 }
 
 # Source Root Dir Parameter

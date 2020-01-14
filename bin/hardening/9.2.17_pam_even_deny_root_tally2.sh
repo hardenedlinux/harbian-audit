@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 9  Hardening
+# harbian audit 9 or CentOS8 Hardening
 #
 
 #
@@ -50,13 +50,17 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "$PACKAGE is installed"
+		ok "$DENYROOT is already configured"
     elif [ $FNRET = 1 ]; then
         warn "Apply:$PACKAGE is absent, installing it"
         install_package $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "Apply:$AUTHPATTERN is not present in $AUTHFILE"
-        add_line_file_after_pattern "$AUTHFILE" "$AUTHRULE" "$ADDPATTERNLINE"
+		if [ $OS_RELEASE -eq 2 ]; then
+			add_line_file_after_pattern_lastline "$AUTHFILE" "$AUTHRULE" "$ADDPATTERNLINE"
+		else
+        	add_line_file_after_pattern "$AUTHFILE" "$AUTHRULE" "$ADDPATTERNLINE"
+		fi
     elif [ $FNRET = 3 ]; then
         crit "$AUTHFILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
@@ -67,7 +71,17 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE='pam'
+		PAMLIBNAME='pam_faillock.so'
+		AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_faillock.so'
+		AUTHFILE='/etc/pam.d/password-auth'
+		AUTHRULE='auth    required pam_faillock.so preauth silent audit deny=3 even_deny_root fail_interval=900 unlock_time=900'
+		ADDPATTERNLINE='auth[[:space:]]*required'
+		DENYROOT='even_deny_root'
+	else
+		:
+	fi
 }
 
 # Source Root Dir Parameter

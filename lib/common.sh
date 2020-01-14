@@ -84,3 +84,9 @@ info () {
 debug () {
     if [ $MACHINE_LOG_LEVEL -ge 5 ]; then _logger $GRAY "[DBG ] $*"; fi
 }
+
+reset_ok () {
+	info "Reset to ok!!!"
+	CRITICAL_ERRORS_NUMBER=0
+}
+
