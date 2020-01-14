@@ -63,7 +63,7 @@ audit_redhat () {
 audit () {
 	if [ $OS_RELEASE -eq 1 ]; then
 		audit_debian	
-	elif [ $OS_RELEASE -eq 1 ]; then
+	elif [ $OS_RELEASE -eq 2 ]; then
 		audit_redhat
 	else
 		crit "Current OS is not support!"
@@ -95,6 +95,7 @@ apply_redhat () {
         if [ $FNRET = 0 ]; then
 			crit "$OPTIONNAME is configured in $FILE"
 			info "Delete option $OPTIONNAME from $FILE"
+			backup_file $FILE
 			sed -i "s/$OPTIONNAME//" $FILE
 		else
 			ok "$OPTIONNAME is not configured in $FILE"
@@ -106,7 +107,7 @@ apply_redhat () {
 apply () {
 	if [ $OS_RELEASE -eq 1 ]; then
 		apply_debian	
-	elif [ $OS_RELEASE -eq 1 ]; then
+	elif [ $OS_RELEASE -eq 2 ]; then
 		apply_redhat
 	else
 		crit "Current OS is not support!"
