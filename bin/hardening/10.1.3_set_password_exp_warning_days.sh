@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9 or CentOS8 Hardening
 #
 
 #
@@ -14,18 +14,12 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=3
 
-PACKAGE='login'
 OPTIONS='PASS_WARN_AGE=7'
 FILE='/etc/login.defs'
 SHA_FILE='/etc/shadow'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    is_pkg_installed $PACKAGE
-    if [ $FNRET != 0 ]; then
-        crit "$PACKAGE is not installed!"
-    else
-        ok "$PACKAGE is installed"
 		SSH_PARAM=$(echo $OPTIONS | cut -d= -f 1)
 		SSH_VALUE=$(echo $OPTIONS | cut -d= -f 2)
 		PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
@@ -40,18 +34,10 @@ audit () {
 		else
 			ok "All user's maxinum password lifttime is equal or less than $SSH_VALUE day"
 		fi
-	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    is_pkg_installed $PACKAGE
-    if [ $FNRET = 0 ]; then
-        ok "$PACKAGE is installed"
-    else
-        crit "$PACKAGE is absent, installing it"
-        install_package $PACKAGE
-    fi
 	SSH_PARAM=$(echo $OPTIONS | cut -d= -f 1)
 	SSH_VALUE=$(echo $OPTIONS | cut -d= -f 2)
 	PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
