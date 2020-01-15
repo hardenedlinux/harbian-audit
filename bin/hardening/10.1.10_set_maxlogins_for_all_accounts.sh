@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit debian 7/8/9 or CentOS8 Hardening
 #
 
 #
@@ -56,7 +56,7 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-        ok "$PACKAGE is installed"
+		ok "$OPTIONS value is correct in $FILE"
     elif [ $FNRET = 1 ]; then
         warn "$PACKAGE is not installed, need install."
         install_package $PACKAGE
@@ -73,7 +73,11 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $OS_RELEASE -eq 2 ]; then
+		PACKAGE='pam'
+	else
+		:
+	fi
 }
 
 # Source Root Dir Parameter

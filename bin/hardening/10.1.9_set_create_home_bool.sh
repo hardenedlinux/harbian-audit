@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit debian 7/8/9 or CentOS8 Hardening
 #
 
 #
@@ -14,17 +14,11 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=3
 
-PACKAGE='login'
 OPTIONS='CREATE_HOME=yes'
 FILE='/etc/login.defs'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    is_pkg_installed $PACKAGE
-    if [ $FNRET != 0 ]; then
-        crit "$PACKAGE is not installed!"
-    else
-        ok "$PACKAGE is installed"
         for SSH_OPTION in $OPTIONS; do
             SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
             SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
@@ -36,18 +30,10 @@ audit () {
                 crit "$PATTERN is not present in $FILE"
             fi
         done
-    fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    is_pkg_installed $PACKAGE
-    if [ $FNRET = 0 ]; then
-        ok "$PACKAGE is installed"
-    else
-        crit "$PACKAGE is absent, installing it"
-        install_package $PACKAGE
-    fi
     for SSH_OPTION in $OPTIONS; do
             SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
             SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
