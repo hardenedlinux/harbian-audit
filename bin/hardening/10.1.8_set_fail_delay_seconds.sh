@@ -38,17 +38,23 @@ audit_debian () {
 }
 
 audit_redhat () {
-	for SSH_OPTION in $OPTIONS; do
-		SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-		SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
-		PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
-		does_pattern_exist_in_file $FILE "$PATTERN"
-		if [ $FNRET = 0 ]; then
-			ok "$PATTERN is present in $FILE"
+	SSH_PARAM=$(echo $OPTION | cut -d= -f 1)
+	SSH_VALUE=$(echo $OPTION | cut -d= -f 2)
+	PATTERN="^$SSH_PARAM[[:space:]]*[[:digit:]]*"
+	does_pattern_exist_in_file $FILE "$PATTERN"
+	if [ $FNRET = 0 ]; then
+		ok "$SSH_PARAM is present in $FILE"
+		if [ $(grep $PATTERN $FILE | awk '{print $2}') -ge 4 ]; then
+			ok "$SSH_PARAM is set least four seconds between logon prompts following a failed console logon attempt"
+			FNRET=0
 		else
-			crit "$PATTERN is not present in $FILE"
+			crit "$SSH_PARAM is not set least four seconds between logon prompts following a failed console logon attempt"
+			FNRET=2
 		fi
-	done
+	else
+		crit "$PATTERN is not present in $FILE"
+		FNRET=1
+	fi
 }
 
 # This function will be called if the script status is on enabled / audit mode
@@ -81,24 +87,17 @@ apply_debian () {
 }
 
 apply_redhat () {
-	for SSH_OPTION in $OPTIONS; do
-		SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-		SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
-		PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
-		does_pattern_exist_in_file $FILE "$PATTERN"
-		if [ $FNRET = 0 ]; then
-			ok "$PATTERN is present in $FILE"
-		else
-			warn "$PATTERN is not present in $FILE, adding it"
-			does_pattern_exist_in_file $FILE "^$SSH_PARAM"
-			if [ $FNRET != 0 ]; then
-				add_end_of_file $FILE "$SSH_PARAM $SSH_VALUE"
-			else
-				info "Parameter $SSH_PARAM is present but with the wrong value -- Fixing"
-				replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SSH_VALUE"
-			fi
-		fi
-	done
+	if [ $FNRET = 0 ]; then
+		ok "$SSH_PARAM is set least four seconds between logon prompts following a failed console logon attempt"
+	elif [ $FNRET = 1 ]; then
+		warn "$PATTERN is not present in $FILE, adding it"
+		add_end_of_file $FILE "$SSH_PARAM $SSH_VALUE"
+	elif [ $FNRET = 2 ]; then
+		warn "Parameter $SSH_PARAM is present but less than $SSH_VALUE -- Fixing"		
+		replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SSH_VALUE"
+	else
+		:
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
@@ -114,7 +113,7 @@ apply () {
 check_config() {
 	# CentOS
 	if [ $OS_RELEASE -eq 2 ]; then
-		OPTIONS='FAIL_DELAY=4'
+		OPTION='FAIL_DELAY=4'
 		FILE='/etc/login.defs'
 	# Debian
 	else
