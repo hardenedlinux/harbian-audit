@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 9  Hardening
+# harbian audit debian 9 or CentOS8 Hardening
 #
 
 #
@@ -14,19 +14,7 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
 
-
-PACKAGE='libpam-modules'
-PAMLIBNAME='pam_faildelay.so'
-PATTERN='^auth.*pam_faildelay.so'
-FILE='/etc/pam.d/login'
-
-OPTIONNAME='delay'
-
-# condition (microseconds)
-CONDT_VAL=4000000
-
-# This function will be called if the script status is on enabled / audit mode
-audit () {
+audit_debian () {
     is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
         crit "$PACKAGE is not installed!"
@@ -49,8 +37,30 @@ audit () {
     fi
 }
 
-# This function will be called if the script status is on enabled mode
-apply () {
+audit_redhat () {
+	for SSH_OPTION in $OPTIONS; do
+		SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
+		SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
+		PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
+		does_pattern_exist_in_file $FILE "$PATTERN"
+		if [ $FNRET = 0 ]; then
+			ok "$PATTERN is present in $FILE"
+		else
+			crit "$PATTERN is not present in $FILE"
+		fi
+	done
+}
+
+# This function will be called if the script status is on enabled / audit mode
+audit () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		audit_redhat
+	else
+		audit_debian
+	fi
+}
+
+apply_debian () {
     if [ $FNRET = 0 ]; then
         ok "$PACKAGE is installed"
     elif [ $FNRET = 1 ]; then
@@ -70,9 +80,52 @@ apply () {
     fi 
 }
 
+apply_redhat () {
+	for SSH_OPTION in $OPTIONS; do
+		SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
+		SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
+		PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
+		does_pattern_exist_in_file $FILE "$PATTERN"
+		if [ $FNRET = 0 ]; then
+			ok "$PATTERN is present in $FILE"
+		else
+			warn "$PATTERN is not present in $FILE, adding it"
+			does_pattern_exist_in_file $FILE "^$SSH_PARAM"
+			if [ $FNRET != 0 ]; then
+				add_end_of_file $FILE "$SSH_PARAM $SSH_VALUE"
+			else
+				info "Parameter $SSH_PARAM is present but with the wrong value -- Fixing"
+				replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SSH_VALUE"
+			fi
+		fi
+	done
+}
+
+# This function will be called if the script status is on enabled mode
+apply () {
+	if [ $OS_RELEASE -eq 2 ]; then
+		apply_redhat
+	else
+		apply_debian
+	fi
+}
+
 # This function will check config parameters required
 check_config() {
-    :
+	# CentOS
+	if [ $OS_RELEASE -eq 2 ]; then
+		OPTIONS='FAIL_DELAY=4'
+		FILE='/etc/login.defs'
+	# Debian
+	else
+		PACKAGE='libpam-modules'
+		PAMLIBNAME='pam_faildelay.so'
+		PATTERN='^auth.*pam_faildelay.so'
+		FILE='/etc/pam.d/login'
+		OPTIONNAME='delay'
+		# condition (microseconds)
+		CONDT_VAL=4000000
+	fi
 }
 
 # Source Root Dir Parameter
