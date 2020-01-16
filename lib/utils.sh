@@ -1,6 +1,5 @@
 # CIS Debian 7 Hardening Utility functions
 
-
 #
 # debian version check 
 #
@@ -15,6 +14,9 @@ is_centos_8()
         		debug "CentOS version is less than 8"
         		FNRET=1
 		fi
+	else
+		debug "Current OS is not redhat/CentOS"
+		FNRET=2
 	fi
 }
 
@@ -141,7 +143,7 @@ does_pattern_exist_in_dmesg() {
 
 does_file_exist() {
     local FILE=$1
-    if $SUDO_CMD [ -e $FILE ]; then
+    if $SUDO_CMD [ -r $FILE ]; then
         FNRET=0
     else
         FNRET=1
