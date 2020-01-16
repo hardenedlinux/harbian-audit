@@ -516,21 +516,32 @@ add_option_to_systemd() {
     local SERVICENAME=$3
     debug "Setting $OPTION for in systemd"
     backup_file "$SERVICEPATH"
-    systemctl stop $SERVICENAME
+	if [ $OS_RELEASE -eq 2 ]; then
+		# For CentOS
+		warn "This item to apply requires reboot OS."
+	else
+		# For debian
+    	systemctl stop $SERVICENAME
+	fi
     # For example : 
     # Options=mode=1777,strictatime,nosuid
     # Options=mode=1777,strictatime,nosuid,nodev
     #debug "Sed command : sed -ie "s;\(^Options.*=mode=[1,2,4,7][1,2,4,7][1,2,4,7][1,2,4,7].*\);\1,$OPTION;\" $SERVICEPATH"
     sed -ie "s;\(^Options.*=mode=[1,2,4,7][1,2,4,7][1,2,4,7][1,2,4,7].*\);\1,$OPTION;" $SERVICEPATH
     systemctl daemon-reload
-    systemctl start $SERVICENAME
 }
 
 remount_partition_by_systemd() {
     local SERVICENAME=$1
     local PARTITION=$2
     debug "Remounting $PARTITION by systemd"
-    systemctl start $SERVICENAME
+	if [ $OS_RELEASE -eq 2 ]; then
+		# For CentOS
+		warn "This item to apply requires reboot OS."
+	else
+		# For debian
+		systemctl start $SERVICENAME
+	fi
 }
 
 #
