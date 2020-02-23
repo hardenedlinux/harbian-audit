@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9  Hardening
+# harbian audit 7/8/9 or CentOS8 Hardening
 #
 
 #
@@ -16,7 +16,7 @@ HARDENING_LEVEL=1
 
 FILE='/etc/gshadow'
 PERMISSIONS='640'
-PERMISSIONS_REDHAT='0000'
+PERMISSIONS_REDHAT='0'
 USER='root'
 GROUP='shadow'
 GROUP_REDHAT='root'
