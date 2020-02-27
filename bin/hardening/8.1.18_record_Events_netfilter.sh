@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 10 Hardening
+# harbian-audit for Debian GNU/Linux 10 Hardening
 #
 
 #

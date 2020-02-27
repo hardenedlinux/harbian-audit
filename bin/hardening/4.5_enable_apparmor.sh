@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9/10 or CentOS Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10 or CentOS Hardening
 # Modify by: Samson-W (samson@hardenedlinux.org)
 # todo: SELinux
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian audit 7/8/9 or CentOS8 Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9 or CentOS8 Hardening
 # Modify author:
 # Samson-W (sccxboy@gmail.com)
 #
