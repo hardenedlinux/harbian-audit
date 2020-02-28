@@ -67,7 +67,7 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-	# CentOS8
+	# CentOS 8
 	if [ $OS_RELEASE -eq 2 ]; then
 		AUDIT_PARAMS='-a always,exit -F path=/etc/audisp/audisp-remote.conf -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/audit/auditd.conf -F perm=wa -k config_file_change

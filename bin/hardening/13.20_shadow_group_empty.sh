@@ -48,7 +48,7 @@ audit () {
 			FNRET=3
     	fi
 	elif [ $OS_RELEASE -eq 2 ]; then
-		ok "shadow group doesn't exist in CentOS8"
+		ok "shadow group doesn't exist in CentOS 8"
 		FNRET=0
 	else
 		:
