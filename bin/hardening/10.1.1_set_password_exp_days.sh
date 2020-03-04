@@ -14,7 +14,7 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=3
 
-OPTIONS='PASS_MAX_DAYS=90'
+OPTIONS='PASS_MAX_DAYS=60'
 FILE='/etc/login.defs'
 SHA_FILE='/etc/shadow'
 
