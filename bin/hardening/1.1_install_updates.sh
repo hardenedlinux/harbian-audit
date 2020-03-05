@@ -30,7 +30,7 @@ audit_debian ()
     fi
 }
 
-audit_redhat ()
+audit_centos ()
 {
 	info "Checking if yum needs an update"
 	info "Fetching upgrades ..."
@@ -50,7 +50,7 @@ audit ()
 	if [ $OS_RELEASE -eq 1 ]; then
 		audit_debian
 	elif [ $OS_RELEASE -eq 2 ]; then
-		audit_redhat
+		audit_centos
 	else
 		crit "Current OS is not support!"
 		FNRET=44 
@@ -67,7 +67,7 @@ apply_debian ()
     fi
 }
 
-apply_redhat ()
+apply_centos ()
 {
 	if [ $FNRET -eq 100 ]; then 
 		info "Applying Upgrades..."
@@ -85,7 +85,7 @@ apply ()
 	if [ $OS_RELEASE -eq 1 ]; then
 		apply_debian
 	elif [ $OS_RELEASE -eq 2 ]; then
-		apply_redhat
+		apply_centos
 	else
 		crit "Current OS is not support!"
 	fi

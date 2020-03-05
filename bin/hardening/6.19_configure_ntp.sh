@@ -2,7 +2,7 @@
 
 #
 # harbian-audit for Debian GNU/Linux 7/8/9 or CentOS Hardening
-# todo base redhat7 v2r3 of STIG
+# todo base centos7 v2r3 of STIG
 
 #
 # 6.19 Configure Network Time Protocol (NTP) (Scored)

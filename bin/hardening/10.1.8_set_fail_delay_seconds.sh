@@ -37,7 +37,7 @@ audit_debian () {
     fi
 }
 
-audit_redhat () {
+audit_centos () {
 	SSH_PARAM=$(echo $OPTION | cut -d= -f 1)
 	SSH_VALUE=$(echo $OPTION | cut -d= -f 2)
 	PATTERN="^$SSH_PARAM[[:space:]]*[[:digit:]]*"
@@ -60,7 +60,7 @@ audit_redhat () {
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		audit_redhat
+		audit_centos
 	else
 		audit_debian
 	fi
@@ -86,7 +86,7 @@ apply_debian () {
     fi 
 }
 
-apply_redhat () {
+apply_centos () {
 	if [ $FNRET = 0 ]; then
 		ok "$SSH_PARAM is set least four seconds between logon prompts following a failed console logon attempt"
 	elif [ $FNRET = 1 ]; then
@@ -103,7 +103,7 @@ apply_redhat () {
 # This function will be called if the script status is on enabled mode
 apply () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		apply_redhat
+		apply_centos
 	else
 		apply_debian
 	fi

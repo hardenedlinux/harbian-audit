@@ -37,7 +37,7 @@ audit_debian () {
     fi
 }
 
-audit_redhat () {
+audit_centos () {
 	is_service_active $SERVICE_NAME
 	if [ $FNRET -eq 0 ]; then
 		crit "$SERVICE_NAME is actived"
@@ -53,7 +53,7 @@ audit () {
 	if [ $OS_RELEASE -eq 1 ]; then
         audit_debian
     elif [ $OS_RELEASE -eq 2 ]; then
-        audit_redhat
+        audit_centos
     else
         crit "Current OS is not support!"
         FNRET=44
@@ -80,7 +80,7 @@ apply_debian () {
 
 }
 
-apply_redhat () {
+apply_centos () {
 	if [ $FNRET -eq 1 ]; then
 		info "Disabling $SERVICE_NAME"
 		systemctl stop $SERVICE_NAME
@@ -95,7 +95,7 @@ apply () {
 	if [ $OS_RELEASE -eq 1 ]; then
         apply_debian
     elif [ $OS_RELEASE -eq 2 ]; then
-        apply_redhat
+        apply_centos
     else
         crit "Current OS is not support!"
     fi

@@ -51,7 +51,7 @@ audit_debian () {
     fi
 }
 
-audit_redhat () {
+audit_centos () {
 	check_param_pair_by_value $FILE_REDHAT $OPTIONNAME le $CONDT_VAL
 	if [ $FNRET = 0 ]; then
 		ok "Option $OPTIONNAME set condition is less than or equal to $CONDT_VAL in $FILE_REDHAT"
@@ -69,7 +69,7 @@ audit () {
 	if [ $OS_RELEASE -eq 1 ]; then
 		audit_debian
 	elif [ $OS_RELEASE -eq 2 ]; then
-		audit_redhat
+		audit_centos
 	else
 		crit "Current OS is not support!"
 		FNRET=44
@@ -97,7 +97,7 @@ apply_debian () {
     fi 
 }
 
-apply_redhat () {
+apply_centos () {
 	if [ $FNRET = 0 ]; then
 		ok "$OPTIONNAME set condition is less than or equal to $CONDT_VAL in $FILE_REDHAT"
 	elif [ $FNRET = 1 ]; then
@@ -116,7 +116,7 @@ apply () {
 	if [ $OS_RELEASE -eq 1 ]; then
 		apply_debian
 	elif [ $OS_RELEASE -eq 2 ]; then
-		apply_redhat
+		apply_centos
 	else
 		crit "Current OS is not support!"
 	fi

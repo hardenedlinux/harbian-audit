@@ -41,7 +41,7 @@ audit_debian () {
     done
 }
 
-audit_redhat () {
+audit_centos () {
     for PACKAGE in $PACKAGES_REDHAT; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
@@ -57,7 +57,7 @@ audit () {
 	if [ $OS_RELEASE -eq 1 ]; then
 		audit_debian
 	elif [ $OS_RELEASE -eq 2 ]; then
-		audit_redhat
+		audit_centos
 	else
 		crit "Current OS is not support!"
 		FNRET=44
@@ -92,7 +92,7 @@ apply_debian () {
     done
 }
 
-apply_redhat () {
+apply_centos () {
     for PACKAGE in $PACKAGES_REDHAT; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
@@ -109,7 +109,7 @@ apply () {
 	if [ $OS_RELEASE -eq 1 ]; then
 		apply_debian
 	elif [ $OS_RELEASE -eq 2 ]; then
-		apply_redhat
+		apply_centos
 	else
 		crit "Current OS is not support!"
 	fi

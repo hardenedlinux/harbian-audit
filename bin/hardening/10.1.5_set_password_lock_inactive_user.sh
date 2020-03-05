@@ -46,7 +46,7 @@ audit_debian () {
 		fi
 }
 
-audit_redhat () {
+audit_centos () {
 	SSH_PARAM=$(echo $OPTIONS | cut -d= -f 1)
 	SSH_VALUE=$(echo $OPTIONS | cut -d= -f 2)
 	INACTIVE_V=$(useradd -D | grep $SSH_PARAM | awk -F= '{print $2}')
@@ -64,7 +64,7 @@ audit () {
     if [ $OS_RELEASE -eq 1 ]; then
 		audit_debian
 	elif [ $OS_RELEASE -eq 2 ]; then
-		audit_redhat
+		audit_centos
 	else
 		warn "Current OS is not support!"	
 	fi
@@ -106,7 +106,7 @@ apply_debian () {
 	fi
 }
 
-apply_redhat () {
+apply_centos () {
 	SSH_PARAM=$(echo $OPTIONS | cut -d= -f 1)
 	SSH_VALUE=$(echo $OPTIONS | cut -d= -f 2)
 	PATTERN="^$SSH_PARAM=$SSH_VALUE"
@@ -147,7 +147,7 @@ apply () {
     if [ $OS_RELEASE -eq 1 ]; then
 		apply_debian
 	elif [ $OS_RELEASE -eq 2 ]; then
-		apply_redhat
+		apply_centos
 	else
 		warn "Current OS is not support!"	
 	fi
