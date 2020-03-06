@@ -16,12 +16,12 @@ HARDENING_LEVEL=3
 HARDENING_EXCEPTION=dns
 
 PACKAGES='avahi-daemon libavahi-common-data libavahi-common3 libavahi-core7'
-PKGS_PATTERN_REDHAT='avahi'
+PKGS_PATTERN_CENTOS='avahi'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGES=$PKGS_PATTERN_REDHAT
+		PACKAGES=$PKGS_PATTERN_CENTOS
 	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
@@ -40,7 +40,7 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGES=$PKGS_PATTERN_REDHAT
+		PACKAGES=$PKGS_PATTERN_CENTOS
 	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE

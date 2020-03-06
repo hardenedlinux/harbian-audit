@@ -15,12 +15,12 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 PACKAGE='nis'
-PACKAGE_REDHAT='ypserv'
+PACKAGE_CENTOS='ypserv'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGE=$PACKAGE_REDHAT
+		PACKAGE=$PACKAGE_CENTOS
 	fi
 	is_pkg_installed $PACKAGE
     if [ $FNRET = 0 ]; then
@@ -34,7 +34,7 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGE=$PACKAGE_REDHAT
+		PACKAGE=$PACKAGE_CENTOS
 	fi
     is_pkg_installed $PACKAGE
     if [ $FNRET = 0 ]; then

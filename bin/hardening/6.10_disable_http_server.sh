@@ -17,12 +17,12 @@ HARDENING_EXCEPTION=http
 
 # Based on aptitude search '~Phttpd'
 PACKAGES='nginx apache2 lighttpd micro-httpd mini-httpd yaws boa bozohttpd'
-PACKAGES_REDHAT='httpd pcp-pmda-nginx'
+PACKAGES_CENTOS='httpd pcp-pmda-nginx'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGES=$PACKAGES_REDHAT
+		PACKAGES=$PACKAGES_CENTOS
 	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
@@ -41,7 +41,7 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGES=$PACKAGES_REDHAT
+		PACKAGES=$PACKAGES_CENTOS
 	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE

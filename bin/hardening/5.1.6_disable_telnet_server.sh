@@ -18,7 +18,7 @@ HARDENING_LEVEL=2
 PACKAGES='telnetd inetutils-telnetd telnetd-ssl krb5-telnetd heimdal-servers'
 FILE='/etc/inetd.conf'
 PATTERN='^telnet'
-PACKAGE_REDHAT='telnet-server'
+PACKAGE_CENTOS='telnet-server'
 
 audit_debian () {
     for PACKAGE in $PACKAGES; do
@@ -43,11 +43,11 @@ audit_debian () {
 }
 
 audit_centos () {
-	is_pkg_installed $PACKAGE_REDHAT
+	is_pkg_installed $PACKAGE_CENTOS
 	if [ $FNRET = 0 ]; then
-		crit "$PACKAGE_REDHAT is installed"
+		crit "$PACKAGE_CENTOS is installed"
 	else
-		ok "$PACKAGE_REDHAT is absent"
+		ok "$PACKAGE_CENTOS is absent"
 	fi
 }
 
@@ -92,12 +92,12 @@ apply_debian () {
 }
 
 apply_centos () {
-	is_pkg_installed $PACKAGE_REDHAT
+	is_pkg_installed $PACKAGE_CENTOS
 	if [ $FNRET = 0 ]; then
-		crit "$PACKAGE_REDHAT is installed, purging it"
-		yum remove $PACKAGE_REDHAT -y 
+		crit "$PACKAGE_CENTOS is installed, purging it"
+		yum remove $PACKAGE_CENTOS -y 
 	else
-		ok "$PACKAGE_REDHAT is absent"
+		ok "$PACKAGE_CENTOS is absent"
 	fi
 }
 

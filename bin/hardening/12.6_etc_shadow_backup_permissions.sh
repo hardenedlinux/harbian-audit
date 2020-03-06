@@ -16,16 +16,16 @@ HARDENING_LEVEL=1
 
 FILE='/etc/shadow-'
 PERMISSIONS='600'
-PERMISSIONS_REDHAT='0'
+PERMISSIONS_CENTOS='0'
 USER='root'
 GROUP='shadow'
-GROUP_REDHAT='root'
+GROUP_CENTOS='root'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PERMISSIONS=$PERMISSIONS_REDHAT
-		GROUP=$GROUP_REDHAT
+		PERMISSIONS=$PERMISSIONS_CENTOS
+		GROUP=$GROUP_CENTOS
 	else
 		:
 	fi
@@ -46,8 +46,8 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PERMISSIONS=$PERMISSIONS_REDHAT
-		GROUP=$GROUP_REDHAT
+		PERMISSIONS=$PERMISSIONS_CENTOS
+		GROUP=$GROUP_CENTOS
 	else
 		:
 	fi

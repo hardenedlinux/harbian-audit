@@ -18,14 +18,14 @@ HARDENING_LEVEL=4
 AUDIT_PARAMS='-w /var/log/faillog -p wa -k logins
 -w /var/log/lastlog -p wa -k logins
 -w /var/log/tallylog -p wa -k logins'
-AUDIT_PARAMS_REDHAT='-w /var/log/lastlog -p wa -k logins
+AUDIT_PARAMS_CENTOS='-w /var/log/lastlog -p wa -k logins
 -w /var/log/tallylog -p wa -k logins'
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		AUDIT_PARAMS=$AUDIT_PARAMS_REDHAT
+		AUDIT_PARAMS=$AUDIT_PARAMS_CENTOS
 	fi
     # define custom IFS and save default one
     d_IFS=$IFS
@@ -45,7 +45,7 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		AUDIT_PARAMS=$AUDIT_PARAMS_REDHAT
+		AUDIT_PARAMS=$AUDIT_PARAMS_CENTOS
 	fi
     d_IFS=$IFS
     IFS=$'\n'

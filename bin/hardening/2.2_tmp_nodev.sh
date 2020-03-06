@@ -19,7 +19,7 @@ PARTITION="/tmp"
 OPTION="nodev"
 SERVICENAME="tmp.mount"
 SERVICEPATH_DEBIAN="/usr/share/systemd/tmp.mount"
-REDHAT_SERVICEPATH="/usr/lib/systemd/system/tmp.mount"
+CENTOS_SERVICEPATH="/usr/lib/systemd/system/tmp.mount"
 DEBIAN_SERVICEPATH="/lib/systemd/system/tmp.mount"
 
 # This function will be called if the script status is on enabled / audit mode
@@ -50,7 +50,7 @@ audit () {
 		if [ $OS_RELEASE -eq 1 ]; then
 			UNITSERVICEPATH=$DEBIAN_SERVICEPATH
 		elif [ $OS_RELEASE -eq 2 ]; then
-			UNITSERVICEPATH=$REDHAT_SERVICEPATH
+			UNITSERVICEPATH=$CENTOS_SERVICEPATH
 		fi
         if [ -e $UNITSERVICEPATH ]; then
 			has_mount_option_systemd $UNITSERVICEPATH $OPTION 
@@ -80,7 +80,7 @@ apply () {
 	if [ $OS_RELEASE -eq 1 ]; then
 		UNITSERVICEPATH=$DEBIAN_SERVICEPATH		
 	elif [ $OS_RELEASE -eq 2 ]; then
-		UNITSERVICEPATH=$REDHAT_SERVICEPATH
+		UNITSERVICEPATH=$CENTOS_SERVICEPATH
 	fi
     if [ $FNRET = 0 ]; then
         ok "$PARTITION is correctly set"

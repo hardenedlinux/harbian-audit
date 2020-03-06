@@ -17,7 +17,7 @@ HARDENING_LEVEL=2
 PACKAGES='inetutils-talkd talkd'
 FILE='/etc/inetd.conf'
 PATTERN='^(talk|ntalk)'
-PACKAGES_REDHAT='talk-server'
+PACKAGES_CENTOS='talk-server'
 
 audit_debian () {
     for PACKAGE in $PACKAGES; do
@@ -42,7 +42,7 @@ audit_debian () {
 }
 
 audit_centos () {
-    for PACKAGE in $PACKAGES_REDHAT; do
+    for PACKAGE in $PACKAGES_CENTOS; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
             crit "$PACKAGE is installed"
@@ -93,7 +93,7 @@ apply_debian () {
 }
 
 apply_centos () {
-    for PACKAGE in $PACKAGES_REDHAT; do
+    for PACKAGE in $PACKAGES_CENTOS; do
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
             crit "$PACKAGE is installed, purging it"

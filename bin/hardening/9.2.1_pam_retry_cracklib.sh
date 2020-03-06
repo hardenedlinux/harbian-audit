@@ -20,10 +20,10 @@ PATTERN='^password.*pam_cracklib.so'
 FILE='/etc/pam.d/common-password'
 
 # Redhat/CentOS default use pam_pwquality
-PACKAGE_REDHAT='libpwquality'
-PAMLIBNAME_REDHAT='pam_pwquality.so'
-PATTERN_REDHAT='^password.*pam_pwquality.so'
-FILE_REDHAT='/etc/pam.d/system-auth'
+PACKAGE_CENTOS='libpwquality'
+PAMLIBNAME_CENTOS='pam_pwquality.so'
+PATTERN_CENTOS='^password.*pam_pwquality.so'
+FILE_CENTOS='/etc/pam.d/system-auth'
 
 OPTIONNAME='retry'
 
@@ -33,10 +33,10 @@ CONDT_VAL=3
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGE=$PACKAGE_REDHAT
-		PAMLIBNAME=$PAMLIBNAME_REDHAT
-		PATTERN=$PATTERN_REDHAT
-		FILE=$FILE_REDHAT
+		PACKAGE=$PACKAGE_CENTOS
+		PAMLIBNAME=$PAMLIBNAME_CENTOS
+		PATTERN=$PATTERN_CENTOS
+		FILE=$FILE_CENTOS
 	fi
     is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
@@ -64,10 +64,10 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGE=$PACKAGE_REDHAT
-		PAMLIBNAME=$PAMLIBNAME_REDHAT
-		PATTERN=$PATTERN_REDHAT
-		FILE=$FILE_REDHAT
+		PACKAGE=$PACKAGE_CENTOS
+		PAMLIBNAME=$PAMLIBNAME_CENTOS
+		PATTERN=$PATTERN_CENTOS
+		FILE=$FILE_CENTOS
 	fi
     if [ $FNRET = 0 ]; then
         ok "$PACKAGE is installed"

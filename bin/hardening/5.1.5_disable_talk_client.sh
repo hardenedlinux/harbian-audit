@@ -15,12 +15,12 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=2
 
 PACKAGES='talk inetutils-talk'
-PACKAGES_REDHAT='talk'
+PACKAGES_CENTOS='talk'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGES=$PACKAGES_REDHAT
+		PACKAGES=$PACKAGES_CENTOS
 	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
@@ -35,7 +35,7 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGES=$PACKAGES_REDHAT
+		PACKAGES=$PACKAGES_CENTOS
 	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE

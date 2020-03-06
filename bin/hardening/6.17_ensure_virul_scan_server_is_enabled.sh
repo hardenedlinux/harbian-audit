@@ -14,7 +14,7 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 VIRULSERVER='clamav-daemon'
-VIRULSERVER_REDHAT='clamav-server clamav-data clamav-update clamav-filesystem clamav clamav-scanner-systemd clamav-devel clamav-lib clamav-server-systemd'
+VIRULSERVER_CENTOS='clamav-server clamav-data clamav-update clamav-filesystem clamav clamav-scanner-systemd clamav-devel clamav-lib clamav-server-systemd'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -58,10 +58,10 @@ apply () {
     	fi
 	elif [ $OS_RELEASE -eq 2 ]; then
     	if [ $FNRET = 0 ]; then
-        	ok "$VIRULSERVER_REDHAT is enable"
+        	ok "$VIRULSERVER_CENTOS is enable"
     	elif [ $FNRET = 1 ]; then
-        	warn "Install $VIRULSERVER_REDHAT"
-        	yum install -y $VIRULSERVER_REDHAT
+        	warn "Install $VIRULSERVER_CENTOS"
+        	yum install -y $VIRULSERVER_CENTOS
     	else
         	warn "Start server $VIRULSERVER"
         	systemctl start $VIRULSERVER

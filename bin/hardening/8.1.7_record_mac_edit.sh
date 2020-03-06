@@ -16,7 +16,7 @@ set -e # One error, it's over
 HARDENING_LEVEL=4
 
 SELINUX_PKG="selinux-basics"
-SELINUX_PKG_REDHAT="selinux-policy"
+SELINUX_PKG_CENTOS="selinux-policy"
 
 SE_AUDIT_PARAMS="-a always,exit -F dir=/etc/selinux/ -F perm=wa -k MAC-policy
 -a always,exit -F dir=/usr/share/selinux/ -F perm=wa -k MAC-policy
@@ -40,7 +40,7 @@ audit () {
     d_IFS=$IFS
     IFS=$'\n'
 	if [ $OS_RELEASE -eq 2 ]; then 
-		SELINUX_PKG=$SELINUX_PKG_REDHAT
+		SELINUX_PKG=$SELINUX_PKG_CENTOS
 	fi
 	is_pkg_installed $SELINUX_PKG
 	if [ $FNRET = 0 ]; then
@@ -72,7 +72,7 @@ apply () {
     d_IFS=$IFS
     IFS=$'\n'
 	if [ $OS_RELEASE -eq 2 ]; then 
-		SELINUX_PKG=$SELINUX_PKG_REDHAT
+		SELINUX_PKG=$SELINUX_PKG_CENTOS
 	fi
 	is_pkg_installed $SELINUX_PKG
 	if [ $FNRET = 0 ]; then

@@ -17,12 +17,12 @@ HARDENING_EXCEPTION=ftp
 
 # Based on aptitude search '~Pftp-server'
 PACKAGES='ftpd ftpd-ssl heimdal-servers inetutils-ftpd krb5-ftpd muddleftpd proftpd-basic pure-ftpd pure-ftpd-ldap pure-ftpd-mysql pure-ftpd-postgresql twoftpd-run vsftpd wzdftpd'
-PACKAGE_REDHAT='tftp-server vsftpd'
+PACKAGE_CENTOS='tftp-server vsftpd'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGES=$PACKAGE_REDHAT
+		PACKAGES=$PACKAGE_CENTOS
 	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
@@ -41,7 +41,7 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGES=$PACKAGE_REDHAT
+		PACKAGES=$PACKAGE_CENTOS
 	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE

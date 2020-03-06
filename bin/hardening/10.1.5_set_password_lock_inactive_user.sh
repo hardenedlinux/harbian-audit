@@ -18,7 +18,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 OPTIONS='INACTIVE=30'
-OPTIONS_REDHAT='INACTIVE=0'
+OPTIONS_CENTOS='INACTIVE=0'
 SHA_FILE='/etc/shadow'
 DISABLE_V='-1'
 FILE='/etc/default/useradd'
@@ -158,7 +158,7 @@ check_config() {
     if [ $OS_RELEASE -eq 1 ]; then
 		:
 	elif [ $OS_RELEASE -eq 2 ]; then
-		OPTIONS=$OPTIONS_REDHAT
+		OPTIONS=$OPTIONS_CENTOS
 	else
 		warn "Current OS is not support!"	
 	fi

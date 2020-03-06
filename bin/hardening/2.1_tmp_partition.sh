@@ -18,7 +18,7 @@ HARDENING_LEVEL=2
 PARTITION="/tmp"
 SERVICENAME="tmp.mount"
 SERVICEPATH_DEBIAN="/usr/share/systemd/tmp.mount"
-REDHAT_SERVICEPATH="/usr/lib/systemd/system/tmp.mount"
+CENTOS_SERVICEPATH="/usr/lib/systemd/system/tmp.mount"
 DEBIAN_SERVICEPATH="/lib/systemd/system/tmp.mount"
 
 # This function will be called if the script status is on enabled / audit mode
@@ -75,12 +75,12 @@ apply () {
 				fi
 			fi
 		elif [ $OS_RELEASE -eq 2 ]; then 
-			if [ -e $REDHAT_SERVICEPATH ]; then
+			if [ -e $CENTOS_SERVICEPATH ]; then
 				$SUDO_CMD systemctl enable "$SERVICENAME"
 				$SUDO_CMD systemctl daemon-reload
 				$SUDO_CMD systemctl start "$SERVICENAME"
 			else
-				crit "System unit file $REDHAT_SERVICEPATH is not exist!"
+				crit "System unit file $CENTOS_SERVICEPATH is not exist!"
 			fi
 		fi
 	fi

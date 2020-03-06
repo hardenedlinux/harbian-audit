@@ -19,9 +19,9 @@ HARDENING_LEVEL=2
 # Do as you want, but this script does not handle this
 
 PACKAGES='iptables iptables-persistent'
-PACKAGES_REDHAT='iptables iptables-services nftables firewalld'
+PACKAGES_CENTOS='iptables iptables-services nftables firewalld'
 SERVICENAME='netfilter-persistent'
-SERVICENAME_REDHAT='iptables ip6tables'
+SERVICENAME_CENTOS='iptables ip6tables'
 
 audit_debian () {
     for PACKAGE in $PACKAGES
@@ -48,7 +48,7 @@ audit_debian () {
 }
 
 audit_centos () {
-    for PACKAGE in $PACKAGES_REDHAT
+    for PACKAGE in $PACKAGES_CENTOS
     do
         is_pkg_installed $PACKAGE
         if [ $FNRET != 0 ]; then
@@ -61,7 +61,7 @@ audit_centos () {
         fi
     done
     if [ $FNRET = 0 ]; then
-		for SERVICENAME in $SERVICENAME_REDHAT
+		for SERVICENAME in $SERVICENAME_CENTOS
 		do
 	    	if [ $(systemctl status ${SERVICENAME}  | grep -c "Active:.active") -ne 1 ]; then
             	crit "${SERVICENAME} service is not actived"
@@ -110,16 +110,16 @@ apply_debian () {
 
 apply_centos () {
         if [ $FNRET = 0 ]; then
-            ok "$PACKAGES_REDHAT is installed"
+            ok "$PACKAGES_CENTOS is installed"
         elif [ $FNRET = 1 ]; then
-            for PACKAGE in $PACKAGES_REDHAT
+            for PACKAGE in $PACKAGES_CENTOS
             do
                 warn "$PACKAGE is absent, installing it"
                 yum_install $PACKAGE
             done
         elif [ $FNRET = 2 ]; then
-            warn "Enable ${SERVICENAME_REDHAT} service to actived"
-			for SERVICENAME in ${SERVICENAME_REDHAT}
+            warn "Enable ${SERVICENAME_CENTOS} service to actived"
+			for SERVICENAME in ${SERVICENAME_CENTOS}
 			do 
 				is_service_enabled ${SERVICENAME}
 				if [ $FNRET = 1 ]; then

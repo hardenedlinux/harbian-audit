@@ -16,7 +16,7 @@ HARDENING_LEVEL=2
 
 # Based on aptitude search '~Prsh-server'
 PACKAGES='rsh-server rsh-redone-server heimdal-servers'
-PACKAGE_REDHAT='rsh-server'
+PACKAGE_CENTOS='rsh-server'
 FILE='/etc/inetd.conf'
 PATTERN='^(shell|login|exec)'
 
@@ -43,11 +43,11 @@ audit_debian () {
 }
 
 audit_centos () {
-	is_pkg_installed $PACKAGE_REDHAT
+	is_pkg_installed $PACKAGE_CENTOS
 	if [ $FNRET = 0 ]; then
-         crit "$PACKAGE_REDHAT is installed!"
+         crit "$PACKAGE_CENTOS is installed!"
 	else
-		ok "$PACKAGE_REDHAT is absent"
+		ok "$PACKAGE_CENTOS is absent"
 	fi
 }
 # This function will be called if the script status is on enabled / audit mode
@@ -91,12 +91,12 @@ apply_debian () {
 }
 
 apply_centos () {
-	is_pkg_installed $PACKAGE_REDHAT
+	is_pkg_installed $PACKAGE_CENTOS
     if [ $FNRET = 0 ]; then
-		crit "$PACKAGE_REDHAT is installed, purging it"
-		yum -y remove $PACKAGE_REDHAT
+		crit "$PACKAGE_CENTOS is installed, purging it"
+		yum -y remove $PACKAGE_CENTOS
 	else
-		ok "$PACKAGE_REDHAT is absent"
+		ok "$PACKAGE_CENTOS is absent"
 	fi
 }
 

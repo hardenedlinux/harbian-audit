@@ -21,7 +21,7 @@ AUDIT_PARAMS_DEBIAN="-a always,exit -F path=/bin/su -F perm=x -F auid>=1000 -F a
 -a always,exit -F path=/usr/bin/chsh -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
 -a always,exit -F path=/usr/bin/sudoedit -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
 -a always,exit -F path=/usr/bin/chfn -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-priv_change"
-AUDIT_PARAMS_REDHAT="-a always,exit -F path=/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+AUDIT_PARAMS_CENTOS="-a always,exit -F path=/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
 -a always,exit -F path=/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
 -a always,exit -F path=/bin/newgrp -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
 -a always,exit -F path=/bin/chsh -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
@@ -83,7 +83,7 @@ check_config() {
 	if [ $OS_RELEASE -eq 1 ]; then
 		AUDIT_PARAMS=$AUDIT_PARAMS_DEBIAN
 	elif [ $OS_RELEASE -eq 2 ]; then
-		AUDIT_PARAMS=$AUDIT_PARAMS_REDHAT
+		AUDIT_PARAMS=$AUDIT_PARAMS_CENTOS
 	fi
 }
 

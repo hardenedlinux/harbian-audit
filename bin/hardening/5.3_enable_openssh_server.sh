@@ -16,7 +16,7 @@ HARDENING_LEVEL=2
 
 PACKAGES='openssh-server openssh-client'
 SERVICE_NAME='ssh.service'
-SERVICE_NAME_REDHAT='sshd.service'
+SERVICE_NAME_CENTOS='sshd.service'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -30,7 +30,7 @@ audit () {
         fi
     done
 	if [ $OS_RELEASE -eq 2 ]; then
-		SERVICE_NAME=$SERVICE_NAME_REDHAT
+		SERVICE_NAME=$SERVICE_NAME_CENTOS
 	fi
 	is_service_active $SERVICE_NAME
 	if [ $FNRET = 0 ]; then
@@ -57,7 +57,7 @@ apply () {
         fi
     done
 	if [ $OS_RELEASE -eq 2 ]; then
-		SERVICE_NAME=$SERVICE_NAME_REDHAT
+		SERVICE_NAME=$SERVICE_NAME_CENTOS
 	fi
 	is_service_active $SERVICE_NAME
 	if [ $FNRET = 0 ]; then

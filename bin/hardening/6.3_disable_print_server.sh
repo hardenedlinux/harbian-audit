@@ -16,12 +16,12 @@ HARDENING_LEVEL=3
 HARDENING_EXCEPTION=cups
 
 PACKAGES='libcups2 libcupscgi1 libcupsimage2 libcupsmime1 libcupsppdc1 cups-common cups-client cups-ppdc libcupsfilters1 cups-filters cups'
-PACKAGES_REDHAT='cups'
+PACKAGES_CENTOS='cups'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGES=$PACKAGES_REDHAT
+		PACKAGES=$PACKAGES_CENTOS
 	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE
@@ -40,7 +40,7 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
 	if [ $OS_RELEASE -eq 2 ]; then
-		PACKAGES=$PACKAGES_REDHAT
+		PACKAGES=$PACKAGES_CENTOS
 	fi
     for PACKAGE in $PACKAGES; do
         is_pkg_installed $PACKAGE

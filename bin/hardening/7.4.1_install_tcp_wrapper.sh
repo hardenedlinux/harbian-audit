@@ -15,7 +15,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 
 PACKAGE='tcpd'
-PACKAGE_REDHAT='tcp_wrappers'
+PACKAGE_CENTOS='tcp_wrappers'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
@@ -26,7 +26,7 @@ audit () {
 			ok "So PASS."
 			return 0
 		else
-			PACKAGE=$PACKAGE_REDHAT
+			PACKAGE=$PACKAGE_CENTOS
 		fi
 	fi
 	is_pkg_installed $PACKAGE
@@ -46,7 +46,7 @@ apply () {
 			ok "So PASS."
 			return 0
 		else
-			PACKAGE=$PACKAGE_REDHAT
+			PACKAGE=$PACKAGE_CENTOS
 		fi
 	fi
 	is_pkg_installed $PACKAGE

@@ -16,7 +16,7 @@ FILE='/etc/audit/rules.d/audit.rules'
 HARDENING_LEVEL=4
 
 AUDIT_PARAMS_DEBIAN='-a always,exit -F path=/usr/sbin/usermod -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-usermod'
-AUDIT_PARAMS_REDHAT='-a always,exit -F path=/sbin/usermod -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-usermod'
+AUDIT_PARAMS_CENTOS='-a always,exit -F path=/sbin/usermod -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-usermod'
 AUDIT_PARAMS=""
 
 # This function will be called if the script status is on enabled / audit mode
@@ -72,7 +72,7 @@ check_config() {
 	if [ $OS_RELEASE -eq 1 ]; then
 		AUDIT_PARAMS=$AUDIT_PARAMS_DEBIAN
 	elif [ $OS_RELEASE -eq 2 ]; then
-		AUDIT_PARAMS=$AUDIT_PARAMS_REDHAT
+		AUDIT_PARAMS=$AUDIT_PARAMS_CENTOS
 	fi
 }
 

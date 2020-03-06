@@ -17,7 +17,7 @@ FILE='/etc/audit/rules.d/audit.rules'
 
 AUDIT_PARAMS_DEBIAN="-a always,exit -F path=/usr/lib/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
 -a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh"
-AUDIT_PARAMS_REDHAT="-a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
+AUDIT_PARAMS_CENTOS="-a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
 -a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh"
 
 AUDIT_PARAMS=""
@@ -75,7 +75,7 @@ check_config() {
 	if [ $OS_RELEASE -eq 1 ]; then
 		AUDIT_PARAMS=$AUDIT_PARAMS_DEBIAN
 	elif [ $OS_RELEASE -eq 2 ]; then
-		AUDIT_PARAMS=$AUDIT_PARAMS_REDHAT
+		AUDIT_PARAMS=$AUDIT_PARAMS_CENTOS
 	fi
 }
 
