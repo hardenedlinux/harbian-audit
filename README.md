@@ -2,11 +2,11 @@
 
 ## Introduction 
 
-Hardened Debian GNU/Linux distro auditing.  
+Hardened Debian GNU/Linux and CentOS 8 distro auditing.  
 
-The main test environment is in debian 9/10, and other versions are not fully tested. There are no implementations of desktop and SELinux related items in this release.
+The main test environment is in debian GNU/Linux 9/10 and CentOS 8, and other versions are not fully tested. There are no implementations of desktop and SELinux related items in this release.
 
-The code framework is based on the [OVH-debian-cis](https://github.com/ovh/debian-cis) project, Modified some of the original implementations according to the features of Debian 9, added and implemented check items for [STIG Redhat V1R4](https://iasecontent.disa.mil/stigs/zip/U_Red_Hat_Enterprise_Linux_7_V1R4_STIG.zip) [STIG Ubuntu V1R2](https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_Canonical_Ubuntu_16-04_LTS_V1R2_STIG.zip) and [cisecurity.org](https://www.cisecurity.org/) recommendations, and also added and implemented some check items by the HardenedLinux community. The audit and apply functions of the infrastructure are implemented, and the automatic fix function is implemented for the items that can be automatically fixed. 
+The code framework is based on the [OVH-debian-cis](https://github.com/ovh/debian-cis) project, Modified some of the original implementations according to the features of Debian 9/10 and CentOS 8, added and implemented check items for [STIG Red_Hat_Enterprise_Linux_7_V2R5](https://github.com/hardenedlinux/STIG-OS-mirror/blob/master/redhat-STIG-DOCs/U_Red_Hat_Enterprise_Linux_7_V2R5_STIG.zip) [STIG Ubuntu V1R2](https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_Canonical_Ubuntu_16-04_LTS_V1R2_STIG.zip) and [cisecurity.org](https://www.cisecurity.org/) recommendations, and also added and implemented some check items by the HardenedLinux community. The audit and apply functions of the infrastructure are implemented, and the automatic fix function is implemented for the items that can be automatically fixed. 
 
 
 ```console
