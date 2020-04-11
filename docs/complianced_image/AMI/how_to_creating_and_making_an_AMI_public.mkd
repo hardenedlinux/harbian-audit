@@ -49,7 +49,7 @@ admin@ip:/opt/harbian-audit-master# passwd admin
 
 ##### First audit && apply:
 ```
-admin@ip:/opt/harbian-audit-master$ sudo cp debian/default /etc/default/cis-hardening
+admin@ip:/opt/harbian-audit-master$ sudo cp etc/default.cfg /etc/default/cis-hardening
 admin@ip:/opt/harbian-audit-master$ sudo sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening 
 admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --init
 admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --audit-all 

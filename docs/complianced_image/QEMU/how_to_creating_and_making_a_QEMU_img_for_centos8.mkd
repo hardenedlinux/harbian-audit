@@ -61,7 +61,7 @@ root@harbian:/opt# cd harbian-audit-master/
 
 #### Audit && Apply   
 ```
-root@harbian:/opt/harbian-audit-master# cp debian/default /etc/default/cis-hardening 
+root@harbian:/opt/harbian-audit-master# cp etc/default.cfg /etc/default/cis-hardening 
 root@harbian:/opt/harbian-audit-master# sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening  
 root@harbian:/opt/harbian-audit-master#  bash bin/hardening.sh --init  
 root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --audit-all  
