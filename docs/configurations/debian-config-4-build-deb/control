@@ -1,0 +1,15 @@
+Source: harbianaudit
+Section: admin
+Priority: optional
+Maintainer: Samson W <samson@hardenedlinux.org>
+Build-Depends: debhelper (>= 11)
+Standards-Version: 4.1.3
+Homepage: https://github.com/hardenedlinux/harbian-audit
+Vcs-Browser: https://github.com/hardenedlinux/harbian-audit
+Vcs-Git: https://github.com/hardenedlinux/harbian-audit
+
+Package: harbianaudit
+Architecture: all
+Depends: ${misc:Depends}
+Description: Hardened Debian GNU/Linux and CentOS 8 distro auditing.
+ Hardened Debian GNU/Linux and CentOS 8 distro auditing.

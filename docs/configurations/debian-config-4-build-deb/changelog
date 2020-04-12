@@ -1,0 +1,5 @@
+harbianaudit (0.4.1-1) unstable; urgency=medium
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Samson W <samson@hardenedlinux.org>  Sat, 11 Apr 2020 07:35:46 -0400

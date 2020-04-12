@@ -1,0 +1,47 @@
+#!/usr/bin/make -f
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+#export DH_VERBOSE = 1
+
+
+# see FEATURE AREAS in dpkg-buildflags(1)
+#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+# see ENVIRONMENT in dpkg-buildflags(1)
+# package maintainers to append CFLAGS
+#export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+# package maintainers to append LDFLAGS
+#export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+
+%:
+	dh $@
+
+
+# dh_make generated override targets
+# This is example for Cmake (See https://bugs.debian.org/641051 )
+#override_dh_auto_configure:
+#	dh_auto_configure -- #	-DCMAKE_LIBRARY_PATH=$(DEB_HOST_MULTIARCH)
+
+override_dh_install:
+	install -d debian/harbianaudit/opt/harbianaudit/
+	install -d debian/harbianaudit/opt/harbianaudit/bin/
+	install -d debian/harbianaudit/opt/harbianaudit/lib/
+	install -d debian/harbianaudit/opt/harbianaudit/etc/
+	install -d debian/harbianaudit/opt/harbianaudit/src/
+	install -d debian/harbianaudit/opt/harbianaudit/bin/hardening/
+	install -g root -o root -m 755 -p bin/hardening.sh debian/harbianaudit/opt/harbianaudit/bin/
+	install -g root -o root -m 755 -p docs/configurations/etc.iptables.rules.v4.sh debian/harbianaudit/opt/harbianaudit/bin/
+	install -g root -o root -m 755 -p docs/configurations/etc.iptables.rules.v6.sh debian/harbianaudit/opt/harbianaudit/bin/
+	install -g root -o root -m 755 -p bin/harbianaudit.sh debian/harbianaudit/opt/harbianaudit/bin/
+	install -g root -o root -m 755 -p bin/hardening/* debian/harbianaudit/opt/harbianaudit/bin/hardening/
+	install -d debian/harbianaudit/etc/default/
+	install -g root -o root -m 644 -p etc/default.cfg debian/harbianaudit/etc/default/cis-hardening
+	install -g root -o root -m 644 -p etc/hardening.cfg debian/harbianaudit/opt/harbianaudit/etc/
+	install -d debian/harbianaudit/opt/harbianaudit/etc/conf.d/ 
+	install -g root -o root -m 644 -p lib/* debian/harbianaudit/opt/harbianaudit/lib/
+	install -g root -o root -m 644 -p src/* debian/harbianaudit/opt/harbianaudit/src/
+	install -d debian/harbianaudit/opt/harbianaudit/tmp/
+	install -d debian/harbianaudit/opt/harbianaudit/tmp/backups/
+	install -d debian/harbianaudit/usr/share/man/man1/
+	install -g root -o root -m 644 -p README.md debian/harbianaudit/usr/share/man/man1/harbianaudit.1
