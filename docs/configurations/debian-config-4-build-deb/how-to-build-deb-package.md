@@ -34,8 +34,10 @@ $ tar zxvf V0.4.1.tar.gz
 
 ## Build deb package 
 ```
+~/harbian-audit-0.4.1$ dpkg-buildpackage --sign-key=<your-gpg-key-id>
+```
+If don't sign the source package and the .buildinfo and .changes files
+```
 ~/harbian-audit-0.4.1$ dpkg-buildpackage -us -uc
 ~/harbian-audit-0.4.1$ sha512sum ../harbianaudit_0.4.1-1_all.deb  > ../harbianaudit_0.4.1-1_all.deb.sha512sum
 ```
-
-
