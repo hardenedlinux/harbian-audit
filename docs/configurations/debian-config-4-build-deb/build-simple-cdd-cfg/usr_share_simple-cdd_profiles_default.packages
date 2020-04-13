@@ -1,0 +1,9 @@
+# This file real path is: /usr/share/simple-cdd/profiles/default.packages
+# less is more intuituve
+less
+net-tools
+bc
+ssh
+pciutils
+network-manager
+man
