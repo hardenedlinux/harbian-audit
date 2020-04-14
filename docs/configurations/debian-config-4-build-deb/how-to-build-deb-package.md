@@ -20,7 +20,7 @@ $ tar zxvf V0.4.1.tar.gz
 ```
 ## Init and dh_make
 ```
-~$ rm V0.4.0.tar.gz
+~$ rm V0.4.1.tar.gz
 ~$  tar -czvf harbian-audit-0.4.1.tar.gz --exclude=.gitignore harbian-audit-0.4.1
 ~$ cd harbian-audit-0.4.1
 ~/harbian-audit-0.4.1$ dh_make -f ../harbian-audit-0.4.1.tar.gz
@@ -39,5 +39,7 @@ $ tar zxvf V0.4.1.tar.gz
 If don't sign the source package and the .buildinfo and .changes files
 ```
 ~/harbian-audit-0.4.1$ dpkg-buildpackage -us -uc
-~/harbian-audit-0.4.1$ sha512sum ../harbianaudit_0.4.1-1_all.deb  > ../harbianaudit_0.4.1-1_all.deb.sha512sum
+~/harbian-audit-0.4.1$ cd ..
+~$ sha512sum harbianaudit_0.4.1-1_all.deb  > harbianaudit_0.4.1-1_all.deb.sha512sum
+~$ gpg -ab harbianaudit_0.4.1-1_all.deb 
 ```
