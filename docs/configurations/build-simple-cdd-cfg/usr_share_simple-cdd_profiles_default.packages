@@ -6,4 +6,4 @@ bc
 ssh
 pciutils
 network-manager
-man
+man-db
