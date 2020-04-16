@@ -39,7 +39,7 @@ audit () {
     for AUDIT_VALUE in $AUDIT_PARAMS; do
 		check_audit_path $AUDIT_VALUE 
 		if [ $FNRET -eq 1 ];then
-			crit "path is not exsit! Please check file path is exist!"
+			warn "path is not exsit! Please check file path is exist!"
 			continue
 		else
         	debug "$AUDIT_VALUE should be in file $FILE"
@@ -62,7 +62,7 @@ apply () {
     for AUDIT_VALUE in $AUDIT_PARAMS; do
 		check_audit_path $AUDIT_VALUE 
 		if [ $FNRET -eq 1 ];then
-			crit "path is not exsit! Please check file path is exist!"
+			warn "path is not exsit! Please check file path is exist!"
 			continue
 		else
         	debug "$AUDIT_VALUE should be in file $FILE"

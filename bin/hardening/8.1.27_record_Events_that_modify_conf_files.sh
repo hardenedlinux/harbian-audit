@@ -26,7 +26,7 @@ audit () {
     for AUDIT_VALUE in $AUDIT_PARAMS; do
 		check_audit_path $AUDIT_VALUE 
 		if [ $FNRET -eq 1 ];then
-			crit "path is not exsit! Please check file path is exist! Rule: $AUDIT_VALUE"
+			warn "path is not exsit! Please check file path is exist! Rule: $AUDIT_VALUE"
 			continue
 		else
         	debug "$AUDIT_VALUE should be in file $FILE"
@@ -49,7 +49,7 @@ apply () {
     for AUDIT_VALUE in $AUDIT_PARAMS; do
 		check_audit_path $AUDIT_VALUE 
 		if [ $FNRET -eq 1 ];then
-			crit "Path is not exsit when apply a rule: $AUDIT_VALUE ! Please check file path is exist!"
+			warn "Path is not exsit when apply a rule: $AUDIT_VALUE ! Please check file path is exist!"
 			continue
 		else
         	debug "$AUDIT_VALUE should be in file $FILE"

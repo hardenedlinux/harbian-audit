@@ -1094,15 +1094,19 @@ yum_check_updates()
 # Example: 
 # Process only the following format:
 # AUDITRULE="-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd"
+# Please manually execute apt-file (Debian) / yum Provides (redhat) to ensure that the path already exists in the repository.
+# example: apt-file search /usr/bin/passwd
+# freedom-maker: /usr/bin/passwd-in-image
+# passwd: /usr/bin/passwd
 check_audit_path ()
 {
 	AUDITRULE=$1
 	RESULT=$(echo $AUDITRULE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
 	if [ -f $(eval echo $RESULT)  -o -d $(eval echo $RESULT) ]; then
-		debug "Result is not NULL"
+		debug "file $RESULT is exist!"
 		FNRET=0
 	else
-		debug "Result is NULL"
+		warn "file $RESULT is not exist!"
 		FNRET=1
 	fi
 }
