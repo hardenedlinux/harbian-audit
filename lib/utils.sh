@@ -1103,10 +1103,10 @@ check_audit_path ()
 	AUDITRULE=$1
 	RESULT=$(echo $AUDITRULE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
 	if [ -f $(eval echo $RESULT)  -o -d $(eval echo $RESULT) ]; then
-		debug "file $RESULT is exist!"
+		debug "File $RESULT is exist!"
 		FNRET=0
 	else
-		warn "file $RESULT is not exist!"
+		warn "File $RESULT is not exist!"
 		FNRET=1
 	fi
 }
