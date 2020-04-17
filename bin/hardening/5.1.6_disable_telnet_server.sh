@@ -68,8 +68,7 @@ apply_debian () {
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
             crit "$PACKAGE is installed, purging it"
-            apt-get purge $PACKAGE -y
-            apt-get autoremove
+            uninstall_pkg $PACKAGE
         else
             ok "$PACKAGE is absent"
         fi
@@ -95,7 +94,7 @@ apply_centos () {
 	is_pkg_installed $PACKAGE_CENTOS
 	if [ $FNRET = 0 ]; then
 		crit "$PACKAGE_CENTOS is installed, purging it"
-		yum remove $PACKAGE_CENTOS -y 
+		uninstall_pkg $PACKAGE_CENTOS 
 	else
 		ok "$PACKAGE_CENTOS is absent"
 	fi

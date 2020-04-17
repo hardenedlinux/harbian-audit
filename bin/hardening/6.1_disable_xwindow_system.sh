@@ -36,8 +36,7 @@ apply () {
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
             crit "$PACKAGE is installed, purging it"
-            apt-get purge $PACKAGE -y
-            apt-get autoremove
+            uninstall_pkg $PACKAGE
         else
             ok "$PACKAGE is absent"
         fi

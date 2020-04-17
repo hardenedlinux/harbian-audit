@@ -49,12 +49,7 @@ apply () {
                 warn "$PACKAGE is installed! But the exception is set to true, so don't need any operate."
             else
                 crit "$PACKAGE is installed, purging it"
-				if [ $OS_RELEASE -eq 2 ]; then
-                	yum autoremove $PACKAGE -y
-				else
-					apt-get purge $PACKAGE -y
-                	apt-get autoremove
-				fi
+				uninstall_pkg $PACKAGE
             fi
         else
             ok "$PACKAGE is absent"

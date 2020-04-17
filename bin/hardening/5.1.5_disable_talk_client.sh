@@ -41,12 +41,7 @@ apply () {
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
             warn "$PACKAGE is installed, purging"
-			if [ $OS_RELEASE -eq 2 ]; then
-				yum remove $PACKAGE -y
-			else
-            	apt-get purge $PACKAGE -y
-            	apt-get autoremove
-			fi
+            uninstall_pkg $PACKAGE
         else
             ok "$PACKAGE is absent"
         fi

@@ -33,7 +33,7 @@ apply () {
 		if [ $FNRET = 0 ]; then
         	crit "$PACKAGE is installed, purging it"
 			"$(which $PACKAGE)" -ua
-			yum autoremove $PACKAGE -y
+			uninstall_pkg $PACKAGE
 		else
         	ok "$PACKAGE is absent"
 		fi
@@ -41,8 +41,7 @@ apply () {
 		if [ $FNRET = 0 ]; then
         	crit "$PACKAGE is installed, purging it"
         	/usr/sbin/prelink -ua
-        	apt-get purge $PACKAGE -y
-        	apt-get autoremove
+        	uninstall_pkg $PACKAGE
     	else
         	ok "$PACKAGE is absent"
     	fi
