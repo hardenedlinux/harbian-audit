@@ -7,7 +7,9 @@
 ```
 # iptables-restore iptables_ufw-4-server.cfg 
 # bash bin/hardening.sh --audit-all 
-# This is set special service to exception(6.2 6.3 6.10)
+```
+This is set special service to exception(6.2 6.3 6.10)
+```
 # bash bin/hardening.sh --set-hardening-level 5 --allow-service dns,http,cups
 # bash bin/hardening.sh --audit-all 
 # bash bin/hardening.sh --apply
@@ -17,11 +19,11 @@
 ```
 # iptables-restore iptables_ufw-4-client.cfg
 # bash bin/hardening.sh --audit-all 
-# This is set special service to exception(6.10)
+```
+This is set special service to exception(6.10)
+```
 # bash bin/hardening.sh --set-hardening-level 5 --allow-service http 
 # bash bin/hardening.sh --audit-all
 # bash bin/hardening.sh --apply
 ```
-
-
 
