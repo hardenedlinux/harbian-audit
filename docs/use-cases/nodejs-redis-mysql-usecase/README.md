@@ -11,14 +11,14 @@
 ### Install mysql
 
 ```
-$ sudo apt install mysql-server
+# apt install mysql-server
 ```
 #### Configurate database
 
 Create helloworld database
 
 ```
-$ sudo mysql -uroot 
+# mysql -uroot 
 
 MariaDB [(none)]> CREATE DATABASE helloworld;
 ```
@@ -45,12 +45,12 @@ deb-src http://mirrors.163.com/debian/ stretch-backports main
 and update
 
 ```
-$ sudo apt update
+# apt update
 ```
 
 #### install the package
 ```
-$ sudo apt -t stretch-backports install -y redis-server
+# apt -t stretch-backports install -y redis-server
 ```
 
 #### Configurate Redis
@@ -82,7 +82,7 @@ systemctl restart redis
 ### Install Nodejs
 
 ```
-$ sudo apt install curl -y
+# apt install curl -y
 ```
 #as root
 ```
@@ -206,8 +206,8 @@ module.exports = {
 
 //Installation PM2: 
 ```
-$ sudo npm install pm2 -g
-$ sudo chmod -R 755 /usr/lib/node_modules/pm2  
+# npm install pm2 -g
+# chmod -R 755 /usr/lib/node_modules/pm2  
 ```
 
 ```
@@ -217,7 +217,7 @@ $ pm2 startup systemd
 
 [PM2] Init System found: systemd
 [PM2] To setup the Startup Script, copy/paste the following command:
-sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u helloworld --hp /home/helloworld
+# env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u helloworld --hp /home/helloworld
 ```
 change to root user and execute
 
@@ -238,7 +238,7 @@ now start the service
 
 ## Set iptables rules
 ```
-$ sudo iptables -I INPUT -p tcp -m tcp --dport 3000 -j ACCEPT
+# iptables -I INPUT -p tcp -m tcp --dport 3000 -j ACCEPT
 ```
 
 ## Test 

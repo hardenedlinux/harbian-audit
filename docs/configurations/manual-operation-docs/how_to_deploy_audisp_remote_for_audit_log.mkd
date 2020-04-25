@@ -3,7 +3,7 @@
 ## Server 
 ### Install package 
 ```
-sudo apt install -y auditd 
+# apt install -y auditd 
 ```
 
 ### Configure 
@@ -21,7 +21,7 @@ systemctl restart auditd
 ## Client 
 ### Install package 
 ```
-sudo apt install -y audispd-plugins  auditd 
+# apt install -y audispd-plugins  auditd 
 ```
 
 ### Configure 

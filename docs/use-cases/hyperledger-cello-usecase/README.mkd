@@ -5,18 +5,18 @@
 
 ## Master node 
 ```
-sudo iptables-restore master-ufw-rules.conf 
-sudo bash bin/hardening.sh --audit-all 
-sudo bash bin/hardening.sh --set-hardening-level 5 
-sudo bash bin/hardening.sh --audit-all 
-sudo bash bin/hardening.sh --apply
+# iptables-restore master-ufw-rules.conf 
+# bash bin/hardening.sh --audit-all 
+# bash bin/hardening.sh --set-hardening-level 5 
+# bash bin/hardening.sh --audit-all 
+# bash bin/hardening.sh --apply
 ```
 
 ## Worker node 
 ```
-sudo iptables-restore worker-ufw-rules.conf
-sudo bash bin/hardening.sh --audit-all 
-sudo bash bin/hardening.sh --set-hardening-level 5 
-sudo bash bin/hardening.sh --audit-all
-sudo bash bin/hardening.sh --apply
+# iptables-restore worker-ufw-rules.conf
+# bash bin/hardening.sh --audit-all 
+# bash bin/hardening.sh --set-hardening-level 5 
+# bash bin/hardening.sh --audit-all
+# bash bin/hardening.sh --apply
 ```

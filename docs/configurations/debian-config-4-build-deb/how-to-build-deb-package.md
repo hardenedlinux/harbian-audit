@@ -2,7 +2,7 @@
 
 ## Pre-install 
 ```
-sudo apt-get install build-essential dh-make debhelper lintian wget 
+# apt-get install build-essential dh-make debhelper lintian wget 
 ```
 ## Config evc var for dh_make 
 ```

@@ -28,7 +28,7 @@
 ## Use harbian-audit to check   
 ```
 admin@ip-:~$ cd /opt/harbian-audit-master/
-admin@ip-:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --audit-all
+admin@ip-:/opt/harbian-audit-master# ./bin/hardening.sh --audit-all
 ......
 
 ################### SUMMARY ###################

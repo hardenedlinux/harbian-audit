@@ -3,7 +3,7 @@ Debian Buster uses the nftables framework by default.
 
 ## Pre-install  
 ```
-$ sudo apt install nftables
+# apt install nftables
 ```
 
 ## Check iptables link point 
@@ -13,7 +13,7 @@ You can switch back and forth between iptables-nft and iptables-legacy by means 
 
 Check iptables currently link:
 ```
-$ sudo update-alternatives  --display iptables
+# update-alternatives  --display iptables
 iptables - auto mode
   link best version is /usr/sbin/iptables-nft
   link currently points to /usr/sbin/iptables-nft
@@ -29,11 +29,11 @@ iptables - auto mode
 ```
 If you see above, don't need switching, if currently link to iptables-legacy, need use command to switching to iptables-nft:
 ```
-$ sudo update-alternatives --set iptables /usr/sbin/iptables-nft
-$ sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-nft
-$ sudo update-alternatives --set arptables /usr/sbin/arptables-nft
-$ sudo update-alternatives --set ebtables /usr/sbin/ebtables-nft
-$ sudo update-alternatives  --display iptables
+# update-alternatives --set iptables /usr/sbin/iptables-nft
+# update-alternatives --set ip6tables /usr/sbin/ip6tables-nft
+# update-alternatives --set arptables /usr/sbin/arptables-nft
+# update-alternatives --set ebtables /usr/sbin/ebtables-nft
+# update-alternatives  --display iptables
 ```
 ## Migrating  
 move from an existing iptables ruleset to nftables:
@@ -41,17 +41,17 @@ move from an existing iptables ruleset to nftables:
 ### Command translation  
 You can generate a translation of an iptables/ip6tables command to know the nftables equivalent. 
 ```
-$ sudo iptables-translate -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
+# iptables-translate -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW -j ACCEPT
 nft add rule ip filter INPUT tcp dport 22 ct state new counter accept
-$ sudo ip6tables-translate -A FORWARD -i eth0 -o eth3 -p udp -m multiport --dports 111,222 -j ACCEPT
+# ip6tables-translate -A FORWARD -i eth0 -o eth3 -p udp -m multiport --dports 111,222 -j ACCEPT
 nft add rule ip6 filter FORWARD iifname "eth0" oifname "eth3" meta l4proto udp udp dport { 111,222} counter accept
 ```
 
 Instead of translating command by command, you can translate your whole ruleset in a single run: 
 
 ```
-$ sudo iptables-save > save.txt
-$ sudo iptables-restore-translate -f save.txt
+# iptables-save > save.txt
+# iptables-restore-translate -f save.txt
 # Translated by iptables-restore-translate v1.8.2 on Fri Jul 12 04:33:36 2019
 add table ip filter
 add chain ip filter INPUT { type filter hook input priority 0; policy drop; }
@@ -114,10 +114,10 @@ add chain ip mangle POSTROUTING { type filter hook postrouting priority -150; po
 ```
 You should be able to directly give this to nftables:  
 ```
-$ sudo iptables-restore-translate -f save.txt > ruleset.nft
-$ sudo nft -f ruleset.nft
+# iptables-restore-translate -f save.txt > ruleset.nft
+# nft -f ruleset.nft
 ```
-$ sudo nft list ruleset 
+# nft list ruleset 
 List nft ruleset:
 ```
 table ip filter {
@@ -263,7 +263,7 @@ table ip mangle {
 
 ## Uninstall iptables 
 ```
-$ sudo apt purge --autoremove iptables 
+# apt purge --autoremove iptables 
 ```
 
 ## Reference  

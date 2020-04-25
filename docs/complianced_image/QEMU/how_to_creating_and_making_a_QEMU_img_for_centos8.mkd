@@ -77,9 +77,8 @@ root@harbian:/opt/harbian-audit-master# reboot
 
 After reboot:
 ```
-harbian-audit@harbian:/opt/harbian-audit-master$ sudo bash ./docs/configurations/etc.iptables.rules.v4.sh  eth0
-harbian-audit@harbian:/opt/harbian-audit-master$ sudo bash ./docs/configurations/etc.iptables.rules.v6.sh eth0 
-harbian-audit@harbian:/opt/harbian-audit-master$ sudo -s   
+harbian-audit@harbian:/opt/harbian-audit-master# bash ./docs/configurations/etc.iptables.rules.v4.sh  eth0
+harbian-audit@harbian:/opt/harbian-audit-master# bash ./docs/configurations/etc.iptables.rules.v6.sh eth0 
 root@harbian:/opt/harbian-audit-master# iptables-save > /etc/sysconfig/iptables   
 root@harbian:/opt/harbian-audit-master# ip6tables-save > /etc/sysconfig/ip6tables  
 ```
@@ -88,7 +87,7 @@ Related how to use harbian-audit to adit and apply, please reference:
 
 ### Set issues 
 ```
-$ sudo sed -i "s/Debian GNU\/Linux 9/harbian-audit complianced for Debian GNU\/Linux 9/g" /etc/issue* 
+# sed -i "s/Debian GNU\/Linux 9/harbian-audit complianced for Debian GNU\/Linux 9/g" /etc/issue* 
 ```
 
 ### Set grub passwd   
@@ -101,7 +100,6 @@ Related how to config grub2 password protection, please reference:
 
 ### Re-set passwd of all users 
 ```
-harbian-audit@harbian:~$ sudo -s
 root@harbian:/home/harbian-audit# passwd 
 root@harbian:/home/harbian-audit# passwd harbian-audit  
 ```
@@ -113,38 +111,37 @@ If need adds a project on AMI, add the project on such as /opt, /usr/local/bin d
 
 #### Uninstall   
 ```
-$ sudo apt-get purge --autoremove unzip -y   
+# apt-get purge --autoremove unzip -y   
 ```
 
 #### Clean harbian-audit temp file and conf  
 ```
-$ sudo rm /opt/master.zip 
-$ sudo rm /opt/harbian-audit-master/tmp/backups/*
+# rm /opt/master.zip 
+# rm /opt/harbian-audit-master/tmp/backups/*
 $ cd /opt/harbian-audit-master/etc/conf.d
-$ sudo rm -f !(8.1.32_freeze_auditd_conf.cfg|8.4.1_install_aide.cfg|8.4.2_aide_cron.cfg) 
+# rm -f !(8.1.32_freeze_auditd_conf.cfg|8.4.1_install_aide.cfg|8.4.2_aide_cron.cfg) 
 ```
 
 #### Final fix  
 ```
 $ cd /opt/harbian-audit-master 
-$ sudo sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.1.32_freeze_auditd_conf.cfg
-$ sudo sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.1_install_aide.cfg 
-$ sudo sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.2_aide_cron.cfg 
-$ sudo bash bin/hardening.sh --apply --only 8.1.32
-$ sudo bash bin/hardening.sh --apply --only 8.4.1
-$ sudo bash bin/hardening.sh --apply --only 8.4.2
-$ sudo rm /opt/harbian-audit-master/tmp/backups/*
-$ sudo rm /opt/harbian-audit-master/etc/conf.d/*
+# sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.1.32_freeze_auditd_conf.cfg
+# sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.1_install_aide.cfg 
+# sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.2_aide_cron.cfg 
+# bash bin/hardening.sh --apply --only 8.1.32
+# bash bin/hardening.sh --apply --only 8.4.1
+# bash bin/hardening.sh --apply --only 8.4.2
+# rm /opt/harbian-audit-master/tmp/backups/*
+# rm /opt/harbian-audit-master/etc/conf.d/*
 ``` 
 
 #### Clear the current log   
 ```
-$ sudo find /var/log/ -name "*.log" -exec shred -u {} \; 
-$ sudo find /var/log/ -name "*.log.*" -exec shred -u {} \; 
-$ sudo find / -name "authorized_keys" -exec shred -u {} \; 
-$ sudo rm  /root/.wget-hsts 
-$ sudo rm  /root/.viminfo 
-$ sudo -s
+# find /var/log/ -name "*.log" -exec shred -u {} \; 
+# find /var/log/ -name "*.log.*" -exec shred -u {} \; 
+# find / -name "authorized_keys" -exec shred -u {} \; 
+# rm  /root/.wget-hsts 
+# rm  /root/.viminfo 
 # echo > /var/log/debug 
 # echo > /var/log/btmp 
 # echo > /var/log/error 
@@ -160,7 +157,7 @@ $ sudo -s
 
 #### AIDE RE-INIT  
 ```
-$ sudo aideinit -y -f  
+# aideinit -y -f  
 ``` 
 
 #### Clear bash hostory  
@@ -169,7 +166,7 @@ $ sudo aideinit -y -f
 # history -cw 
 $ echo > ~/.bash_history 
 $ history -cw 
-$ sudo poweroff 
+# poweroff 
 ``` 
 
 ## sign QEMU image 

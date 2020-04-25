@@ -6,7 +6,7 @@
 
 审计功能的使用示例： 
 ```console
-$ sudo bash bin/hardening.sh --audit-all
+# bash bin/hardening.sh --audit-all
 [...]
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/13.15_check_duplicate_gid.sh
 13.15_check_duplicate_gid [INFO] Working on 13.15_check_duplicate_gid
@@ -29,13 +29,13 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 ### 下载及初始化 
 ```console
 $ git clone https://github.com/hardenedlinux/harbian-audit.git && cd harbian-audit
-$ sudo cp etc/default.cfg /etc/default/cis-hardening
-$ sudo sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening
-$ sudo bin/hardening.sh --init
+# cp etc/default.cfg /etc/default/cis-hardening
+# sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening
+# bin/hardening.sh --init
 ```
 ### 对所有的安全检查项进行审计 
 ```
-$ sudo bin/hardening.sh --audit-all
+# bin/hardening.sh --audit-all
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
 1.1_install_updates       [INFO] Working on 1.1_install_updates
 1.1_install_updates       [INFO] Checking Configuration
@@ -55,8 +55,8 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 ```
 ### 设置加固级别并进行自动修复  
 ```
-$ sudo bin/hardening.sh --set-hardening-level 5  
-$ sudo bin/hardening.sh --apply  
+# bin/hardening.sh --set-hardening-level 5  
+# bin/hardening.sh --apply  
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
 1.1_install_updates       [INFO] Working on 1.1_install_updates
 1.1_install_updates       [INFO] Checking Configuration
@@ -75,17 +75,17 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 ### 需要预装的软件  
 如果是使用的最小安装方式安装的Debian GNU/Linux系统，在使用此项目之前，需要安装如下的软件：
 ```
-sudo apt-get install -y bc net-tools pciutils 
+# apt-get install -y bc net-tools pciutils 
 ```
 如果系统是Redhat/CentOS，在使用此项目前，需要安装如下的软件包：
 ```
-sudo yum install -y bc net-tools pciutils NetworkManager epel-release 
+# yum install -y bc net-tools pciutils NetworkManager epel-release 
 ```
 
 ### 需要预先进行的配置 
 在使用此项目前，必须给所有要用到的用户设置了密码。如果没有设置密码的话，将在进行自动化加固后不能够登录到系统。例如(用户：root和test）:
 ```
-$ sudo -s 
+ 
 # passwd 
 # passwd test 
 ```
@@ -155,8 +155,8 @@ EXCEPTIONS=""
 基于iptables的部署:
 ```
 $ INTERFACENAME="your network interfacename(Example eth0)"
-$ sudo bash docs/configurations/etc.iptables.rules.v4.sh $INTERFACENAME
-$ sudo -s
+# bash docs/configurations/etc.iptables.rules.v4.sh $INTERFACENAME
+
 # iptables-save > /etc/iptables/rules.v4 
 # ip6tables-save > /etc/iptables/rules.v6 
 ```
@@ -164,13 +164,13 @@ $ sudo -s
 按照以下命令修改nftables.conf(你的对外网口的名称，例如：eth0):
 ```
 $ sed -i 's/^define int_if = ens33/define int_if = eth0/g' etc.nftables.conf 
-$ sudo nft -f ./etc.nftables.conf 
+# nft -f ./etc.nftables.conf 
 ```
 5) 当所有安全基线项都修复完成后，使用--final方法将完成以下的最终的工作：
    1.使用passwd命令去重新设置常规用户及root用户的密码，以满足pam_cracklib模块配置的密码强度和健壮性。
    2. 重新初始化aide工具的数据库。
 ```
-$ sudo bin/hardening.sh --final
+# bin/hardening.sh --final
 ```
 
 ## 特别注意 

@@ -10,7 +10,7 @@ The code framework is based on the [OVH-debian-cis](https://github.com/ovh/debia
 
 
 ```console
-$ sudo bash bin/hardening.sh --audit-all
+# bash bin/hardening.sh --audit-all
 [...]
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/13.15_check_duplicate_gid.sh
 13.15_check_duplicate_gid [INFO] Working on 13.15_check_duplicate_gid
@@ -32,10 +32,10 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 
 ```console
 $ git clone https://github.com/hardenedlinux/harbian-audit.git && cd harbian-audit
-$ sudo cp etc/default.cfg /etc/default/cis-hardening
-$ sudo sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening
-$ sudo bin/hardening.sh --init
-$ sudo bin/hardening.sh --audit-all
+# cp etc/default.cfg /etc/default/cis-hardening
+# sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening
+# bin/hardening.sh --init
+# bin/hardening.sh --audit-all
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
 1.1_install_updates       [INFO] Working on 1.1_install_updates
 1.1_install_updates       [INFO] Checking Configuration
@@ -52,8 +52,8 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
          Total Failed Checks : [  39/278 ]
    Enabled Checks Percentage : 100.00 %
        Conformity Percentage : 85.97 %
-$ sudo bin/hardening.sh --set-hardening-level 5
-$ sudo bin/hardening.sh --apply 
+# bin/hardening.sh --set-hardening-level 5
+# bin/hardening.sh --apply 
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
 1.1_install_updates       [INFO] Working on 1.1_install_updates
 1.1_install_updates       [INFO] Checking Configuration
@@ -73,18 +73,18 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 
 If use Network install from a minimal CD to installed Debian GNU/Linux, need install packages before use the hardening tool. 
 ```
-sudo apt-get install -y bc net-tools pciutils network-manager 
+# apt-get install -y bc net-tools pciutils network-manager 
 ```
 
 Redhat/CentOS need install packages before use the hardening tool:
 ```
-sudo yum install -y bc net-tools pciutils NetworkManager epel-release 
+# yum install -y bc net-tools pciutils NetworkManager epel-release 
 ```
 
 ### Pre-Set 
 You must set a password for all users before hardening. Otherwise, you will not be able to log in after the hardening is completed. Example(OS user: root and test): 
 ```
-$ sudo -s 
+ 
 # passwd 
 # passwd test 
 ```
@@ -169,8 +169,8 @@ Set the corresponding firewall rules according to the applications used. Hardene
 to do the following:
 ```
 $ INTERFACENAME="your network interfacename(Example eth0)"
-$ sudo bash docs/configurations/etc.iptables.rules.v4.sh $INTERFACENAME
-$ sudo -s
+# bash docs/configurations/etc.iptables.rules.v4.sh $INTERFACENAME
+
 # iptables-save > /etc/iptables/rules.v4 
 # ip6tables-save > /etc/iptables/rules.v6 
 ```
@@ -180,13 +180,13 @@ $ sudo -s
 to do the following(your network interfacename(Example eth0)):
 ```
 $ sed -i 's/^define int_if = ens33/define int_if = eth0/g' etc.nftables.conf 
-$ sudo nft -f ./etc.nftables.conf 
+# nft -f ./etc.nftables.conf 
 ```
 5) When all repairs are completed. --final method will:
    1. Use passwd command to change the password of the regular and root user to apply the password complexity and robustness of the pam_cracklib module configuration.
    2. Aide reinitializes.
 ```
-$ sudo bin/hardening.sh --final
+# bin/hardening.sh --final
 ```
 
 ## Special Note 

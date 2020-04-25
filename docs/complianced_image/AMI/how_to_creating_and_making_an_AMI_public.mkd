@@ -24,15 +24,15 @@ The creation process is as follows:
 
 ### Pre-Install 
 ```
-$ sudo apt update 
-$ sudo apt install -y bc net-tools  bc net-tools pciutils network-manager vim unzip
+# apt update 
+# apt install -y bc net-tools  bc net-tools pciutils network-manager vim unzip
 ```
 
 ### Get harbian-audit project 
 ```
 $ cd /opt
-/opt$ sudo wget https://github.com/hardenedlinux/harbian-audit/archive/master.zip 
-/opt$ sudo unzip master.zip 
+/opt# wget https://github.com/hardenedlinux/harbian-audit/archive/master.zip 
+/opt# unzip master.zip 
 /opt$ cd harbian-audit-master/ 
 ```
 ### How to use harbian-audit to audit and apply 
@@ -40,7 +40,6 @@ $ cd /opt
 //maybe not need 
 #### Set passwd to all user:
 ```
-admin@ip:/opt/harbian-audit-master$ sudo -s
 admin@ip:/opt/harbian-audit-master# passwd
 admin@ip:/opt/harbian-audit-master# passwd admin
 ```
@@ -49,27 +48,26 @@ admin@ip:/opt/harbian-audit-master# passwd admin
 
 ##### First audit && apply:
 ```
-admin@ip:/opt/harbian-audit-master$ sudo cp etc/default.cfg /etc/default/cis-hardening
-admin@ip:/opt/harbian-audit-master$ sudo sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening 
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --init
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --audit-all 
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --set-hardening-level 5 
-admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=disabled/' etc/conf.d/8.1.32_freeze_auditd_conf.cfg 
-admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=disabled/' etc/conf.d/7.4.4_hosts_deny.cfg 
-admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=disabled/' etc/conf.d/10.1.6_remove_nopasswd_sudoers.cfg
-admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=disabled/' etc/conf.d/8.4.1_install_aide.cfg 
-admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=disabled/' etc/conf.d/8.4.2_aide_cron.cfg 
-admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=disabled/' etc/conf.d/10.1.1_set_password_exp_days.cfg
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply 
-admin@ip:/opt/harbian-audit-master$ sudo reboot 
+admin@ip:/opt/harbian-audit-master# cp etc/default.cfg /etc/default/cis-hardening
+admin@ip:/opt/harbian-audit-master# sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening 
+admin@ip:/opt/harbian-audit-master# ./bin/hardening.sh --init
+admin@ip:/opt/harbian-audit-master# ./bin/hardening.sh --audit-all 
+admin@ip:/opt/harbian-audit-master# ./bin/hardening.sh --set-hardening-level 5 
+admin@ip:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/8.1.32_freeze_auditd_conf.cfg 
+admin@ip:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/7.4.4_hosts_deny.cfg 
+admin@ip:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/10.1.6_remove_nopasswd_sudoers.cfg
+admin@ip:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/8.4.1_install_aide.cfg 
+admin@ip:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/8.4.2_aide_cron.cfg 
+admin@ip:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/10.1.1_set_password_exp_days.cfg
+admin@ip:/opt/harbian-audit-master# ./bin/hardening.sh --apply 
+admin@ip:/opt/harbian-audit-master# reboot 
 ```
 ##### Second audit && apply(After reboot)  
 Configuring  the firewall:
 ```
 admin@ip:/opt/harbian-audit-master$ INTERFACENAME="eth0"
-admin@ip:/opt/harbian-audit-master$ sudo bash /opt/harbian-audit-master/docs/configurations/etc.iptables.rules.v4.sh $INTERFACENAME 
-admin@ip:/opt/harbian-audit-master$ sudo bash /opt/harbian-audit-master/docs/configurations/etc.iptables.rules.v6.sh $INTERFACENAME 
-admin@ip:/opt/harbian-audit-master$ sudo -s 
+admin@ip:/opt/harbian-audit-master# bash /opt/harbian-audit-master/docs/configurations/etc.iptables.rules.v4.sh $INTERFACENAME 
+admin@ip:/opt/harbian-audit-master# bash /opt/harbian-audit-master/docs/configurations/etc.iptables.rules.v6.sh $INTERFACENAME 
 admin@ip:/opt/harbian-audit-master# iptables-save > /etc/iptables/rules.v4 
 admin@ip:/opt/harbian-audit-master# ip6tables-save > /etc/iptables/rules.v6
 admin@ip:/opt/harbian-audit-master# exit
@@ -77,28 +75,28 @@ admin@ip:/opt/harbian-audit-master# exit
 
 Apply need to apply twice items and that items of must apply after first apply:
 ```
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 8.1.1.2
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 8.1.1.3
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 8.1.12
-admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.1.32_freeze_auditd_conf.cfg 
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 8.1.32 
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 4.5
-admin@ip:/opt/harbian-audit-master$ sudo reboot 
+admin@ip:/opt/harbian-audit-master# ./bin/hardening.sh --apply --only 8.1.1.2
+admin@ip:/opt/harbian-audit-master# ./bin/hardening.sh --apply --only 8.1.1.3
+admin@ip:/opt/harbian-audit-master# ./bin/hardening.sh --apply --only 8.1.12
+admin@ip:/opt/harbian-audit-master# sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.1.32_freeze_auditd_conf.cfg 
+admin@ip:/opt/harbian-audit-master# ./bin/hardening.sh --apply --only 8.1.32 
+admin@ip:/opt/harbian-audit-master# ./bin/hardening.sh --apply --only 4.5
+admin@ip:/opt/harbian-audit-master# reboot 
 ```
 
 ##### Third apply(after reboot)  
 Apply need to apply three times items:
 ```
-admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.1_install_aide.cfg 
-admin@ip:/opt/harbian-audit-master$ sudo sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.2_aide_cron.cfg
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 8.4.1
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --apply --only 8.4.2
-admin@ip:/opt/harbian-audit-master$ sudo reboot 
+admin@ip:/opt/harbian-audit-master# sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.1_install_aide.cfg 
+admin@ip:/opt/harbian-audit-master# sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.2_aide_cron.cfg
+admin@ip:/opt/harbian-audit-master# ./bin/hardening.sh --apply --only 8.4.1
+admin@ip:/opt/harbian-audit-master# ./bin/hardening.sh --apply --only 8.4.2
+admin@ip:/opt/harbian-audit-master# reboot 
 ```  
 
 ### Set issues 
 ```
-$ sudo sed -i "s/Debian GNU\/Linux 9/harbian-audit complianced for Debian GNU\/Linux 9/g" /etc/issue* 
+# sed -i "s/Debian GNU\/Linux 9/harbian-audit complianced for Debian GNU\/Linux 9/g" /etc/issue* 
 ```
 
 ### Hacking 
@@ -110,24 +108,23 @@ Use the following guidelines to reduce the attack surface and improve the reliab
 
 #### Clean harbian-audit temp file and conf 
 ```
-$ sudo rm /opt/master.zip 
-$ sudo rm /opt/harbian-audit-master/tmp/backups/*
-$ sudo rm /opt/harbian-audit-master/etc/conf.d/*.cfg 
+# rm /opt/master.zip 
+# rm /opt/harbian-audit-master/tmp/backups/*
+# rm /opt/harbian-audit-master/etc/conf.d/*.cfg 
 ```
 
 #### Uninstall 
 ```
-$ sudo apt-get purge --autoremove unzip -y 
+# apt-get purge --autoremove unzip -y 
 ```
 
 #### Clear the current log:
 ```
-$ sudo find /var/log/ -name "*.log" -exec shred -u {} \; 
-$ sudo find /var/log/ -name "*.log.*" -exec shred -u {} \; 
-$ sudo find / -name "authorized_keys" -exec shred -u {} \; 
-$ sudo rm  /root/.wget-hsts 
-$ sudo rm  /root/.viminfo 
-$ sudo -s
+# find /var/log/ -name "*.log" -exec shred -u {} \; 
+# find /var/log/ -name "*.log.*" -exec shred -u {} \; 
+# find / -name "authorized_keys" -exec shred -u {} \; 
+# rm  /root/.wget-hsts 
+# rm  /root/.viminfo 
 # echo > /var/log/debug 
 # echo > /var/log/btmp 
 # echo > /var/log/error 
@@ -145,7 +142,7 @@ $ sudo -s
 #### Final apply
 Reset password for all users and reinit aide database: 
 ```
-admin@ip:/opt/harbian-audit-master$ sudo ./bin/hardening.sh --final 
+admin@ip:/opt/harbian-audit-master# ./bin/hardening.sh --final 
 ```
 
 #### Clear bash hostory 
