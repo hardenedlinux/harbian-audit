@@ -20,6 +20,22 @@ is_centos_8()
 	fi
 }
 
+is_debian_ge_10()
+{
+	if [ -r /etc/debian_version ]; then
+    	if [ $(cat /etc/debian_version | awk -F"." '{print $1}') -ge 10 ]; then
+        	debug "Debian version is greater than or equal to 10"
+        	FNRET=0
+    	else
+        	debug "Debian version is less than 10"
+        	FNRET=1
+    	fi
+	else
+		debug "Current OS is not Debian."
+		FNRET=2
+	fi
+}
+
 is_debian_ge_9()
 {
 	if [ -r /etc/debian_version ]; then

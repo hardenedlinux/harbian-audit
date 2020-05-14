@@ -34,7 +34,7 @@ audit_debian () {
     if [ $FNRET = 0 ]; then
         ok "$PACKAGE is installed"
 		# Since Debian 10 (Buster), AppArmor is enabled by default. It's a system service 
-		is_debian_10
+		is_debian_ge_10
 		if [ $FNRET = 0 ]; then
 			is_service_active $SERVICENAME
 			if [ $FNRET -eq 0 ]; then
@@ -101,7 +101,7 @@ apply_debian () {
         done
     elif [ $FNRET = 2 ]; then
 		# Since Debian 10 (Buster), AppArmor is enabled by default. It's a system service 
-		is_debian_10
+		is_debian_ge_10
 		if [ $FNRET = 0 ]; then
 			warn "Start $SERVICENAME"
 			systemctl start $SERVICENAME
