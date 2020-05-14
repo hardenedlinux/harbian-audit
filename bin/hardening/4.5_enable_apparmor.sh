@@ -20,6 +20,7 @@ KEYWORD="GRUB_CMDLINE_LINUX"
 PATTERN="apparmor=1[[:space:]]*security=apparmor" 
 SETSTRING="apparmor=1 security=apparmor" 
 GRUBFILE='/etc/default/grub'
+SERVICENAME='apparmor.service'
 
 audit_debian () {
     for PACKAGE in ${PACKAGES}
@@ -32,26 +33,49 @@ audit_debian () {
     done
     if [ $FNRET = 0 ]; then
         ok "$PACKAGE is installed"
-        if [ $( grep -w "^${KEYWORD}" ${GRUBFILE} | grep -c ${PATTERN}) -eq 1 ]; then
-            ok "There are ${SETSTRING} to ${KEYWORD} in ${GRUBFILE}"
-            is_mounted  "/sys/kernel/security"
-            if [ ${FNRET} -eq 0 -a $(/usr/sbin/apparmor_status 2>&1 | grep -c "apparmor filesystem is not mounted.") -eq 1 ]; then
-                crit "AppArmor profiles not enable in the system "
-                FNRET=3
-            elif [ ${FNRET} -eq 0 -a $(/usr/sbin/apparmor_status | grep 'profiles are loaded' | awk '{print $1}') -gt 0 ]; then 
-                ok "AppArmor profiles is enable in the system "
+		# Since Debian 10 (Buster), AppArmor is enabled by default. It's a system service 
+		is_debian_10
+		if [ $FNRET = 0 ]; then
+			is_service_active $SERVICENAME
+			if [ $FNRET -eq 0 ]; then
+                ok "$SERVICENAME is active!"
                 FNRET=0
-            fi
-        else
-            crit "There are not set ${SETSTRING} to ${KEYWORD} in ${GRUBFILE}"
-            FNRET=2
-        fi
+			else
+            	crit "$SERVICENAME is inactive!"
+            	FNRET=2
+			fi
+		else
+			if [ $(grep -c "${SETSTRING}" /proc/cmdline) -eq 1 ]; then
+				ok "There are ${SETSTRING} to ${KEYWORD} in ${GRUBFILE}"
+            	is_mounted  "/sys/kernel/security"
+            	if [ ${FNRET} -eq 0 -a $(/usr/sbin/aa-status 2>&1 | grep -c "apparmor filesystem is not mounted.") -eq 1 ]; then
+                	crit "AppArmor profiles not enable in the system "
+                	FNRET=3
+            	elif [ ${FNRET} -eq 0 -a $(/usr/sbin/aa-status | grep 'profiles are loaded' | awk '{print $1}') -gt 0 ]; then 
+                	ok "AppArmor profiles is enable in the system "
+                	FNRET=0
+            	fi
+        	else
+				crit "There are ${SETSTRING} to ${KEYWORD} not in ${GRUBFILE}"
+            	FNRET=2
+        	fi
+		fi
     fi
 }
 
-# Todo
 audit_centos () {
-	:	
+	if [ $(rpm -qa | grep -c libselinux-utils) -gt 0 ]; then
+		if [ $(getenforce | grep -c Enforcing) -eq 1 ]; then
+			ok "SELinux is activated and in Enforcing mode."
+			FNRET=0
+		else
+			crit "SELinux is actived and in Enforcing mode."
+			FNRET=2
+		fi
+	else
+		crit "SELinux related packages are not installed."
+		FNRET=1
+	fi
 }
 
 # This function will be called if the script status is on enabled / audit mode
@@ -76,9 +100,16 @@ apply_debian () {
             apt_install $PACKAGE
         done
     elif [ $FNRET = 2 ]; then
-        warn "Set ${SETSTRING} to ${GRUBFILE} in ${GRUBFILE}, need to reboot the system and enable AppArmor profiles after setting it."
-        sed -i "s;\(${KEYWORD}=\)\(\".*\)\(\"\);\1\2 ${SETSTRING}\3;" ${GRUBFILE}
-        /usr/sbin/update-grub2
+		# Since Debian 10 (Buster), AppArmor is enabled by default. It's a system service 
+		is_debian_10
+		if [ $FNRET = 0 ]; then
+			warn "Start $SERVICENAME"
+			systemctl start $SERVICENAME
+		else
+        	warn "Set ${SETSTRING} to ${GRUBFILE} in ${GRUBFILE}, need to reboot the system and enable AppArmor profiles after setting it."
+        	sed -i "s;\(${KEYWORD}=\)\(\".*\)\(\"\);\1\2 ${SETSTRING}\3;" ${GRUBFILE}
+        	/usr/sbin/update-grub2
+		fi
     elif [ $FNRET = 3 ]; then
         warn "Enable AppArmor profiles in the system "
         /usr/sbin/aa-enforce /etc/apparmor.d/*
