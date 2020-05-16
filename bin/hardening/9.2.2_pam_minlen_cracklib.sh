@@ -84,7 +84,7 @@ apply_debian () {
         apt_install $PACKAGE
     elif [ $FNRET = 2 ]; then
         warn "$PATTERN is not present in $FILE, add default config to $FILE"
-        add_line_file_before_pattern $FILE "password    requisite           pam_cracklib.so retry=3 minlen=8 difok=3" "# pam-auth-update(8) for details."
+        add_line_file_before_pattern $FILE "password    requisite           pam_cracklib.so retry=3 minlen=$OPTIONNAME difok=3" "# pam-auth-update(8) for details."
     elif [ $FNRET = 3 ]; then
         crit "$FILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
