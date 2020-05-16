@@ -5,7 +5,7 @@
 #
 
 #
-# 8.1.31 Collect the execution of privileged functions Events (Scored)
+# 8.1.12 Collect the execution of privileged functions Events (Scored)
 # Author: Samson-W (sccxboy@gmail.com)
 #
 

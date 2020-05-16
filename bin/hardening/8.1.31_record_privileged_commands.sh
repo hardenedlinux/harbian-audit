@@ -5,7 +5,7 @@
 #
 
 #
-# 8.1.12 Collect Use of Privileged Commands (Scored)
+# 8.1.31 Collect Use of Privileged Commands (Scored)
 #
 
 set -e # One error, it's over
@@ -28,12 +28,13 @@ audit () {
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
         IFS=$d_IFS
-        does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
+		RESULT=$(echo $AUDITRULE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
+		does_valid_pattern_exist_in_file $FILE "$RESULT"
         IFS=$c_IFS
         if [ $FNRET != 0 ]; then
-            crit "$AUDIT_VALUE is not in file $FILE"
+            crit "$RESULT is not in file $FILE"
         else
-            ok "$AUDIT_VALUE is present in $FILE"
+            ok "$RESULT is present in $FILE"
         fi
     done
     IFS=$d_IFS
@@ -44,7 +45,8 @@ apply () {
     IFS=$'\n'
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
-        does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
+		RESULT=$(echo $AUDITRULE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
+		does_valid_pattern_exist_in_file $FILE "$RESULT"
         if [ $FNRET != 0 ]; then
             warn "$AUDIT_VALUE is not in file $FILE, adding it"
             add_end_of_file $FILE $AUDIT_VALUE
