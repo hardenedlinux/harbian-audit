@@ -28,7 +28,7 @@ audit () {
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
         IFS=$d_IFS
-		RESULT=$(echo $AUDITRULE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
+		RESULT=$(echo $AUDIT_VALUE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
 		does_valid_pattern_exist_in_file $FILE "$RESULT"
         IFS=$c_IFS
         if [ $FNRET != 0 ]; then
@@ -45,7 +45,7 @@ apply () {
     IFS=$'\n'
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
-		RESULT=$(echo $AUDITRULE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
+		RESULT=$(echo $AUDIT_VALUE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
 		does_valid_pattern_exist_in_file $FILE "$RESULT"
         if [ $FNRET != 0 ]; then
             warn "$AUDIT_VALUE is not in file $FILE, adding it"
