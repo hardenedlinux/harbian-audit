@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9 or CentOS 8 Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10 or CentOS 8 Hardening
 # Modify author:
 # Samson-W (sccxboy@gmail.com)
 #
@@ -20,29 +20,31 @@ FILE='/etc/default/grub'
 KEYWORD='GRUB_CMDLINE_LINUX'
 OPTION='audit'
 SETVAL=1
+SERVICENAME='auditd.service'
+PROCCMDLIN='/proc/cmdline'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    does_file_exist $FILE
-    if [ $FNRET != 0 ]; then
-        crit "$FILE does not exist"
-        FNRET=1
-    else
-        ok "$FILE exists, checking configuration"
-        if [ $(grep -w "^${KEYWORD}" ${FILE} | grep -c ${OPTION}) -eq 1 ]; then 
-            ok "$OPTION is present in $FILE"
-            if [ $(grep -w "^${KEYWORD}" $FILE | grep -c "${OPTION}=${SETVAL}") -eq 1 ]; then
-                ok "${OPTION}'s set is correctly."
-                FNRET=0
-            else
-                crit "${OPTION}'s set is not correctly."
-                FNRET=3
-            fi
-        else
-            crit "$OPTION is not present in $FILE"
-            FNRET=2
-        fi 
-    fi
+	# Debian 10 (Buster), auditd is a system service 
+	is_debian_ge_10
+	if [ $FNRET = 0 ]; then
+		is_service_active $SERVICENAME
+		if [ $FNRET -eq 0 ]; then
+			ok "$SERVICENAME is active!"
+			FNRET=0
+		else
+			crit "$SERVICENAME is inactive!"
+			FNRET=1
+		fi
+	else
+		if [ $(grep -c "${OPTION}=${SETVAL}" $PROCCMDLIN) -eq 1 ]; then
+			ok "There are "${OPTION}=${SETVAL}" in $PROCCMDLIN"
+			FNRET=0
+		else
+			crit "There aren't "${OPTION}=${SETVAL}" in ${PROCCMDLIN}"
+            		FNRET=1
+    	fi
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
@@ -50,23 +52,24 @@ apply () {
     if [ $FNRET = 0 ]; then
         ok "${OPTION}'s set is correctly."
     elif [ $FNRET = 1 ]; then
-        warn "$FILE does not exist, creating it"
-        touch $FILE
-    elif [ $FNRET = 2 ]; then
-        warn "$OPTION is not present in $FILE, add it to $KEYWORD line, need to reboot the system  after setting it"
-        sed -i "s;\(${KEYWORD}=\)\(\".*\)\(\"\);\1\2 ${OPTION}=${SETVAL}\3;" $FILE
-		if [ $OS_RELEASE -eq 1 ]; then
-        	usr/sbin/update-grub2 
-		elif [ $OS_RELEASE -eq 2 ]; then
-			grub2-mkconfig –o /boot/grub2/grub.cfg
-		fi
-    elif [ $FNRET = 3 ]; then
-        warn "Parameter $OPTION is present but with the wrong value -- Fixing, need to reboot the system after setting it"
-        sed -i "s/${OPTION}=./${OPTION}=${SETVAL}/" $FILE 
-		if [ $OS_RELEASE -eq 1 ]; then
-        	usr/sbin/update-grub2 
-		elif [ $OS_RELEASE -eq 2 ]; then
-			grub2-mkconfig –o /boot/grub2/grub.cfg
+		# Debian 10 (Buster), auditd is a system service 
+		is_debian_ge_10
+		if [ $FNRET = 0 ]; then
+			warn "Start $SERVICENAME"
+			systemctl start $SERVICENAME
+		else
+			does_valid_pattern_exist_in_file $FILE "${OPTION}=${SETVAL}"
+			if [ $FNRET = 0 ]; then 
+        			warn "$OPTION was present in $FILE, just need to reboot the system  after setting it"
+			else
+				warn "$OPTION is not present in $FILE, add it to $KEYWORD line, need to reboot the system  after setting it"
+       				sed -i "s;\(${KEYWORD}=\)\(\".*\)\(\"\);\1\2 ${OPTION}=${SETVAL}\3;" $FILE
+				if [ $OS_RELEASE -eq 1 ]; then
+        				/usr/sbin/update-grub2 
+				elif [ $OS_RELEASE -eq 2 ]; then
+					grub2-mkconfig –o /boot/grub2/grub.cfg
+				fi
+			fi
 		fi
     fi
 }
