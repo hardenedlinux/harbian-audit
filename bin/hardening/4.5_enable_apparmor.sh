@@ -3,10 +3,9 @@
 #
 # harbian-audit for Debian GNU/Linux 7/8/9/10 or CentOS Hardening
 # Modify by: Samson-W (samson@hardenedlinux.org)
-# todo: SELinux
 
 #
-# 4.5 Activate AppArmor/SELinux (Scored)
+# 4.5 Activate AppArmor (Scored)
 # Add by Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -64,18 +63,7 @@ audit_debian () {
 }
 
 audit_centos () {
-	if [ $(rpm -qa | grep -c libselinux-utils) -gt 0 ]; then
-		if [ $(getenforce | grep -c Enforcing) -eq 1 ]; then
-			ok "SELinux is activated and in Enforcing mode."
-			FNRET=0
-		else
-			crit "SELinux is actived and in Enforcing mode."
-			FNRET=2
-		fi
-	else
-		crit "SELinux related packages are not installed."
-		FNRET=1
-	fi
+	ok "Apparmor is only support for Debian, So pass!"
 }
 
 # This function will be called if the script status is on enabled / audit mode
@@ -116,9 +104,8 @@ apply_debian () {
     fi
 }
 
-# Todo
 apply_centos () {
-	:
+	ok "Apparmor is only support for Debian, So pass!"
 }
 
 # This function will be called if the script status is on enabled mode
