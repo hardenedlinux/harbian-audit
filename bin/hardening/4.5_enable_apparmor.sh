@@ -63,7 +63,7 @@ audit_debian () {
 }
 
 audit_centos () {
-	ok "Apparmor is only support for Debian, So pass!"
+	ok "AppArmor is only support for Debian, So pass!"
 }
 
 # This function will be called if the script status is on enabled / audit mode
@@ -105,7 +105,7 @@ apply_debian () {
 }
 
 apply_centos () {
-	ok "Apparmor is only support for Debian, So pass!"
+	ok "AppArmor is only support for Debian, So pass!"
 }
 
 # This function will be called if the script status is on enabled mode

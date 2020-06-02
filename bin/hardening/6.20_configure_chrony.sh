@@ -15,7 +15,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 HARDENING_EXCEPTION=ntp
 
-ANALOGONS_PKG='ntp'
+ANALOGOUS_PKG='ntp'
 PACKAGE='chrony'
 NTP_CONF_FILE='/etc/chrony/chrony.conf'
 NTP_SERVER_PATTERN='^(server|pool)'
@@ -26,9 +26,9 @@ audit () {
 	if [ $OS_RELEASE -eq 2 ]; then
 		ok "Redhat or CentOS does not have this check, so PASS"
 	else
-    	is_pkg_installed $ANALOGONS_PKG
+    	is_pkg_installed $ANALOGOUS_PKG
     	if [ $FNRET = 0 ]; then
-			ok "Analogons pagkage $ANALOGONS_PKG is installed. So pass check."
+			ok "Analogous pagkage $ANALOGOUS_PKG is installed. So pass check."
 		else
     		is_pkg_installed $PACKAGE
     		if [ $FNRET != 0 ]; then
@@ -51,9 +51,9 @@ apply () {
 	if [ $OS_RELEASE -eq 2 ]; then
 		ok "Redhat or CentOS does not have this check, so PASS"
 	else
-    	is_pkg_installed $ANALOGONS_PKG
+    	is_pkg_installed $ANALOGOUS_PKG
     	if [ $FNRET = 0 ]; then
-			ok "Analogons pagkage $ANALOGONS_PKG is installed. So pass check."
+			ok "Analogous pagkage $ANALOGOUS_PKG is installed. So pass check."
 		else
         	is_pkg_installed $PACKAGE
         	if [ $FNRET = 0 ]; then

@@ -15,7 +15,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 HARDENING_EXCEPTION=ntp
 
-ANALOGONS_PKG='chrony'
+ANALOGOUS_PKG='chrony'
 PACKAGE='ntp'
 NTP_CONF_DEFAULT_PATTERN='^restrict -4 default (kod nomodify notrap nopeer noquery|ignore)'
 NTP_CONF_FILE='/etc/ntp.conf'
@@ -26,9 +26,9 @@ NTP_POOL_CFG='pool 2.debian.pool.ntp.org iburst'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    is_pkg_installed $ANALOGONS_PKG
+    is_pkg_installed $ANALOGOUS_PKG
     if [ $FNRET = 0 ]; then
-        ok "Analogons pagkage $ANALOGONS_PKG is installed. So pass check."
+        ok "Analogous pagkage $ANALOGOUS_PKG is installed. So pass check."
     else
         is_pkg_installed $PACKAGE
         if [ $FNRET != 0 ]; then
@@ -59,9 +59,9 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    is_pkg_installed $ANALOGONS_PKG
+    is_pkg_installed $ANALOGOUS_PKG
     if [ $FNRET = 0 ]; then
-        ok "Analogons pagkage $ANALOGONS_PKG is installed. So pass check. "
+        ok "Analogous pagkage $ANALOGOUS_PKG is installed. So pass check. "
     else
         is_pkg_installed $PACKAGE
         if [ $FNRET = 0 ]; then
