@@ -20,8 +20,13 @@ PATTERN="apparmor=1[[:space:]]*security=apparmor"
 SETSTRING="apparmor=1 security=apparmor" 
 GRUBFILE='/etc/default/grub'
 SERVICENAME='apparmor.service'
+SELINUXSETSTRING="security=selinux" 
 
 audit_debian () {
+	if [ $(grep -c "${SELINUXSETSTRING}" /proc/cmdline) -eq 1 ]; then
+		ok "SELinux was actived. So pass."
+		return 0
+	fi
     for PACKAGE in ${PACKAGES}
     do
         is_pkg_installed $PACKAGE
@@ -79,6 +84,10 @@ audit () {
 }
 
 apply_debian () {
+	if [ $(grep -c "${SELINUXSETSTRING}" /proc/cmdline) -eq 1 ]; then
+		ok "SELinux was actived. So pass."
+		return 0
+	fi
     if [ $FNRET = 0 ]; then
         ok "AppArmor profiles is enable in the system "
     elif [ $FNRET = 1 ]; then

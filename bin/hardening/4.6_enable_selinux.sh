@@ -16,8 +16,13 @@ HARDENING_LEVEL=3
 
 PACKAGES='selinux-basics selinux-policy-default'
 SETSTRING="security=selinux" 
+APPARMOR_RUN="/sys/kernel/security/apparmor/"
 
 audit_debian () {
+	if [ -d APPARMOR_RUN ]; then
+		ok "AppArmor was actived. So pass."
+		return 0
+	fi
 	# Only support for Debian 10 (Buster) 
 	is_debian_ge_10
 	if [ $FNRET = 0 ]; then
@@ -80,6 +85,10 @@ audit () {
 }
 
 apply_debian () {
+	if [ -d $APPARMOR_RUN ]; then
+		ok "AppArmor was actived. So pass."
+		return 0
+	fi
     if [ $FNRET = 0 ]; then
 		ok "SELinux is active and in Enforcing mode."
     elif [ $FNRET = 1 ]; then
@@ -92,7 +101,7 @@ apply_debian () {
 		warn "Set SELinux to activate."
 		selinux-activate
     elif [ $FNRET = 3 ]; then
-		warn "Set SELinux to enforcing mode."
+		warn "Set SELinux to enforcing mode, and need reboot"
 		replace_in_file '/etc/selinux/config' 'SELINUX=.*' 'SELINUX=enforcing'
 	else
 		warn "SELinux check only support Debian 10."
