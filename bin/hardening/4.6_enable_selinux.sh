@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 10 or CentOS 8 Hardening
+# harbian-audit for Debian GNU/Linux 9/10 or CentOS 8 Hardening
 #
 
 #
@@ -17,43 +17,39 @@ HARDENING_LEVEL=3
 PACKAGES='selinux-basics selinux-policy-default'
 SETSTRING="security=selinux" 
 APPARMOR_RUN="/sys/kernel/security/apparmor/"
+PROC_CMDLINE='/proc/cmdline'
+SELINUXCONF_FILE='/etc/selinux/config'
+SELINUXENFORCE_MODE='SELINUX=enforcing'
 
 audit_debian () {
-	if [ -d APPARMOR_RUN ]; then
+	if [ -d $APPARMOR_RUN ]; then
 		ok "AppArmor was actived. So pass."
 		return 0
 	fi
-	# Only support for Debian 10 (Buster) 
-	is_debian_ge_10
+	for PACKAGE in ${PACKAGES}
+	do
+		is_pkg_installed $PACKAGE
+		if [ $FNRET != 0 ]; then
+			crit "$PACKAGE is absent!"
+			FNRET=1
+		fi
+	done
 	if [ $FNRET = 0 ]; then
-    	for PACKAGE in ${PACKAGES}
-    	do
-        	is_pkg_installed $PACKAGE
-        	if [ $FNRET != 0 ]; then
-            	crit "$PACKAGE is absent!"
-            	FNRET=1
-        	fi
-    	done
-    	if [ $FNRET = 0 ]; then
-        	ok "$PACKAGE is installed"
-		fi
-		if [ $(grep -c "${SETSTRING}" /proc/cmdline) -eq 1 ]; then
-			ok "SELinux is actived."
-			does_valid_pattern_exist_in_file '/etc/selinux/config' 'SELINUX=enforcing'
-			if [ ${FNRET} -eq 0 -a $(getenforce | grep -c 'Enforcing') -eq 1 ]; then
-				ok "SELinux is in Enforcing mode."
-				FNRET=0
-			else	
-				crit "SELinux is not in Enforcing mode."
-				FNRET=3
-			fi
+		ok "$PACKAGE is installed"
+	fi
+	if [ $(grep -c "${SETSTRING}" $PROC_CMDLINE) -eq 1 ]; then
+		ok "SELinux is actived."
+		does_valid_pattern_exist_in_file $SELINUXCONF_FILE $SELINUXENFORCE_MODE
+		if [ ${FNRET} -eq 0 -a $(getenforce | grep -c 'Enforcing') -eq 1 ]; then
+			ok "SELinux is in Enforcing mode."
+			FNRET=0
 		else	
-			crit "SELinux is inactived."
-			FNRET=2
+			crit "SELinux is not in Enforcing mode."
+			FNRET=3
 		fi
-	else
-		warn "SELinux check only support Debian 10."
-		FNRET=4
+	else	
+		crit "SELinux is inactived."
+		FNRET=2
 	fi
 }
 
@@ -98,13 +94,13 @@ apply_debian () {
             apt_install $PACKAGE
         done
     elif [ $FNRET = 2 ]; then
-		warn "Set SELinux to activate."
+		warn "Set SELinux to activate, and need reboot"
 		selinux-activate
     elif [ $FNRET = 3 ]; then
 		warn "Set SELinux to enforcing mode, and need reboot"
-		replace_in_file '/etc/selinux/config' 'SELINUX=.*' 'SELINUX=enforcing'
+		replace_in_file $SELINUXCONF_FILE 'SELINUX=.*' $SELINUXENFORCE_MODE
 	else
-		warn "SELinux check only support Debian 10."
+		:
     fi
 }
 
