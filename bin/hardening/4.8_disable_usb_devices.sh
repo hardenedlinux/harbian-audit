@@ -6,7 +6,7 @@
 #
 
 #
-# 4.6 Disable USB Devices
+# 4.8 Disable USB Devices
 # TODO test
 #
 
