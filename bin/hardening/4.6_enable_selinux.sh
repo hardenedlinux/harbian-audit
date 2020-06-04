@@ -20,6 +20,7 @@ APPARMOR_RUN="/sys/kernel/security/apparmor/"
 PROC_CMDLINE='/proc/cmdline'
 SELINUXCONF_FILE='/etc/selinux/config'
 SELINUXENFORCE_MODE='SELINUX=enforcing'
+LSM_RUN_STATUS_FILE='/sys/kernel/security/lsm'
 
 audit_debian () {
 	if [ -d $APPARMOR_RUN ]; then
@@ -54,12 +55,28 @@ audit_debian () {
 }
 
 audit_centos () {
-	if [ $(rpm -qa | grep -c libselinux-utils) -gt 0 ]; then
-		if [ $(getenforce | grep -c Enforcing) -eq 1 ]; then
-			ok "SELinux is activated and in Enforcing mode."
-			FNRET=0
+	for PACKAGE in ${PACKAGES}
+	do
+		is_pkg_installed $PACKAGE
+		if [ $FNRET != 0 ]; then
+			crit "$PACKAGE is absent!"
+			FNRET=1
 		else
-			crit "SELinux is actived and in Enforcing mode."
+			FNRET=0
+		fi
+	done
+	if [ $FNRET -eq 0 ]; then
+		if [ $(grep -c selinux $LSM_RUN_STATUS_FILE) -eq 1 ]; then
+			ok "SELinux was activated."
+			if [ $(getenforce | grep -c Enforcing) -eq 1 ]; then
+				ok "SELinux is in Enforcing mode."
+				FNRET=0
+			else
+				crit "SELinux is not in Enforcing mode."
+				FNRET=3
+			fi
+		else
+			crit "SELinux is inactived."
 			FNRET=2
 		fi
 	else
@@ -91,7 +108,7 @@ apply_debian () {
         warn "$PACKAGE is not installed, install $PACKAGES"
         for PACKAGE in ${PACKAGES}
         do
-            apt_install $PACKAGE
+            install_package $PACKAGE
         done
     elif [ $FNRET = 2 ]; then
 		warn "Set SELinux to activate, and need reboot"
@@ -104,9 +121,23 @@ apply_debian () {
     fi
 }
 
-# Todo
 apply_centos () {
-	:
+    if [ $FNRET = 0 ]; then
+		ok "SELinux is active and in Enforcing mode."
+    elif [ $FNRET = 1 ]; then
+        warn "$PACKAGE is not installed, install $PACKAGES"
+        for PACKAGE in ${PACKAGES}
+        do
+            install_package $PACKAGE
+        done
+    elif [ $FNRET = 2 ]; then
+		warn "Set SELinux to activate, and need reboot"
+    elif [ $FNRET = 3 ]; then
+		warn "Set SELinux to enforcing mode, and need reboot"
+		replace_in_file $SELINUXCONF_FILE 'SELINUX=.*' $SELINUXENFORCE_MODE
+	else
+		:
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
@@ -123,7 +154,7 @@ apply () {
 # This function will check config parameters required
 check_config() {
 	if [ $OS_RELEASE -eq 2 ]; then
-		:
+		PACKAGES='libselinux libselinux-utils selinux-policy-targeted'
 	else
 		:
 	fi
