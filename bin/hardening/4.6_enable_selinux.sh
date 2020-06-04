@@ -68,7 +68,8 @@ audit_centos () {
 	if [ $FNRET -eq 0 ]; then
 		if [ $(grep -c selinux $LSM_RUN_STATUS_FILE) -eq 1 ]; then
 			ok "SELinux was activated."
-			if [ $(getenforce | grep -c Enforcing) -eq 1 ]; then
+			does_valid_pattern_exist_in_file $SELINUXCONF_FILE $SELINUXENFORCE_MODE
+			if [ ${FNRET} -eq 0 -a $(getenforce | grep -c 'Enforcing') -eq 1 ]; then
 				ok "SELinux is in Enforcing mode."
 				FNRET=0
 			else
