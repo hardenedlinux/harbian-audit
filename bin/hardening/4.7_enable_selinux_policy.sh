@@ -64,7 +64,7 @@ apply_debian () {
     if [ $FNRET = 0 ]; then
 		ok "SELinux targeted policy was enabled."			
     elif [ $FNRET = 1 ]; then
-		warn "Set SELinux targeted policy to enable, and need root"			
+		warn "Set SELinux targeted policy to enable, and need reboot"			
 		replace_in_file $SELINUXCONF_FILE 'SELINUXTYPE=.*' $SELINUXTYPE_VALUE
 	else
 		:
@@ -75,7 +75,7 @@ apply_centos () {
     if [ $FNRET = 0 ]; then
 		ok "SELinux targeted policy was enabled."			
     elif [ $FNRET = 1 ]; then
-		warn "Set SELinux targeted policy to enable, and need root"			
+		warn "Set SELinux targeted policy to enable, and need reboot"			
 		replace_in_file $SELINUXCONF_FILE 'SELINUXTYPE=.*' $SELINUXTYPE_VALUE
 	else
 		:
