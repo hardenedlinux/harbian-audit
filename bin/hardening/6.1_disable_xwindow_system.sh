@@ -43,13 +43,18 @@ apply () {
     done
 }
 
-# This function will check config parameters required
-check_config() {
+# This function will create the config file for this check with default values
+create_config() {
 cat <<EOF
 status=disabled
 # Put here exception to pass this case, if set is 1, don't need apply, let to pass.
 ISEXCEPTION=0
 EOF
+}
+
+# This function will check config parameters required
+check_config() {
+	:
 }
 
 # Source Root Dir Parameter
