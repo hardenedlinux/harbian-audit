@@ -20,27 +20,35 @@ PACKAGES='xserver-xorg-core xserver-xorg-core-dbg xserver-common xserver-xephyr 
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    for PACKAGE in $PACKAGES; do
-        is_pkg_installed $PACKAGE
-        if [ $FNRET = 0 ]; then
-            crit "$PACKAGE is installed!"
-        else
-            ok "$PACKAGE is absent"
-        fi
-    done
+	for PACKAGE in $PACKAGES; do
+		is_pkg_installed $PACKAGE
+		if [ $FNRET = 0 ]; then
+			if [ $ISEXCEPTION -eq 1 ]; then
+				warn "$PACKAGE is installed! But Exception is set to 1, so it's pass!"
+			else
+				crit "$PACKAGE is installed!"
+			fi
+		else
+			ok "$PACKAGE is absent"
+		fi
+	done
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    for PACKAGE in $PACKAGES; do
-        is_pkg_installed $PACKAGE
-        if [ $FNRET = 0 ]; then
-            crit "$PACKAGE is installed, purging it"
-            uninstall_pkg $PACKAGE
-        else
-            ok "$PACKAGE is absent"
-        fi
-    done
+	for PACKAGE in $PACKAGES; do
+		is_pkg_installed $PACKAGE
+		if [ $FNRET = 0 ]; then
+			if [ $ISEXCEPTION -eq 1 ]; then
+				warn "$PACKAGE is installed! But Exception is set to 1, so it's pass!"
+			else
+				crit "$PACKAGE is installed, purging it"
+				uninstall_pkg $PACKAGE
+			fi
+		else
+			ok "$PACKAGE is absent"
+		fi
+	done
 }
 
 # This function will create the config file for this check with default values
