@@ -14,14 +14,16 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=3
 
-APPARMOR_RUN="/sys/kernel/security/apparmor/"
 SELINUXCONF_FILE='/etc/selinux/config'
 SELINUXTYPE_VALUE='SELINUXTYPE=default'
+APPARMOR_STATUS='/usr/sbin/aa-status'
 
 audit_debian () {
-	if [ -d $APPARMOR_RUN ]; then
-		ok "AppArmor was actived. So pass."
-		return 0
+	if [ -f "$APPARMOR_STATUS" ]; then
+		if [ $($APPARMOR_STATUS | grep 'profiles are loaded' | awk '{print $1}') -gt 0 ]; then
+			ok "AppArmor was actived. So pass."
+			return 0
+		fi
 	fi
 	does_valid_pattern_exist_in_file $SELINUXCONF_FILE $SELINUXTYPE_VALUE
 	if [ ${FNRET} -eq 0 ]; then
@@ -57,9 +59,11 @@ audit () {
 }
 
 apply_debian () {
-	if [ -d $APPARMOR_RUN ]; then
-		ok "AppArmor was actived. So pass."
-		return 0
+	if [ -f "$APPARMOR_STATUS" ]; then
+		if [ $($APPARMOR_STATUS | grep 'profiles are loaded' | awk '{print $1}') -gt 0 ]; then
+			ok "AppArmor was actived. So pass."
+			return 0
+		fi
 	fi
     if [ $FNRET = 0 ]; then
 		ok "SELinux targeted policy was enabled."			
