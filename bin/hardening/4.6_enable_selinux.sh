@@ -16,16 +16,18 @@ HARDENING_LEVEL=3
 
 PACKAGES='selinux-basics selinux-policy-default'
 SETSTRING="security=selinux" 
-APPARMOR_RUN="/sys/kernel/security/apparmor/"
 PROC_CMDLINE='/proc/cmdline'
 SELINUXCONF_FILE='/etc/selinux/config'
 SELINUXENFORCE_MODE='SELINUX=enforcing'
 LSM_RUN_STATUS_FILE='/sys/kernel/security/lsm'
+APPARMOR_STATUS='/usr/sbin/aa-status'
 
 audit_debian () {
-	if [ -d $APPARMOR_RUN ]; then
-		ok "AppArmor was actived. So pass."
-		return 0
+	if [ -f "$APPARMOR_STATUS" ]; then
+		if [ $($APPARMOR_STATUS | grep 'profiles are loaded' | awk '{print $1}') -gt 0 ]; then
+			ok "AppArmor was actived. So pass."
+			return 0
+		fi
 	fi
 	for PACKAGE in ${PACKAGES}
 	do
@@ -33,6 +35,7 @@ audit_debian () {
 		if [ $FNRET != 0 ]; then
 			crit "$PACKAGE is absent!"
 			FNRET=1
+			return 
 		fi
 	done
 	if [ $FNRET = 0 ]; then
@@ -47,10 +50,12 @@ audit_debian () {
 		else	
 			crit "SELinux is not in Enforcing mode."
 			FNRET=3
+			return 
 		fi
 	else	
 		crit "SELinux is inactived."
 		FNRET=2
+		return
 	fi
 }
 
@@ -99,27 +104,34 @@ audit () {
 }
 
 apply_debian () {
-	if [ -d $APPARMOR_RUN ]; then
-		ok "AppArmor was actived. So pass."
-		return 0
+	if [ -f "$APPARMOR_STATUS" ]; then
+		if [ $($APPARMOR_STATUS | grep 'profiles are loaded' | awk '{print $1}') -gt 0 ]; then
+			ok "AppArmor was actived. So pass."
+			return 0
+		fi
 	fi
-    if [ $FNRET = 0 ]; then
-		ok "SELinux is active and in Enforcing mode."
-    elif [ $FNRET = 1 ]; then
-        warn "$PACKAGE is not installed, install $PACKAGES"
-        for PACKAGE in ${PACKAGES}
-        do
-            install_package $PACKAGE
-        done
-    elif [ $FNRET = 2 ]; then
-		warn "Set SELinux to activate, and need reboot"
-		selinux-activate
-    elif [ $FNRET = 3 ]; then
-		warn "Set SELinux to enforcing mode, and need reboot"
-		replace_in_file $SELINUXCONF_FILE 'SELINUX=.*' $SELINUXENFORCE_MODE
-	else
-		:
-    fi
+	case $FNRET in 
+		0)	ok "SELinux is active and in Enforcing mode."
+			;;
+		1)	warn "$PACKAGE is not installed, install $PACKAGES"
+        	for PACKAGE in ${PACKAGES}
+        	do
+            	install_package $PACKAGE
+        	done
+			warn "Set SELinux to activate, and need reboot"
+			selinux-activate
+			warn "Set SELinux to enforcing mode, and need reboot"
+			replace_in_file $SELINUXCONF_FILE 'SELINUX=.*' $SELINUXENFORCE_MODE
+			;;
+		2)	warn "Set SELinux to activate, and need reboot"
+			selinux-activate
+			warn "Set SELinux to enforcing mode, and need reboot"
+			replace_in_file $SELINUXCONF_FILE 'SELINUX=.*' $SELINUXENFORCE_MODE
+			;;
+		3)	warn "Set SELinux to enforcing mode, and need reboot"
+			replace_in_file $SELINUXCONF_FILE 'SELINUX=.*' $SELINUXENFORCE_MODE
+			;;
+	esac
 }
 
 apply_centos () {
