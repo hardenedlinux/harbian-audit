@@ -16,14 +16,12 @@ HARDENING_LEVEL=3
 
 SELINUXCONF_FILE='/etc/selinux/config'
 SELINUXTYPE_VALUE='SELINUXTYPE=default'
-APPARMOR_STATUS='/usr/sbin/aa-status'
 
 audit_debian () {
-	if [ -f "$APPARMOR_STATUS" ]; then
-		if [ $($APPARMOR_STATUS | grep 'profiles are loaded' | awk '{print $1}') -gt 0 ]; then
-			ok "AppArmor was actived. So pass."
-			return 0
-		fi
+	check_aa_status
+	if [ $FNRET = 0 ]; then
+		ok "AppArmor was actived. So pass."
+		return 0
 	fi
 	does_valid_pattern_exist_in_file $SELINUXCONF_FILE $SELINUXTYPE_VALUE
 	if [ ${FNRET} -eq 0 ]; then
@@ -59,11 +57,10 @@ audit () {
 }
 
 apply_debian () {
-	if [ -f "$APPARMOR_STATUS" ]; then
-		if [ $($APPARMOR_STATUS | grep 'profiles are loaded' | awk '{print $1}') -gt 0 ]; then
-			ok "AppArmor was actived. So pass."
-			return 0
-		fi
+	check_aa_status
+	if [ $FNRET = 0 ]; then
+		ok "AppArmor was actived. So pass."
+		return 0
 	fi
     if [ $FNRET = 0 ]; then
 		ok "SELinux targeted policy was enabled."			

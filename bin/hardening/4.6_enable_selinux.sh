@@ -20,14 +20,12 @@ PROC_CMDLINE='/proc/cmdline'
 SELINUXCONF_FILE='/etc/selinux/config'
 SELINUXENFORCE_MODE='SELINUX=enforcing'
 LSM_RUN_STATUS_FILE='/sys/kernel/security/lsm'
-APPARMOR_STATUS='/usr/sbin/aa-status'
 
 audit_debian () {
-	if [ -f "$APPARMOR_STATUS" ]; then
-		if [ $($APPARMOR_STATUS | grep 'profiles are loaded' | awk '{print $1}') -gt 0 ]; then
-			ok "AppArmor was actived. So pass."
-			return 0
-		fi
+	check_aa_status
+	if [ $FNRET = 0 ]; then
+		ok "AppArmor was actived. So pass."
+		return 0
 	fi
 	for PACKAGE in ${PACKAGES}
 	do
@@ -104,11 +102,10 @@ audit () {
 }
 
 apply_debian () {
-	if [ -f "$APPARMOR_STATUS" ]; then
-		if [ $($APPARMOR_STATUS | grep 'profiles are loaded' | awk '{print $1}') -gt 0 ]; then
-			ok "AppArmor was actived. So pass."
-			return 0
-		fi
+	check_aa_status
+	if [ $FNRET = 0 ]; then
+		ok "AppArmor was actived. So pass."
+		return 0
 	fi
 	case $FNRET in 
 		0)	ok "SELinux is active and in Enforcing mode."

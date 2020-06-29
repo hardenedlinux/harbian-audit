@@ -1163,3 +1163,34 @@ uninstall_pkg ()
 	fi
 }
 
+# Check apparmor is active by aa-status
+# Only support Debian
+check_aa_status ()
+{
+	APPARMOR_STATUS='/usr/sbin/aa-status'
+	if [ -f "$APPARMOR_STATUS" ]; then
+		$APPARMOR_STATUS  > /dev/null 2>&1 
+		case $? in
+			0)	info "AppArmor is enabled and policy is loaded."
+				FNRET=0
+				;;
+			1)	info "AppArmor is not enabled/loaded."
+				FNRET=1
+				;;
+			2)	info "AppArmor enabled but no policy is loaded."
+				FNRET=2
+				;;
+			3)	info "AppArmor control files aren't available under /sys/kernel/security/."
+				FNRET=3
+				;;
+			4)	info "The user running the script doesn't have enough privileges to read the AppArmor control files."
+				FNRET=4
+				;;
+
+		esac
+	else
+		info "$APPARMOR_STATUS is not exist!"
+		FNRET=5
+	fi
+}
+
