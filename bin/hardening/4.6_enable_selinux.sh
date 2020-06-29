@@ -22,7 +22,9 @@ SELINUXENFORCE_MODE='SELINUX=enforcing'
 LSM_RUN_STATUS_FILE='/sys/kernel/security/lsm'
 
 audit_debian () {
+	set +e
 	check_aa_status
+	set -e
 	if [ $FNRET = 0 ]; then
 		ok "AppArmor was actived. So pass."
 		return 0
