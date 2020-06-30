@@ -104,7 +104,9 @@ audit () {
 }
 
 apply_debian () {
+	set +e
 	check_aa_status
+	set -e
 	if [ $FNRET = 0 ]; then
 		ok "AppArmor was actived. So pass."
 		return 0
@@ -112,7 +114,16 @@ apply_debian () {
 	case $FNRET in 
 		0)	ok "SELinux is active and in Enforcing mode."
 			;;
-		1)	warn "$PACKAGE is not installed, install $PACKAGES"
+		2)	warn "Set SELinux to activate, and need reboot"
+			selinux-activate
+			warn "Set SELinux to enforcing mode, and need reboot"
+			replace_in_file $SELINUXCONF_FILE 'SELINUX=.*' $SELINUXENFORCE_MODE
+			;;
+		3)	warn "Set SELinux to enforcing mode, and need reboot"
+			replace_in_file $SELINUXCONF_FILE 'SELINUX=.*' $SELINUXENFORCE_MODE
+			;;
+		# When return 1 or 5
+		*)	warn "$PACKAGE is not installed, install $PACKAGES"
         	for PACKAGE in ${PACKAGES}
         	do
             	install_package $PACKAGE
@@ -120,14 +131,6 @@ apply_debian () {
 			warn "Set SELinux to activate, and need reboot"
 			selinux-activate
 			warn "Set SELinux to enforcing mode, and need reboot"
-			replace_in_file $SELINUXCONF_FILE 'SELINUX=.*' $SELINUXENFORCE_MODE
-			;;
-		2)	warn "Set SELinux to activate, and need reboot"
-			selinux-activate
-			warn "Set SELinux to enforcing mode, and need reboot"
-			replace_in_file $SELINUXCONF_FILE 'SELINUX=.*' $SELINUXENFORCE_MODE
-			;;
-		3)	warn "Set SELinux to enforcing mode, and need reboot"
 			replace_in_file $SELINUXCONF_FILE 'SELINUX=.*' $SELINUXENFORCE_MODE
 			;;
 	esac
