@@ -21,6 +21,11 @@ ALLOWGROUP='AllowGroups[[:space:]]*\*'
 DENYUSER='DenyUsers[[:space:]]*nobody'
 DENYGROUP='DenyGroups[[:space:]]*nobody'
 
+ALLOWUSER_KEY='AllowUsers'
+ALLOWGROUP_KEY='AllowGroups'
+DENYUSER_KEY='DenyUsers'
+DENYGROUP_KEY='DenyGroups'
+
 ALLOWUSER_RET=1
 ALLOWGROUP_RET=1
 DENYUSER_RET=1
@@ -33,26 +38,31 @@ audit () {
         crit "$PACKAGE is not installed!"
     else
         ok "$PACKAGE is installed"
-		if [ $(sshd -T  | grep -ic $ALLOWUSER) -eq 1 ]; then 
+		check_sshd_access_limit $ALLOWUSER_KEY	$ALLOWUSER
+		if [ $FNRET != 0 ]; then
 			crit "AllowUsers is not set!"
 		else
 			ok "AllowUsers has set limit."
 			ALLOWUSER_RET=0
 		fi
 
-		if [ $(sshd -T  | grep -ic $ALLOWGROUP) -eq 1 ]; then 
+		check_sshd_access_limit $ALLOWGROUP_KEY	$ALLOWGROUP
+		if [ $FNRET != 0 ]; then
 			crit "AllowGroups is not set!"
 		else
 			ok "AllowGroups has set limit."
 			ALLOWGROUP_RET=0
 		fi
-		if [ $(sshd -T  | grep -ic $DENYUSER) -eq 1 ]; then 
+
+		check_sshd_access_limit $DENYUSER_KEY $DENYUSER
+		if [ $FNRET != 0 ]; then
 			crit "DenyUsers is not set!"
 		else
 			ok "DenyUsers has set limit."
 			DENYUSER_RET=0
 		fi
-		if [ $(sshd -T  | grep -ic $DENYGROUP) -eq 1 ]; then 
+		check_sshd_access_limit $DENYGROUP_KEY $DENYGROUP
+		if [ $FNRET != 0 ]; then
 			crit "DenyGroups is not set!"
 		else
 			ok "DenyGroups has set limit."

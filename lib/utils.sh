@@ -1194,3 +1194,22 @@ check_aa_status ()
 	fi
 }
 
+# Check sshd access limit 
+# If not exist key of above, it's fail beacause default is everyone to allow 
+# Example: $1='AllowUsers'  $2='AllowUsers[[:space:]]*\*'
+check_sshd_access_limit ()
+{
+	if [ $(sshd -T | grep -ic $1) -eq 1 ]; then 
+		if [ $(sshd -T | grep -ic $2) -eq 1 ]; then 
+			debug "$1 is not set limit!"
+			FNRET=2
+		else
+			debug "$1 has set limit!"
+			FNRET=0
+		fi
+	else
+		debug "Arguments $1 is not exist! By default, login is allowed for all."
+		FNRET=1
+	fi
+}
+
