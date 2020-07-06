@@ -1186,7 +1186,6 @@ check_aa_status ()
 			4)	info "The user running the script doesn't have enough privileges to read the AppArmor control files."
 				FNRET=4
 				;;
-
 		esac
 	else
 		info "$APPARMOR_STATUS is not exist!"
