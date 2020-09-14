@@ -1,0 +1,193 @@
+# How to fix SELinux's access denied  
+
+## Top3 causes of problems  
+### Labeling Problems  
+On systems running SELinux, all processes and files are labeled with a label that contains security-relevant information. This information is called the SELinux context. If these labels are wrong, accessmay be denied. An incorrectly labeled application may cause an incorrect label to be assigned to itsprocess. This may cause SELinux to deny access, and the process may create mislabeled files. A common cause of labeling problems is when a non-standard directory is used for a service.
+
+For example, instead of using /var/www/html/ for a website, an administrator wants to use /srv/myweb/. The /srv directory is labeled with the var_t type. Files and directories createdin /srv inherit this type. Also, newly-created objects in top-level directories (such as /myserver) may belabeled with the default_t type. SELinux prevents the Apache HTTP Server (httpd) from accessing bothof these types. To allow access, SELinux must know that the files in /srv/myweb/ are to be accessible to httpd:
+```
+~# semanage fcontext -a -t httpd_sys_content_t "/srv/myweb(/.*)?"
+```
+This semanage command adds the context for the /srv/myweb/ directory (and all files and directoriesunder it) to the SELinux file-context configuration. The semanage utility does not change thecontext. As root, run the restorecon utility to apply the changes:
+```
+~# restorecon -R -v /srv/myweb
+```
+
+How to check the context of a file path and compares it to the default label for thatpath. 
+
+The following example demonstrates using matchpathcon on a directory that contains incorrectlylabeled files:
+```
+~# matchpathcon -V /var/www/html/*
+/var/www/html/index.html has context unconfined_u:object_r:user_home_t:s0, should besystem_u:object_r:httpd_sys_content_t:s0
+/var/www/html/page1.html has context unconfined_u:object_r:user_home_t:s0, should besystem_u:object_r:httpd_sys_content_t:s0
+```
+In this example, the index.html and page1.html files are labeled with the user_home_t type. This typeis used for files in user home directories. Using the mv command to move files from your home directory may result in files being labeled with the user_home_t type. This type should not exist outside of home directories. Use the restorecon utility to restore such files to their correct type:
+```
+~# restorecon -v /var/www/html/index.html 
+restorecon reset /var/www/html/index.html context unconfined_u:object_r:user_home_t:s0->system_u:object_r:httpd_sys_content_t:s0
+```
+To restore the context for all files under a directory, use the -R option.
+
+### Configuring Booleans   
+Services can be run in a variety of ways. To cater for this, you need to specify how you run your services.This can be achieved through Booleans that allow parts of SELinux policy to be changed at runtime,without any knowledge of SELinux policy writing. This allows changes, such as allowing services accessto NFS volumes, without reloading or recompiling SELinux policy. Also, running services on non-defaultport numbers requires policy configuration to be updated using the semanage command.For example, to allow the Apache HTTP Server to communicate with MariaDB, enable the httpd_can_network_connect_db Boolean:
+```
+~# setsebool -P httpd_can_network_connect_db on
+```
+
+### Evolving Rules and Broken Applications  
+Applications may be broken, causing SELinux to deny access. Also, SELinux rules are evolving – SELinux may not have seen an application running in a certain way, possibly causing it to deny access, eventhough the application is working as expected. For example, if a new version of PostgreSQL is released,it may perform actions the current policy has not seen before, causing access to be denied, even thoughaccess should be allowed.For these situations, after access is denied, use the audit2allow utility to create a custom policy moduleto allow access.
+
+## Example fix clamav-daemon access   
+
+### Platform info  
+OS: Debian 10  
+SELinux status:  
+```
+~# sestatus  
+SELinux status:                 enabled
+SELinuxfs mount:                /sys/fs/selinux
+SELinux root directory:         /etc/selinux
+Loaded policy name:             default
+Current mode:                   enforcing
+Mode from config file:          enforcing
+Policy MLS status:              enabled
+Policy deny_unknown status:     allowed
+Memory protection checking:     actual (secure)
+Max kernel policy version:      31
+```
+Installed pkg: auditd, clamav-daemon, clamav-freshclam
+
+### Problems info
+When SELinux is set enforcing, clamav-daemon.service is failed:
+```
+~# systemctl status clamav-daemon.service 
+● clamav-daemon.service - Clam AntiVirus userspace daemon
+   Loaded: loaded (/lib/systemd/system/clamav-daemon.service; enabled; vendor preset: enabled)
+  Drop-In: /etc/systemd/system/clamav-daemon.service.d
+           └─extend.conf
+   Active: failed (Result: exit-code) since Sun 2020-09-13 04:51:04 EDT; 20h ago
+     Docs: man:clamd(8)
+           man:clamd.conf(5)
+           https://www.clamav.net/documents/
+  Process: 618 ExecStartPre=/bin/mkdir /run/clamav (code=exited, status=1/FAILURE)
+  Process: 619 ExecStartPre=/bin/chown clamav /run/clamav (code=exited, status=0/SUCCESS)
+  Process: 620 ExecStart=/usr/sbin/clamd --foreground=true (code=exited, status=1/FAILURE)
+ Main PID: 620 (code=exited, status=1/FAILURE)
+
+Sep 13 04:50:47 debian systemd[1]: Starting Clam AntiVirus userspace daemon...
+Sep 13 04:50:47 debian mkdir[618]: /bin/mkdir: cannot create directory ‘/run/clamav’: File exists
+Sep 13 04:50:47 debian systemd[1]: Started Clam AntiVirus userspace daemon.
+Sep 13 04:51:04 debian clamd[620]: Sun Sep 13 04:51:04 2020 -> !LOCAL: Socket file /var/run/clamav/clamd.ctl could not be bound: Permission denied
+Sep 13 04:51:04 debian systemd[1]: clamav-daemon.service: Main process exited, code=exited, status=1/FAILURE
+Sep 13 04:51:04 debian systemd[1]: clamav-daemon.service: Failed with result 'exit-code'.
+```
+
+### Find incorrect 
+
+#### First, check bool config of clamav relate 
+```
+~# semanage boolean -l | grep clamav
+clamav_read_all_non_security_files_clamscan (off  ,  off)  Determine whether clamscan can read all non-security files.
+clamav_read_user_content_files_clamscan (off  ,  off)  Determine whether clamscan can read user content files.
+~# semanage boolean -l | grep clamd
+clamd_use_jit                  (off  ,  off)  Determine whether can clamd use JIT compiler.
+```
+
+#### Get descriptions of why the access was denied 
+```
+~# grep clamd  /var/log/audit/audit.log | audit2why 
+type=AVC msg=audit(1599973736.201:32): avc:  denied  { search } for  pid=454 comm="clamd" name="dbus" dev="tmpfs" ino=16346 scontext=system_u:system_r:clamd_t:s0 tcontext=system_u:object_r:system_dbusd_var_run_t:s0 tclass=dir permissive=0
+
+	Was caused by:
+		Missing type enforcement (TE) allow rule.
+
+		You can use audit2allow to generate a loadable module to allow this access.
+
+type=AVC msg=audit(1599973754.677:52): avc:  denied  { getattr } for  pid=454 comm="clamd" path="/run/clamav" dev="tmpfs" ino=16617 scontext=system_u:system_r:clamd_t:s0 tcontext=system_u:object_r:initrc_var_run_t:s0 tclass=dir permissive=0
+
+	Was caused by:
+		Missing type enforcement (TE) allow rule.
+
+		You can use audit2allow to generate a loadable module to allow this access.
+......
+```
+According to the above information, it can be concluded that it is caused by the missing of TE allow rules. 
+
+### To fix this problems 
+#### Set SELinux in permissive mode 
+```
+~# setenforce 0
+```
+
+#### Disable dontaudit rules 
+To temporarily disable dontaudit rules, allowing all denials to be logged, enter the following command as root:
+```
+~# semodule -DB
+```
+
+#### Restart service 
+TO restart clamav-daemon.service to generate audit logs:
+```
+~# systemctl restart clamav-daemon.service
+```
+
+#### Find deny message 
+Find AVC,USER_AVC,SELINUX_ERR message of audit.log:
+```
+~# ausearch -m AVC,USER_AVC,SELINUX_ERR -ts today
+type=AVC msg=audit(1600117445.764:3149): avc:  denied  { create } for  pid=3857 comm="clamd" name="clamd.ctl" scontext=system_u:system_r:clamd_t:s0 tcontext=system_u:object_r:initrc_var_run_t:s0 tclass=sock_file permissive=1
+type=AVC msg=audit(1600117445.764:3149): avc:  denied  { add_name } for  pid=3857 comm="clamd" name="clamd.ctl" scontext=system_u:system_r:clamd_t:s0 tcontext=system_u:object_r:initrc_var_run_t:s0 tclass=dir permissive=1
+type=AVC msg=audit(1600117445.764:3149): avc:  denied  { write } for  pid=3857 comm="clamd" name="clamav" dev="tmpfs" ino=15823 scontext=system_u:system_r:clamd_t:s0 tcontext=system_u:object_r:initrc_var_run_t:s0 tclass=dir permissive=1
+type=AVC msg=audit(1600117445.764:3149): avc:  denied  { search } for  pid=3857 comm="clamd" name="clamav" dev="tmpfs" ino=15823 scontext=system_u:system_r:clamd_t:s0 tcontext=system_u:object_r:initrc_var_run_t:s0 tclass=dir permissive=1
+......
+```
+#### Generate a loadable module and install 
+```
+~# grep clamd /var/log/audit/audit.log  | audit2allow -M clamd
+~# semodule -i clamd.pp
+```
+#### Enable dontaudit rules
+```
+semodule -B
+```
+
+Set SELinux in enforcing mode 
+```
+~# setenforce 1
+```
+
+Check module is install success:
+```
+~# cat clamd.te 
+
+module clamd 1.0;
+
+require {
+	type system_dbusd_var_run_t;
+	type system_dbusd_t;
+	type initrc_var_run_t;
+	type clamd_t;
+	type init_t;
+	class dir { add_name getattr remove_name search write };
+	class sock_file { create setattr unlink write };
+	class unix_stream_socket connectto;
+	class dbus send_msg;
+}
+
+#============= clamd_t ==============
+allow clamd_t init_t:dbus send_msg;
+allow clamd_t initrc_var_run_t:dir { add_name getattr remove_name search write };
+allow clamd_t initrc_var_run_t:sock_file { create setattr unlink };
+allow clamd_t system_dbusd_t:dbus send_msg;
+allow clamd_t system_dbusd_t:unix_stream_socket connectto;
+allow clamd_t system_dbusd_var_run_t:dir search;
+allow clamd_t system_dbusd_var_run_t:sock_file write;
+
+#============= init_t ==============
+allow init_t clamd_t:dbus send_msg;
+~# sesearch --allow -s clamd_t -t initrc_var_run_t -p create
+allow clamd_t initrc_var_run_t:sock_file { create setattr unlink };
+```
+
+## Reference 
+[https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/pdf/selinux_users_and_administrators_guide/Red_Hat_Enterprise_Linux-7-SELinux_Users_and_Administrators_Guide-en-US.pdf](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/pdf/selinux_users_and_administrators_guide/Red_Hat_Enterprise_Linux-7-SELinux_Users_and_Administrators_Guide-en-US.pdf)
