@@ -2,26 +2,26 @@
 
 ## Top3 causes of problems  
 ### Labeling Problems  
-On systems running SELinux, all processes and files are labeled with a label that contains security-relevant information. This information is called the SELinux context. If these labels are wrong, accessmay be denied. An incorrectly labeled application may cause an incorrect label to be assigned to itsprocess. This may cause SELinux to deny access, and the process may create mislabeled files. A common cause of labeling problems is when a non-standard directory is used for a service.
+On systems running SELinux, all processes and files are labeled with a label that contains security-relevant information. This information is called the SELinux context. If these labels are wrong, accessmay be denied. An incorrectly labeled application may cause an incorrect label to be assigned to its process. This may cause SELinux to deny access, and the process may create mislabeled files. A common cause of labeling problems is when a non-standard directory is used for a service.
 
-For example, instead of using /var/www/html/ for a website, an administrator wants to use /srv/myweb/. The /srv directory is labeled with the var_t type. Files and directories createdin /srv inherit this type. Also, newly-created objects in top-level directories (such as /myserver) may belabeled with the default_t type. SELinux prevents the Apache HTTP Server (httpd) from accessing bothof these types. To allow access, SELinux must know that the files in /srv/myweb/ are to be accessible to httpd:
+For example, instead of using /var/www/html/ for a website, an administrator wants to use /srv/myweb/. The /srv directory is labeled with the var_t type. Files and directories created in /srv inherit this type. Also, newly-created objects in top-level directories (such as /myserver) may belabeled with the default_t type. SELinux prevents the Apache HTTP Server (httpd) from accessing both of these types. To allow access, SELinux must know that the files in /srv/myweb/ are to be accessible to httpd:
 ```
 ~# semanage fcontext -a -t httpd_sys_content_t "/srv/myweb(/.*)?"
 ```
-This semanage command adds the context for the /srv/myweb/ directory (and all files and directoriesunder it) to the SELinux file-context configuration. The semanage utility does not change thecontext. As root, run the restorecon utility to apply the changes:
+This semanage command adds the context for the /srv/myweb/ directory (and all files and directories under it) to the SELinux file-context configuration. The semanage utility does not change thecontext. As root, run the restorecon utility to apply the changes:
 ```
 ~# restorecon -R -v /srv/myweb
 ```
 
-How to check the context of a file path and compares it to the default label for thatpath. 
+How to check the context of a file path and compares it to the default label for that path. 
 
-The following example demonstrates using matchpathcon on a directory that contains incorrectlylabeled files:
+The following example demon strates using matchpathcon on a directory that contains incorrectly labeled files:
 ```
 ~# matchpathcon -V /var/www/html/*
 /var/www/html/index.html has context unconfined_u:object_r:user_home_t:s0, should besystem_u:object_r:httpd_sys_content_t:s0
 /var/www/html/page1.html has context unconfined_u:object_r:user_home_t:s0, should besystem_u:object_r:httpd_sys_content_t:s0
 ```
-In this example, the index.html and page1.html files are labeled with the user_home_t type. This typeis used for files in user home directories. Using the mv command to move files from your home directory may result in files being labeled with the user_home_t type. This type should not exist outside of home directories. Use the restorecon utility to restore such files to their correct type:
+In this example, the index.html and page1.html files are labeled with the user_home_t type. This type is used for files in user home directories. Using the mv command to move files from your home directory may result in files being labeled with the user_home_t type. This type should not exist outside of home directories. Use the restorecon utility to restore such files to their correct type:
 ```
 ~# restorecon -v /var/www/html/index.html 
 restorecon reset /var/www/html/index.html context unconfined_u:object_r:user_home_t:s0->system_u:object_r:httpd_sys_content_t:s0
@@ -29,13 +29,13 @@ restorecon reset /var/www/html/index.html context unconfined_u:object_r:user_hom
 To restore the context for all files under a directory, use the -R option.
 
 ### Configuring Booleans   
-Services can be run in a variety of ways. To cater for this, you need to specify how you run your services.This can be achieved through Booleans that allow parts of SELinux policy to be changed at runtime,without any knowledge of SELinux policy writing. This allows changes, such as allowing services accessto NFS volumes, without reloading or recompiling SELinux policy. Also, running services on non-defaultport numbers requires policy configuration to be updated using the semanage command.For example, to allow the Apache HTTP Server to communicate with MariaDB, enable the httpd_can_network_connect_db Boolean:
+Services can be run in a variety of ways. To cater for this, you need to specify how you run your services. This can be achieved through Booleans that allow parts of SELinux policy to be changed at runtime, without any knowledge of SELinux policy writing. This allows changes, such as allowing services access to NFS volumes, without reloading or recompiling SELinux policy. Also, running services on non-defaultport numbers requires policy configuration to be updated using the semanage command. For example, to allow the Apache HTTP Server to communicate with MariaDB, enable the httpd_can_network_connect_db Boolean:
 ```
 ~# setsebool -P httpd_can_network_connect_db on
 ```
 
 ### Evolving Rules and Broken Applications  
-Applications may be broken, causing SELinux to deny access. Also, SELinux rules are evolving – SELinux may not have seen an application running in a certain way, possibly causing it to deny access, eventhough the application is working as expected. For example, if a new version of PostgreSQL is released,it may perform actions the current policy has not seen before, causing access to be denied, even thoughaccess should be allowed.For these situations, after access is denied, use the audit2allow utility to create a custom policy moduleto allow access.
+Applications may be broken, causing SELinux to deny access. Also, SELinux rules are evolving – SELinux may not have seen an application running in a certain way, possibly causing it to deny access, even though the application is working as expected. For example, if a new version of PostgreSQL is released,it may perform actions the current policy has not seen before, causing access to be denied, even though access should be allowed. For these situations, after access is denied, use the audit2allow utility to create a custom policy module to allow access.
 
 ## Example fix clamav-daemon access   
 
@@ -132,7 +132,7 @@ TO restart clamav-daemon.service to generate audit logs:
 ```
 
 #### Find deny message 
-Find AVC,USER_AVC,SELINUX_ERR message of audit.log:
+Find AVC, USER_AVC, SELINUX_ERR message of audit.log:
 ```
 ~# ausearch -m AVC,USER_AVC,SELINUX_ERR -ts today
 type=AVC msg=audit(1600117445.764:3149): avc:  denied  { create } for  pid=3857 comm="clamd" name="clamd.ctl" scontext=system_u:system_r:clamd_t:s0 tcontext=system_u:object_r:initrc_var_run_t:s0 tclass=sock_file permissive=1
@@ -151,12 +151,18 @@ type=AVC msg=audit(1600117445.764:3149): avc:  denied  { search } for  pid=3857 
 semodule -B
 ```
 
-Set SELinux in enforcing mode 
+#### Set SELinux in enforcing mode 
 ```
 ~# setenforce 1
 ```
 
+#### Check 
 Check module is install success:
+```
+# semodule -l | grep clamd
+clamd
+```
+Check whether the allow rule setting is successful: 
 ```
 ~# cat clamd.te 
 
