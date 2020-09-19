@@ -245,6 +245,7 @@ This document is a description of the additions to the sections not included in 
 [How to deploy audisp-remote for auditd log](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_deploy_audisp_remote_for_audit_log.mkd)  
 [How to migrating from iptables to nftables in debian10](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_migrating_from_iptables_to_nftables_in_debian10.md)  
 [How to persistent nft rules with debian 10](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_persistent_nft_rules_with_debian_10.mkd)  
+[How to fix SELinux access denied](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_fix_SELinux_access_denied.mkd)
 
 ### Use case docs  
 [Nodejs + redis + mysql demo](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/use-cases/nodejs-redis-mysql-usecase/README.md)  
