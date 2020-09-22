@@ -37,11 +37,11 @@ audit () {
             	ok "$PATTERN is present in $FILE"
             	check_param_pair_by_pam $FILE $KEYWORD $OPTIONNAME ge $CONDT_VAL
             	if [ $FNRET = 0 ]; then
-					ok "$OPTIONNAME set condition is less-than-or-equal-to $CONDT_VAL"
+					ok "$OPTIONNAME set condition is greater-than-or-equal-to $CONDT_VAL"
 					reset_ok
 					return
             	else
-                	crit "$OPTIONNAME set condition is not less-than-or-equal-to $CONDT_VAL"
+                	crit "$OPTIONNAME set condition is not greater-than-or-equal-to $CONDT_VAL"
             	fi
         	else
             	crit "$PATTERN is not present in $FILE"
@@ -54,7 +54,7 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
-		ok "$OPTIONNAME set condition is less-than-or-equal-to $CONDT_VAL"
+		ok "$OPTIONNAME set condition is greater-than-or-equal-to $CONDT_VAL"
     elif [ $FNRET = 1 ]; then
         crit "$PACKAGE is absent, installing it"
         install_package $PACKAGE
@@ -71,7 +71,7 @@ apply () {
         add_option_to_password_check $FILE $KEYWORD "$OPTIONNAME=$CONDT_VAL"
     elif [ $FNRET = 5 ]; then
         reset_option_to_password_check $FILE $KEYWORD $OPTIONNAME $CONDT_VAL 
-		crit "$OPTIONNAME set is not less-than-or-equal-to $CONDT_VAL, reset it to $CONDT_VAL"
+		crit "$OPTIONNAME set is not greater-than-or-equal-to $CONDT_VAL, reset it to $CONDT_VAL"
     fi 
 }
 
