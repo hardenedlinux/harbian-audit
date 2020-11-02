@@ -1212,3 +1212,19 @@ check_sshd_access_limit ()
 	fi
 }
 
+# Check blacklist module set of /etc/modprobe.d/* 
+# If set, return 0; else return 1
+# Example: $1='nf_nat_sip'
+check_blacklist_module_set ()
+{
+	MODPROBE_CONF_FILE_PATTERN='/etc/modprobe.d/*'
+	COUNT=$(grep -w $1 -r $MODPROBE_CONF_FILE_PATTERN | grep "^blacklist" | wc -l)
+	if [ $COUNT -ge 1 ]; then
+		debug "$1 has set in $MODPROBE_CONF_FILE_PATTERN"
+		FNRET=0
+	else
+		debug "$1 is not set in $MODPROBE_CONF_FILE_PATTERN"
+		FNRET=1
+	fi
+}
+
