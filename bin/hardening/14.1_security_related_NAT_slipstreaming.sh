@@ -70,7 +70,12 @@ apply () {
         		ok "$SYSCTL_PARAM correctly set to $SYSCTL_EXP_RESULT"
     		fi
 	else
-		echo "$SYSCTL_PARAM = $SYSCTL_EXP_RESULT" >> /etc/sysctl.conf
+		warn "/proc/sys/net/netfilter/nf_conntrack_helper is not exist, just set $SYSCTL_PARAM = $SYSCTL_EXP_RESULT to /etc/sysctl.conf"
+		if [ $(grep "^$SYSCTL_PARAM = $SYSCTL_EXP_RESULT" /etc/sysctl.conf | wc -l) -eq 0 ]; then
+			echo "$SYSCTL_PARAM = $SYSCTL_EXP_RESULT" >> /etc/sysctl.conf
+		else
+			:
+		fi
 	fi
 }
 
