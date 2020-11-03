@@ -1212,6 +1212,29 @@ check_sshd_access_limit ()
 	fi
 }
 
+# Check sshd conf for one value  sshd -T return 'keyword value' pairs
+# If the value of keyword is equal $2, return 0 
+# If the keywork does not exist in the sshd runtime configuration, return 1
+# If the value of keyword is not equal $2, return 2
+# Example: $1='PermitRootLogin'  $2='no'
+check_sshd_conf_for_one_value_runtime ()
+{
+	COUNT=$(sshd -T | grep -i $1 | wc -l)
+	if [ $COUNT -eq 0 ]; then
+		debug "The keyword $1 does not exist in the sshd runtime configuration."
+		FNRET=1
+	else
+		RUNTIMEVALUE=$(sshd -T | grep -i $1 | awk '{print $2}')
+		if [ "$RUNTIMEVALUE" = "$2" ]; then
+			debug "The value of keyword $1 has set to $2, it's correct."
+			FNRET=0
+		else
+			debug "The value of keyword $1 is not set to $2, it's incorrect."
+			FNRET=2
+		fi
+	fi
+}
+
 # Check blacklist module set of /etc/modprobe.d/* 
 # If set, return 0; else return 1
 # Example: $1='nf_nat_sip'
