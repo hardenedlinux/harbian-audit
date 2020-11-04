@@ -31,20 +31,18 @@ audit () {
 		if [ $FNRET = 0 ]; then 
 			ok "The value of keyword $SSH_PARAM has set to $SSH_VALUE, it's correct."
 			FNRET=0
-		elif [ $FNRET = 1 ]; then 
+		else
 			crit "The keyword $SSH_PARAM does not exist in the sshd runtime configuration."
-			PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
+			PATTERN="^$SSH_PARAM[[:space:]]*"
+			PATTERN_INFO="$SSH_PARAM $SSH_VALUE"
 			does_pattern_exist_in_file $FILE "$PATTERN"
 			if [ $FNRET = 0 ]; then
-				ok "$PATTERN is present in $FILE"
+				crit "The value of keyword $SSH_PARAM is not set to $SSH_VALUE, it's incorrect."
 				FNRET=1
 			else
-				crit "$PATTERN is not present in $FILE"
+				crit "$PATTERN_INFO is not present in $FILE"
 				FNRET=2
 			fi
-		else
-			crit "The value of keyword $SSH_PARAM is not set to $SSH_VALUE, it's incorrect."
-			FNRET=3			
 		fi
     fi
 }
@@ -53,19 +51,16 @@ audit () {
 apply () {
 	SSH_PARAM=$(echo $OPTIONS | cut -d= -f 1)
 	SSH_VALUE=$(echo $OPTIONS | cut -d= -f 2)
-	PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
+	PATTERN_INFO="$SSH_PARAM $SSH_VALUE"
 	case $FNRET in
 		0)	ok "The value of keyword $SSH_PARAM has set to $SSH_VALUE, it's correct."
 			;;
-		1)	warn "$PATTERN is present in $FILE, but runtime conf is incorrect, need reload"
-			/etc/init.d/ssh reload > /dev/null 2>&1
-			;;
-		2)	warn "$PATTERN is not present in $FILE, need add to sshd_config and reload"
-			add_end_of_file $FILE "$SSH_PARAM $SSH_VALUE"
-			/etc/init.d/ssh reload > /dev/null 2>&1
-			;;
-		3)	warn "The value of keyword $SSH_PARAM is not set to $SSH_VALUE, it's incorrect. Fixing and reload config"
+		1)	warn "The value of keyword $SSH_PARAM is not set to $SSH_VALUE, it's incorrect. Fixing and reload config"
 			replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SSH_VALUE"
+			/etc/init.d/ssh reload > /dev/null 2>&1
+			;;
+		2)	warn "$PATTERN_INFO is not present in $FILE, need add to sshd_config and reload"
+			add_end_of_file $FILE "$SSH_PARAM $SSH_VALUE"
 			/etc/init.d/ssh reload > /dev/null 2>&1
 			;;
 		5)	warn "$PACKAGE is absent, installing it"
