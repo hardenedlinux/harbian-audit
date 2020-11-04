@@ -33,7 +33,7 @@ audit () {
 			ok "The value of keyword $SSH_PARAM has set to $SSH_VALUE, it's correct."
 			FNRET=0
 		else
-			crit "The keyword $SSH_PARAM does not exist in the sshd runtime configuration."
+			crit "The keyword value pair "\"$SSH_PARAM $SSH_VALUE\"" does not exist in the sshd runtime configuration."
 			PATTERN="^$SSH_PARAM[[:space:]]*"
 			PATTERN_INFO="$SSH_PARAM $SSH_VALUE"
 			does_pattern_exist_in_file $FILE "$PATTERN"
