@@ -25,36 +25,34 @@ audit () {
 		FNRET=5
 	else
 		ok "$PACKAGE is installed"
-		for SSH_OPTION in $OPTIONS; do
-			SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-			SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
-			check_sshd_conf_for_one_value_runtime $SSH_PARAM $SSH_VALUE
-			if [ $FNRET = 0 ]; then 
-				ok "The value of keyword $SSH_PARAM has set to $SSH_VALUE, it's correct."
-				FNRET=0
-			elif [ $FNRET = 1 ]; then 
-				crit "The keyword $SSH_PARAM does not exist in the sshd runtime configuration."
-				PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
-				does_pattern_exist_in_file $FILE "$PATTERN"
-				if [ $FNRET = 0 ]; then
-					ok "$PATTERN is present in $FILE"
-					FNRET=1
-				else
-					crit "$PATTERN is not present in $FILE"
-					FNRET=2
-				fi
+		SSH_PARAM=$(echo $OPTIONS | cut -d= -f 1)
+		SSH_VALUE=$(echo $OPTIONS | cut -d= -f 2)
+		check_sshd_conf_for_one_value_runtime $SSH_PARAM $SSH_VALUE
+		if [ $FNRET = 0 ]; then 
+			ok "The value of keyword $SSH_PARAM has set to $SSH_VALUE, it's correct."
+			FNRET=0
+		elif [ $FNRET = 1 ]; then 
+			crit "The keyword $SSH_PARAM does not exist in the sshd runtime configuration."
+			PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
+			does_pattern_exist_in_file $FILE "$PATTERN"
+			if [ $FNRET = 0 ]; then
+				ok "$PATTERN is present in $FILE"
+				FNRET=1
 			else
-				crit "The value of keyword $SSH_PARAM is not set to $SSH_VALUE, it's incorrect."
-				FNRET=3
+				crit "$PATTERN is not present in $FILE"
+				FNRET=2
 			fi
-	done
-fi
+		else
+			crit "The value of keyword $SSH_PARAM is not set to $SSH_VALUE, it's incorrect."
+			FNRET=3
+		fi
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-	SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-	SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
+	SSH_PARAM=$(echo $OPTIONS | cut -d= -f 1)
+	SSH_VALUE=$(echo $OPTIONS | cut -d= -f 2)
 	PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
 	case $FNRET in
 		0)	ok "The value of keyword $SSH_PARAM has set to $SSH_VALUE, it's correct."
