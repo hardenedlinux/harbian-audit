@@ -23,50 +23,64 @@ audit () {
     is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
         crit "$PACKAGE is not installed!"
+		FNRET=5
     else
         ok "$PACKAGE is installed"
         for SSH_OPTION in $OPTIONS; do
-            SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-            SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
-            PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
-            does_pattern_exist_in_file $FILE "$PATTERN"
-            if [ $FNRET = 0 ]; then
-                ok "$PATTERN is present in $FILE"
-            else
-                crit "$PATTERN is not present in $FILE"
-            fi
+			SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
+			SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
+			check_sshd_conf_for_one_value_runtime $SSH_PARAM $SSH_VALUE
+			if [ $FNRET = 0 ]; then 
+				ok "The value of keyword $SSH_PARAM has set to $SSH_VALUE, it's correct."
+				FNRET=0
+			else
+				crit "The keyword value pair "\"$SSH_PARAM $SSH_VALUE\"" does not exist in the sshd runtime configuration."
+				PATTERN="^$SSH_PARAM[[:space:]]*"
+				PATTERN_INFO="$SSH_PARAM $SSH_VALUE"
+				does_pattern_exist_in_file $FILE "$PATTERN"
+				if [ $FNRET = 0 ]; then
+					crit "The value of keyword $SSH_PARAM is not set to $SSH_VALUE, it's incorrect."
+					FNRET=1
+				else
+					crit "$PATTERN_INFO is not present in $FILE"
+					FNRET=2
+				fi
+			fi
         done
     fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    is_pkg_installed $PACKAGE
-    if [ $FNRET = 0 ]; then
-        ok "$PACKAGE is installed"
-    else
-        crit "$PACKAGE is absent, installing it"
+    OPTIONS="ClientAliveInterval=$SSHD_TIMEOUT ClientAliveCountMax=0"
+    if [ $FNRET = 5 ]; then
+        warn "$PACKAGE is absent, installing it"
        	install_package $PACKAGE
+	else 
+		:
     fi
     for SSH_OPTION in $OPTIONS; do
-            SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-            SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
-            PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
-            does_pattern_exist_in_file $FILE "$PATTERN"
-            if [ $FNRET = 0 ]; then
-                ok "$PATTERN is present in $FILE"
-            else
-                warn "$PATTERN is not present in $FILE, adding it"
-                does_pattern_exist_in_file $FILE "^$SSH_PARAM"
-                if [ $FNRET != 0 ]; then
-                    add_end_of_file $FILE "$SSH_PARAM $SSH_VALUE"
-                else
-                    info "Parameter $SSH_PARAM is present but with the wrong value -- Fixing"
-                    replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SSH_VALUE"
-                fi
-				systemctl reload sshd
-            fi
-    done
+		SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
+		SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
+		check_sshd_conf_for_one_value_runtime $SSH_PARAM $SSH_VALUE
+		if [ $FNRET = 0 ]; then 
+			ok "The value of keyword $SSH_PARAM has set to $SSH_VALUE, it's correct."
+		else
+			warn "The keyword value pair "\"$SSH_PARAM $SSH_VALUE\"" does not exist in the sshd runtime configuration."
+			PATTERN="^$SSH_PARAM[[:space:]]*"
+			PATTERN_INFO="$SSH_PARAM $SSH_VALUE"
+			does_pattern_exist_in_file $FILE "$PATTERN"
+			if [ $FNRET = 0 ]; then
+				warn "The value of keyword $SSH_PARAM is not set to $SSH_VALUE, it's incorrect. Fixing and reload config"
+				replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SSH_VALUE"
+				/etc/init.d/ssh reload > /dev/null 2>&1
+			else
+				warn "$PATTERN_INFO is not present in $FILE, need add to sshd_config and reload"
+				add_end_of_file $FILE "$SSH_PARAM $SSH_VALUE"
+				/etc/init.d/ssh reload > /dev/null 2>&1
+			fi	
+		fi
+	done
 }
 
 # This function will create the config file for this check with default values
