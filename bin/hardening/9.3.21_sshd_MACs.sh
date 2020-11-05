@@ -23,50 +23,73 @@ audit () {
     is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
         crit "$PACKAGE is not installed!"
-    else
-        ok "$PACKAGE is installed"
-        for SSH_OPTION in $OPTIONS; do
-            SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-            SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
-            PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
-            does_pattern_exist_in_file $FILE "$PATTERN"
-            if [ $FNRET = 0 ]; then
-                ok "$PATTERN is present in $FILE"
-            else
-                crit "$PATTERN is not present in $FILE"
-            fi
-        done
-    fi
+		FNRET=5
+	else
+		SSH_PARAM=$(echo $OPTIONS | cut -d= -f 1)
+		SSH_VALUES=$(echo $OPTIONS | cut -d= -f 2)
+		VALUES_CHECK=$(echo $SSH_VALUES | sed 's@,@ @g')
+		VALUES_RUNTIME=$(sshd -T | grep -i $SSH_PARAM | awk '{print $2}')
+		SET_VALUES_TMP=""
+		for VALUE in $VALUES_CHECK; do
+			if [ $(echo $VALUES_RUNTIME | grep -wc $VALUE) -eq 1 ]; then
+				ok "$VALUE has set in the runtime configuration."
+			else
+				SET_VALUES_TMP+="$VALUE"
+				crit "$VALUE is not set in the runtime configuration."
+			fi	
+		done
+		SET_VALUES=$(echo ${SET_VALUES_TMP%?})
+		if [ "${SET_VALUES}Harbian" = "Harbian" ]; then
+			FNRET=0
+		else
+			crit "Need to add set values ${SET_VALUES} to sshd_config."
+			FNRET=1
+		fi
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    is_pkg_installed $PACKAGE
-    if [ $FNRET = 0 ]; then
-        ok "$PACKAGE is installed"
-    else
-        crit "$PACKAGE is absent, installing it"
-        install_package $PACKAGE
-    fi
-    for SSH_OPTION in $OPTIONS; do
-            SSH_PARAM=$(echo $SSH_OPTION | cut -d= -f 1)
-            SSH_VALUE=$(echo $SSH_OPTION | cut -d= -f 2)
-            PATTERN="^$SSH_PARAM[[:space:]]*$SSH_VALUE"
-            does_pattern_exist_in_file $FILE "$PATTERN"
-            if [ $FNRET = 0 ]; then
-                ok "$PATTERN is present in $FILE"
-            else
-                warn "$PATTERN is not present in $FILE, adding it"
-                does_pattern_exist_in_file $FILE "^$SSH_PARAM"
-                if [ $FNRET != 0 ]; then
-                    add_end_of_file $FILE "$SSH_PARAM $SSH_VALUE"
-                else
-                    info "Parameter $SSH_PARAM is present but with the wrong value -- Fixing"
-                    replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SSH_VALUE"
-                fi
-				systemctl reload sshd
-            fi
-    done
+	SSH_PARAM=$(echo $OPTIONS | cut -d= -f 1)
+	SSH_VALUES=$(echo $OPTIONS | cut -d= -f 2)
+	case $FNRET in
+		0)	ok "The value of keyword $SSH_PARAM has set to $SSH_VALUES, it's correct."
+		;;
+		1)	VALUES_CHECK=$(echo $SSH_VALUES | sed 's@,@ @g')
+			VALUES_RUNTIME=$(sshd -T | grep -i $SSH_PARAM | awk '{print $2}')
+			SET_VALUES_TMP=""
+			for VALUE in $VALUES_CHECK; do
+				if [ $(echo $VALUES_RUNTIME | grep -wc $VALUE) -eq 1 ]; then
+					debug "$VALUE has set in the runtime configuration."
+				else
+					debug "$VALUE is not set in the runtime configuration."
+					SET_VALUES_TMP+="$VALUE,"
+				fi	
+			done
+			SET_VALUES=$(echo ${SET_VALUES_TMP%?})
+			if [ "${SET_VALUES}Harbian" = "Harbian" ]; then
+				:
+			else
+				warn "Need to add set values ${SET_VALUES} to sshd_config."
+				PATTERN="^$SSH_PARAM[[:space:]]*"
+				does_pattern_exist_in_file $FILE "$PATTERN"
+				SET_VALUES_NOW="${VALUES_RUNTIME},${SET_VALUES}"
+				if [ $FNRET = 0 ]; then
+					warn "$SSH_PARAM has exist $FILE, replace new values $SET_VALUES_NOW to $FILE, fixing and reload"
+					replace_in_file $FILE "^$SSH_PARAM[[:space:]]*.*" "$SSH_PARAM $SET_VALUES_NOW"	
+					/etc/init.d/ssh reload > /dev/null 2>&1
+				else
+					warn "$SSH_PARAM is not present in $FILE, need add to sshd_config and reload"
+					add_end_of_file $FILE "$SSH_PARAM $SET_VALUES_NOW"
+					/etc/init.d/ssh reload > /dev/null 2>&1
+				fi
+			fi
+		;;
+		5)	warn "$PACKAGE is absent, installing it"
+			install_package $PACKAGE
+			;;
+		*)	;;
+	esac
 }
 
 # This function will check config parameters required
