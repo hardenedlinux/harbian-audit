@@ -1240,7 +1240,7 @@ check_sshd_conf_for_one_value_runtime ()
 # Example: $1='nf_nat_sip'
 check_blacklist_module_set ()
 {
-	MODPROBE_CONF_FILE_PATTERN='/etc/modprobe.d/*'
+	MODPROBE_CONF_FILE_PATTERN="/etc/modprobe.d/*"
 	COUNT=$(grep -w $1 -r $MODPROBE_CONF_FILE_PATTERN | grep "^blacklist" | wc -l)
 	if [ $COUNT -ge 1 ]; then
 		debug "$1 has set in $MODPROBE_CONF_FILE_PATTERN"

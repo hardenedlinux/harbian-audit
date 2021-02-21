@@ -19,7 +19,7 @@ YUM_CONF='/etc/yum.conf'
 
 audit_debian ()
 {
-    if [ $(grep -v "^#" /etc/apt/ -r | grep -c "${OPTION}.*true") -gt 0 ]; then
+    if [ $(grep -v "^#" /etc/apt/ -Ir | grep -c "${OPTION}.*true") -gt 0 ]; then
         crit "The signature of packages option is disable "
         FNRET=1
     else
@@ -63,7 +63,7 @@ apply_debian () {
         ok "The signature of packages option is enable "
     else
         warn "Set to enabled signature of packages option"
-        for CONFFILE in $(grep -i "${OPTION}" /etc/apt/ -r | grep -v "^#" | awk -F: '{print $1}')
+        for CONFFILE in $(grep -i "${OPTION}" /etc/apt/ -Ir | grep -v "^#" | awk -F: '{print $1}')
         do
             sed -i "/${OPTION}/d" ${CONFFILE}
             #sed -i "s/${OPTION}.*true.*/${OPTION} \"false\";/g" ${CONFFILE}

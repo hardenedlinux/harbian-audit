@@ -19,7 +19,7 @@ YUM_OPTION='repo_gpgcheck'
 YUM_CONFFILE='/etc/yum.conf'
 
 audit_debian () {
-    if [ $(grep -v "^#" /etc/apt/ -r | grep -c "${OPTION}.*true") -gt 0 ]; then
+    if [ $(grep -v "^#" /etc/apt/ -rI | grep -c "${OPTION}.*true") -gt 0 ]; then
         crit "The allow insecure repository when by apt update is enable"
         FNRET=1
     else
@@ -61,7 +61,7 @@ apply_debian () {
         ok "The allow insecure repository when by apt update is disable"
     else
         warn "Set no allow insecure repository when by apt update"
-        for CONFFILE in $(grep -i "${OPTION}" /etc/apt/ -r | grep -v "^#" | awk -F: '{print $1}')
+        for CONFFILE in $(grep -i "${OPTION}" /etc/apt/ -rI | grep -v "^#" | awk -F: '{print $1}')
         do
             sed -i "s/${OPTION}.*true.*/${OPTION} \"false\";/g" ${CONFFILE}
         done
