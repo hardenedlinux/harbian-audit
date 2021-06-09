@@ -63,8 +63,8 @@ apply_debian () {
         ok "The signature of local packages option is enable "
     else
         warn "Set to enabled signature of local packages option"
-            sed -i "/^${OPTION}/d" ${CONFFILE}
-            #sed -i "s/${OPTION}.*true.*/${OPTION} \"false\";/g" ${CONFFILE}
+			backup_file $CONFFILE
+            sed -i "s/^${OPTION}/#&/" ${CONFFILE}
     fi
 }
 
@@ -72,9 +72,11 @@ apply_centos () {
     if [ $FNRET = 0 ]; then
         ok "The signature of packages option is enable "
     elif [ $FNRET = 1 ]; then
+		backup_file $YUM_CONFFILE
         warn "Set to enabled signature of packages option"
         sed -i "s/$YUM_OPTION=.*/$YUM_OPTION=1/g" $YUM_CONFFILE
     else
+		backup_file $YUM_CONFFILE
         warn "Add $YUM_OPTION option to $YUM_CONFFILE"
         add_end_of_file $YUM_CONFFILE "$YUM_OPTION=1"
     fi

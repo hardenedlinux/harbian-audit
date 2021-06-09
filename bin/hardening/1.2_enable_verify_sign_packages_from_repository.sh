@@ -65,8 +65,8 @@ apply_debian () {
         warn "Set to enabled signature of packages option"
         for CONFFILE in $(grep -i "${OPTION}" /etc/apt/ -Ir | grep -v "^#" | awk -F: '{print $1}')
         do
-            sed -i "/${OPTION}/d" ${CONFFILE}
-            #sed -i "s/${OPTION}.*true.*/${OPTION} \"false\";/g" ${CONFFILE}
+			backup_file ${CONFFILE}	
+            sed -i "s/^${OPTION}/#&/" ${CONFFILE}
         done
     fi
 }
@@ -75,9 +75,12 @@ apply_centos () {
 		ok "The signature of packages option is enable "
 	elif [ $FNRET = 1 ]; then
 		warn "Set to enabled signature of packages option"
+		backup_file $YUM_CONF
 		sed -i "s/$YUM_OPTION=.*/$YUM_OPTION=1/g" $YUM_CONF
+		
 	else 
 		warn "Add $YUM_OPTION option to $YUM_CONF"
+		backup_file $YUM_CONF
 		add_end_of_file $YUM_CONF "$YUM_OPTION=1"
     fi
 }
