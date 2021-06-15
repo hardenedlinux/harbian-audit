@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9 or CentOS Hardening
+# harbian-audit for Debian GNU/Linux 9/10 Hardening
 #
 
 #
-# 8.1.18 Make the Audit Configuration Immutable (Scored)
-# Modify by: Samson-W (sccxboy@gmail.com)
+# 8.1.33 Collect iptables-restore exec (Scored)
+# Add by Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
 set -e # One error, it's over
@@ -14,21 +14,27 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-e 2'
+AUDIT_PARAMS='-a always,exit -F path=/sbin/iptables-restore -F perm=x -k iptables_restore_exec
+-a always,exit -F path=/sbin/ip6tables-restore -F perm=x -k iptables_restore_exec'
+
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
     # define custom IFS and save default one
     d_IFS=$IFS
-    IFS=$'\n'
+    c_IFS=$'\n'
+    IFS=$c_IFS
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
-        does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
+        IFS=$d_IFS
+		RESULT=$(echo $AUDIT_VALUE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
+		does_valid_pattern_exist_in_file $FILE "$RESULT"
+        IFS=$c_IFS
         if [ $FNRET != 0 ]; then
-            crit "$AUDIT_VALUE is not in file $FILE"
+            crit "$RESULT is not in file $FILE"
         else
-            ok "$AUDIT_VALUE is present in $FILE"
+            ok "$RESULT is present in $FILE"
         fi
     done
     IFS=$d_IFS
@@ -36,11 +42,11 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    d_IFS=$IFS
     IFS=$'\n'
     for AUDIT_VALUE in $AUDIT_PARAMS; do
         debug "$AUDIT_VALUE should be in file $FILE"
-        does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
+		RESULT=$(echo $AUDIT_VALUE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
+		does_valid_pattern_exist_in_file $FILE "$RESULT"
         if [ $FNRET != 0 ]; then
             warn "$AUDIT_VALUE is not in file $FILE, adding it"
             add_end_of_file $FILE $AUDIT_VALUE
@@ -49,7 +55,6 @@ apply () {
             ok "$AUDIT_VALUE is present in $FILE"
         fi
     done
-    IFS=$d_IFS
 }
 
 # This function will check config parameters required
