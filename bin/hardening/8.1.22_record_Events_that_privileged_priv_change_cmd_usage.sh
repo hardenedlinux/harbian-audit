@@ -15,19 +15,6 @@ set -e # One error, it's over
 HARDENING_LEVEL=4
 FILE='/etc/audit/rules.d/audit.rules'
 
-AUDIT_PARAMS_DEBIAN="-a always,exit -F path=/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
--a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
--a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
--a always,exit -F path=/usr/bin/chsh -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
--a always,exit -F path=/usr/bin/sudoedit -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
--a always,exit -F path=/usr/bin/chfn -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-priv_change"
-AUDIT_PARAMS_CENTOS="-a always,exit -F path=/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
--a always,exit -F path=/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
--a always,exit -F path=/bin/newgrp -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
--a always,exit -F path=/bin/chsh -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
--a always,exit -F path=/bin/sudoedit -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
--a always,exit -F path=/bin/chfn -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-priv_change"
-
 AUDIT_PARAMS=""
 
 # This function will be called if the script status is on enabled / audit mode
@@ -80,6 +67,34 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
+	if [ $DONT_AUDITD_BY_UID -eq 1 ]; then
+AUDIT_PARAMS_DEBIAN="-a always,exit -F path=/bin/su -F perm=x -k privileged-priv_change
+-a always,exit -F path=/usr/bin/sudo -F perm=x -k privileged-priv_change
+-a always,exit -F path=/usr/bin/newgrp -F perm=x -k privileged-priv_change
+-a always,exit -F path=/usr/bin/chsh -F perm=x -k privileged-priv_change
+-a always,exit -F path=/usr/bin/sudoedit -F perm=x -k privileged-priv_change
+-a always,exit -F path=/usr/bin/chfn -F perm=x -k privileged-priv_change"
+AUDIT_PARAMS_CENTOS="-a always,exit -F path=/bin/su -F perm=x -k privileged-priv_change
+-a always,exit -F path=/bin/sudo -F perm=x -k privileged-priv_change
+-a always,exit -F path=/bin/newgrp -F perm=x -k privileged-priv_change
+-a always,exit -F path=/bin/chsh -F perm=x -k privileged-priv_change
+-a always,exit -F path=/bin/sudoedit -F perm=x -k privileged-priv_change
+-a always,exit -F path=/bin/chfn -F perm=x -k privileged-priv_change"
+	else
+AUDIT_PARAMS_DEBIAN="-a always,exit -F path=/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/usr/bin/chsh -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/usr/bin/sudoedit -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/usr/bin/chfn -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-priv_change"
+AUDIT_PARAMS_CENTOS="-a always,exit -F path=/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/bin/newgrp -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/bin/chsh -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/bin/sudoedit -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
+-a always,exit -F path=/bin/chfn -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-priv_change"
+	fi
+
 	if [ $OS_RELEASE -eq 1 ]; then
 		AUDIT_PARAMS=$AUDIT_PARAMS_DEBIAN
 	elif [ $OS_RELEASE -eq 2 ]; then

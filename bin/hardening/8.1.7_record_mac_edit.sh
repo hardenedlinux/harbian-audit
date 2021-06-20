@@ -17,23 +17,7 @@ HARDENING_LEVEL=4
 
 SELINUX_PKG="selinux-basics"
 SELINUX_PKG_CENTOS="selinux-policy"
-
-SE_AUDIT_PARAMS="-a always,exit -F dir=/etc/selinux/ -F perm=wa -k MAC-policy
--a always,exit -F dir=/usr/share/selinux/ -F perm=wa -k MAC-policy
--a always,exit -F path=/usr/bin/audit2allow -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
--a always,exit -F path=/usr/bin/chcon -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
--a always,exit -F path=/usr/bin/newrole -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
--a always,exit -F path=/usr/sbin/semanage -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
--a always,exit -F path=/usr/sbin/setsebool -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
--a always,exit -F path=/usr/sbin/restorecon -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
--a always,exit -F path=/usr/sbin/fixfiles -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
--a always,exit -F path=/usr/sbin/setenforce -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
--a always,exit -F path=/usr/sbin/setfiles -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event"
-
 APPARMOR_PKG="apparmor"
-AA_AUDIT_PARAMS='-w /etc/apparmor/ -p wa -k MAC-policy
--w /etc/apparmor.d/ -p wa -k MAC-policy
--a always,exit -F path=/sbin/apparmor_parser -F perm=x -F auid>=1000 -F auid!=4294967295 -k MAC-policy'
 
 FILE='/etc/audit/rules.d/audit.rules'
 
@@ -108,7 +92,37 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $DONT_AUDITD_BY_UID -eq 1 ]; then
+SE_AUDIT_PARAMS="-a always,exit -F dir=/etc/selinux/ -F perm=wa -k MAC-policy
+-a always,exit -F dir=/usr/share/selinux/ -F perm=wa -k MAC-policy
+-a always,exit -F path=/usr/bin/audit2allow -F perm=wax -k MAC_Event
+-a always,exit -F path=/usr/bin/chcon -F perm=wax -k MAC_Event
+-a always,exit -F path=/usr/bin/newrole -F perm=wax -k MAC_Event
+-a always,exit -F path=/usr/sbin/semanage -F perm=wax -k MAC_Event
+-a always,exit -F path=/usr/sbin/setsebool -F perm=wax -k MAC_Event
+-a always,exit -F path=/usr/sbin/restorecon -F perm=wax -k MAC_Event
+-a always,exit -F path=/usr/sbin/fixfiles -F perm=wax -k MAC_Event
+-a always,exit -F path=/usr/sbin/setenforce -F perm=wax -k MAC_Event
+-a always,exit -F path=/usr/sbin/setfiles -F perm=wax -k MAC_Event"
+AA_AUDIT_PARAMS='-w /etc/apparmor/ -p wa -k MAC-policy
+-w /etc/apparmor.d/ -p wa -k MAC-policy
+-a always,exit -F path=/sbin/apparmor_parser -F perm=x -k MAC-policy'
+else
+SE_AUDIT_PARAMS="-a always,exit -F dir=/etc/selinux/ -F perm=wa -k MAC-policy
+-a always,exit -F dir=/usr/share/selinux/ -F perm=wa -k MAC-policy
+-a always,exit -F path=/usr/bin/audit2allow -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
+-a always,exit -F path=/usr/bin/chcon -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
+-a always,exit -F path=/usr/bin/newrole -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
+-a always,exit -F path=/usr/sbin/semanage -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
+-a always,exit -F path=/usr/sbin/setsebool -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
+-a always,exit -F path=/usr/sbin/restorecon -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
+-a always,exit -F path=/usr/sbin/fixfiles -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
+-a always,exit -F path=/usr/sbin/setenforce -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event
+-a always,exit -F path=/usr/sbin/setfiles -F perm=wax -F auid>=1000 -F auid!=4294967295 -k MAC_Event"
+AA_AUDIT_PARAMS='-w /etc/apparmor/ -p wa -k MAC-policy
+-w /etc/apparmor.d/ -p wa -k MAC-policy
+-a always,exit -F path=/sbin/apparmor_parser -F perm=x -F auid>=1000 -F auid!=4294967295 -k MAC-policy'
+	fi
 }
 
 # Source Root Dir Parameter

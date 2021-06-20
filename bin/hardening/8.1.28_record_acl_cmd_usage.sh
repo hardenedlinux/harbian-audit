@@ -16,9 +16,6 @@ FILE='/etc/audit/rules.d/audit.rules'
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F path=/usr/bin/setfacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
--a always,exit -F path=/usr/bin/chacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng'
-
 # This function will be called if the script status is on enabled / audit mode
 audit () {
     # define custom IFS and save default one
@@ -69,7 +66,13 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $DONT_AUDITD_BY_UID -eq 1 ]; then
+AUDIT_PARAMS='-a always,exit -F path=/usr/bin/setfacl -F perm=x -k perm_chng
+-a always,exit -F path=/usr/bin/chacl -F perm=x -k perm_chng'
+	else
+AUDIT_PARAMS='-a always,exit -F path=/usr/bin/setfacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F path=/usr/bin/chacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng'
+	fi
 }
 
 # Source Root Dir Parameter

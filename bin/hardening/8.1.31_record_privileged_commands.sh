@@ -13,10 +13,6 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-# Find all files with setuid or setgid set
-AUDIT_PARAMS=$(find / -xdev \( -perm -4000 -o -perm -2000 \) -type f | awk '{print \
-"-a always,exit -F path=" $1 " -F perm=x -F auid>=1000 -F auid!=4294967295 \
--k privileged" }')
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
@@ -59,7 +55,16 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $DONT_AUDITD_BY_UID -eq 1 ]; then
+# Find all files with setuid or setgid set
+AUDIT_PARAMS=$(find / -xdev \( -perm -4000 -o -perm -2000 \) -type f | awk '{print \
+"-a always,exit -F path=" $1 " -F perm=x -k privileged" }')
+	else
+# Find all files with setuid or setgid set
+AUDIT_PARAMS=$(find / -xdev \( -perm -4000 -o -perm -2000 \) -type f | awk '{print \
+"-a always,exit -F path=" $1 " -F perm=x -F auid>=1000 -F auid!=4294967295 \
+-k privileged" }')
+	fi
 }
 
 # Source Root Dir Parameter

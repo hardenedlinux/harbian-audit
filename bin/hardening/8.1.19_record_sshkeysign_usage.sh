@@ -15,11 +15,6 @@ set -e # One error, it's over
 HARDENING_LEVEL=4
 FILE='/etc/audit/rules.d/audit.rules'
 
-AUDIT_PARAMS_DEBIAN="-a always,exit -F path=/usr/lib/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
--a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh"
-AUDIT_PARAMS_CENTOS="-a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
--a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh"
-
 AUDIT_PARAMS=""
 
 # This function will be called if the script status is on enabled / audit mode
@@ -72,6 +67,18 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
+	if [ $DONT_AUDITD_BY_UID -eq 1 ]; then
+AUDIT_PARAMS_DEBIAN="-a always,exit -F path=/usr/lib/openssh/ssh-keysign -F perm=x -k privileged-ssh
+-a always,exit -F path=/usr/bin/ssh-agent -F perm=x -k privileged-ssh"
+AUDIT_PARAMS_CENTOS="-a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F perm=x -k privileged-ssh
+-a always,exit -F path=/usr/bin/ssh-agent -F perm=x -k privileged-ssh"
+	else
+AUDIT_PARAMS_DEBIAN="-a always,exit -F path=/usr/lib/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
+-a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh"
+AUDIT_PARAMS_CENTOS="-a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
+-a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh"
+	fi	
+
 	if [ $OS_RELEASE -eq 1 ]; then
 		AUDIT_PARAMS=$AUDIT_PARAMS_DEBIAN
 	elif [ $OS_RELEASE -eq 2 ]; then
