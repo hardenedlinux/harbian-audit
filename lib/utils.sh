@@ -1152,7 +1152,7 @@ check_audit_path ()
 {
 	AUDITRULE=$1
 	# Check -w style, for example: "-w /etc/shadow -p wa" "-w /etc/ -p wa"    
-	if [ $(grep -c "-w") -eq 1 ]; then
+	if [[  $AUDITRULE =~ "-w" ]]; then 
 		RESULT=$(echo $AUDITRULE | awk '{print $2}')
 		if [ -f $(eval echo $RESULT)  -o -d $(eval echo $RESULT) ]; then
 			debug "File $RESULT is exist!"
@@ -1162,7 +1162,7 @@ check_audit_path ()
 			FNRET=1
 		fi
 	# Check -F style, for example: "-a always,exit -F path=/etc/shadow -F perm=wa" "-a always,exit -F dir=/etc/ -F perm=wa"    
-	elif [ $(grep -c "\-F.*path=") -eq 1 -o $(grep -c "\-F.*dir=") -eq 1 ]; then
+	elif [ $(echo $AUDITRULE | grep -c "\-F.*path=") -eq 1 -o $(echo $AUDITRULE | grep -c "\-F.*dir=") -eq 1 ]; then
 		RESULT=$(echo $AUDITRULE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
 		if [ -f $(eval echo $RESULT)  -o -d $(eval echo $RESULT) ]; then
 			debug "File $RESULT is exist!"
