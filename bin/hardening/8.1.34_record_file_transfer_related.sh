@@ -14,11 +14,6 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F path=/usr/bin/scp -F perm=x -k file_transfer_exec
--a always,exit -F path=/usr/bin/wget -F perm=x -k file_transfer_exec
--a always,exit -F path=/usr/bin/sftp -F perm=x -k file_transfer_exec
--a always,exit -F path=/usr/bin/curl -F perm=x -k file_transfer_exec'
-
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
@@ -62,7 +57,17 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $DONT_AUDITD_BY_UID -eq 1 ]; then
+AUDIT_PARAMS='-a always,exit -F path=/usr/bin/scp -F perm=x -k file_transfer_exec
+-a always,exit -F path=/usr/bin/wget -F perm=x -k file_transfer_exec
+-a always,exit -F path=/usr/bin/sftp -F perm=x -k file_transfer_exec
+-a always,exit -F path=/usr/bin/curl -F perm=x -k file_transfer_exec'
+	else
+AUDIT_PARAMS='-a always,exit -F path=/usr/bin/scp -F perm=x -F auid>=1000 -F auid!=4294967295 -k file_transfer_exec
+-a always,exit -F path=/usr/bin/wget -F perm=x -F auid>=1000 -F auid!=4294967295 -k file_transfer_exec
+-a always,exit -F path=/usr/bin/sftp -F perm=x -F auid>=1000 -F auid!=4294967295 -k file_transfer_exec
+-a always,exit -F path=/usr/bin/curl -F perm=x -F auid>=1000 -F auid!=4294967295 -k file_transfer_exec'
+	fi
 }
 
 # Source Root Dir Parameter
