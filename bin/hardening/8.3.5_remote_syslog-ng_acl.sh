@@ -1,31 +1,38 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9/10 or CentOS  Hardening
-#
-#
-# 8.7 Verifies integrity all packages (Scored)
-# Author : Samson wen, Samson <sccxboy@gmail.com>
+# harbian-audit for Debian GNU/Linux 7/8/9  Hardening
 #
 
-set -e # One error, it's over  
+#
+# 8.3.5 Accept Remote rsyslog Messages Only on Designated Log Hosts (Not Scored)
+#
+
+set -e # One error, it's over
 set -u # One variable unset, it's over
 
-HARDENING_LEVEL=5
+HARDENING_LEVEL=3
+PACKAGE_R='rsyslog'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    verify_integrity_all_packages
-    if [ $FNRET != 0 ]; then
-        crit "Verify integrity all packages is fail!"
-    else
-        ok "Verify integrity all packages is ok."
-    fi
+    is_pkg_installed $PACKAGE_R
+	if [ $FNRET = 0 ]; then
+		ok "$PACKAGE_R has installed, so pass."
+		FNRET=0
+	else
+    	info "Not implemented yet"
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    warn "This check item need to confirm manually. No automatic fix is available."
+    is_pkg_installed $PACKAGE_R
+	if [ $FNRET = 0 ]; then
+		ok "$PACKAGE_R has installed, so pass."
+	else
+    	info "Not implemented yet"
+	fi
 }
 
 # This function will check config parameters required

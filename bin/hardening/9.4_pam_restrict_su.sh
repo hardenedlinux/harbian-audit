@@ -5,7 +5,7 @@
 #
 
 #
-# 9.5 Restrict Access to the su Command (Scored)
+# 9.4 Restrict Access to the su Command (Scored)
 #
 
 set -e # One error, it's over

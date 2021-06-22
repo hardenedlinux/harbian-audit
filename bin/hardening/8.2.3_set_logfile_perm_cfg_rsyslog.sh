@@ -5,7 +5,7 @@
 #
 
 #
-# 8.2.4 Create and Set Permissions on rsyslog Log Files by conf file (Scored)
+# 8.2.3 Create and Set Permissions on rsyslog Log Files by conf file (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 

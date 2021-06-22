@@ -5,7 +5,7 @@
 #
 
 #
-# 8.3.5 Configure syslog-ng to Send Logs to a Remote Log Host (Not Scored)
+# 8.3.4 Configure syslog-ng to Send Logs to a Remote Log Host (Not Scored)
 #
 
 set -e # One error, it's over

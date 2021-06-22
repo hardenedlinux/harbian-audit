@@ -1,44 +1,31 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9  Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10 or CentOS  Hardening
 #
-
 #
-# 8.2.3 Configure /etc/rsyslog.conf (Not Scored)
+# 8.6 Verifies integrity all packages (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
-set -e # One error, it's over
+set -e # One error, it's over  
 set -u # One variable unset, it's over
 
-HARDENING_LEVEL=3
-
-SERVICE_NAME="rsyslog"
-PACKAGE_NG='syslog-ng'
+HARDENING_LEVEL=5
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-	is_pkg_installed $PACKAGE_NG	
-	if [ $FNRET = 0 ]; then
-		ok "$PACKAGE_NG has installed, so pass."
-		FNRET=0
-	else
-    	info "Ensure default and local facilities are preserved on the system"
-    	info "No measure here, please review the file by yourself"
-	fi
+    verify_integrity_all_packages
+    if [ $FNRET != 0 ]; then
+        crit "Verify integrity all packages is fail!"
+    else
+        ok "Verify integrity all packages is ok."
+    fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-	is_pkg_installed $PACKAGE_NG	
-	if [ $FNRET = 0 ]; then
-		ok "$PACKAGE_NG has installed, so pass."
-		FNRET=0
-	else
-    	info "Ensure default and local facilities are preserved on the system"
-    	info "No measure here, please review the file by yourself"
-	fi
+    warn "This check item need to confirm manually. No automatic fix is available."
 }
 
 # This function will check config parameters required
