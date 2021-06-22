@@ -1141,7 +1141,9 @@ yum_check_updates()
 # Check path of audit rule is exist, return 0 if path string is not NULL, else return 1 
 # Example: 
 # Process only the following format:
-# AUDITRULE="-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd"
+# AUDITRULE="-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd" or
+# AUDITRULE="-a always,exit -F dir=/home/ -F auid>=1000 -F auid!=4294967295 -k privileged-passwd" or
+# AUDITRULE="-w /home/ -k privileged-passwd" 
 # Please manually execute apt-file (Debian) / yum Provides (redhat) to ensure that the path already exists in the repository.
 # example: apt-file search /usr/bin/passwd
 # freedom-maker: /usr/bin/passwd-in-image
@@ -1149,13 +1151,29 @@ yum_check_updates()
 check_audit_path ()
 {
 	AUDITRULE=$1
-	RESULT=$(echo $AUDITRULE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
-	if [ -f $(eval echo $RESULT)  -o -d $(eval echo $RESULT) ]; then
-		debug "File $RESULT is exist!"
-		FNRET=0
+	# Check -w style, for example: "-w /etc/shadow -p wa" "-w /etc/ -p wa"    
+	if [[  $AUDITRULE =~ "-w" ]]; then 
+		RESULT=$(echo $AUDITRULE | awk '{print $2}')
+		if [ -f $(eval echo $RESULT)  -o -d $(eval echo $RESULT) ]; then
+			debug "File $RESULT is exist!"
+			FNRET=0
+		else
+			warn "File $RESULT is not exist!"
+			FNRET=1
+		fi
+	# Check -F style, for example: "-a always,exit -F path=/etc/shadow -F perm=wa" "-a always,exit -F dir=/etc/ -F perm=wa"    
+	elif [ $(echo $AUDITRULE | grep -c "\-F.*path=") -eq 1 -o $(echo $AUDITRULE | grep -c "\-F.*dir=") -eq 1 ]; then
+		RESULT=$(echo $AUDITRULE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
+		if [ -f $(eval echo $RESULT)  -o -d $(eval echo $RESULT) ]; then
+			debug "File $RESULT is exist!"
+			FNRET=0
+		else
+			warn "File $RESULT is not exist!"
+			FNRET=1
+		fi
 	else
-		warn "File $RESULT is not exist!"
-		FNRET=1
+		info "This rule is not including path or dir."		
+		FNRET=0
 	fi
 }
 

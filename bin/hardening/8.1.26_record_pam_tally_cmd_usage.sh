@@ -15,9 +15,6 @@ FILE='/etc/audit/rules.d/audit.rules'
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F path=/sbin/pam_tally -F perm=wxa -F auid>=1000 -F auid!=4294967295 -k privileged-pam
--a always,exit -F path=/sbin/pam_tally2 -F perm=wxa -F auid>=1000 -F auid!=4294967295 -k privileged-pam'
-
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	# This feature is only for debian
@@ -78,7 +75,13 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $DONT_AUDITD_BY_UID -eq 1 ]; then
+AUDIT_PARAMS='-a always,exit -F path=/sbin/pam_tally -F perm=wxa -k privileged-pam
+-a always,exit -F path=/sbin/pam_tally2 -F perm=wxa -k privileged-pam'
+	else
+AUDIT_PARAMS='-a always,exit -F path=/sbin/pam_tally -F perm=wxa -F auid>=1000 -F auid!=4294967295 -k privileged-pam
+-a always,exit -F path=/sbin/pam_tally2 -F perm=wxa -F auid>=1000 -F auid!=4294967295 -k privileged-pam'
+	fi
 }
 
 # Source Root Dir Parameter

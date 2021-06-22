@@ -91,9 +91,9 @@ $LONG_SCRIPT_NAME <RUN_MODE> [OPTIONS], where RUN_MODE is one of:
            password strength and robustness;
         2. Aide reinitializes.
 
-    --dont-auditd-by-uid
+    --dont-auditd-by-uid <1/0>
         Auditd rules do not use uid parameter, for all user to auditd. If set 1 will not use uid, else if 
-        set 0 will use uid.
+        set 0 will use uid. Default is 0.
 
 OPTIONS:
 
@@ -185,23 +185,25 @@ if [ -z "$CIS_ROOT_DIR" ]; then
 fi
 
 # For --dont-auditd-by-uid
-if [ $DONT_BY_UID_G_CONFIG -ne 127 ]; then
-	if [ $DONT_BY_UID_G_CONFIG -eq 1 ]; then
-		echo "Set dont use uid for auditd rules"
-		sed -i 's/^DONT_AUDITD_BY_UID=.*/DONT_AUDITD_BY_UID=1/g' $CIS_ROOT_DIR/etc/hardening.cfg
-	else
-		echo "Set use uid for auditd rules"
-		sed -i 's/^DONT_AUDITD_BY_UID=.*/DONT_AUDITD_BY_UID=0/g' $CIS_ROOT_DIR/etc/hardening.cfg
+if [ -z "$DONT_BY_UID_G_CONFIG" ]; then
+	usage
+else
+	if [ $DONT_BY_UID_G_CONFIG -ne 127 ]; then
+		if [ $DONT_BY_UID_G_CONFIG -eq 1 ]; then
+			echo "Set dont use uid for auditd rules"
+			sed -i 's/^DONT_AUDITD_BY_UID=.*/DONT_AUDITD_BY_UID=1/g' $CIS_ROOT_DIR/etc/hardening.cfg
+		else
+			echo "Set use uid for auditd rules"
+			sed -i 's/^DONT_AUDITD_BY_UID=.*/DONT_AUDITD_BY_UID=0/g' $CIS_ROOT_DIR/etc/hardening.cfg
+		fi
+		exit 0
 	fi
-	exit 0
 fi
 
 [ -r $CIS_ROOT_DIR/lib/constants.sh  ] && . $CIS_ROOT_DIR/lib/constants.sh
 [ -r $CIS_ROOT_DIR/etc/hardening.cfg ] && . $CIS_ROOT_DIR/etc/hardening.cfg
 [ -r $CIS_ROOT_DIR/lib/common.sh     ] && . $CIS_ROOT_DIR/lib/common.sh
 [ -r $CIS_ROOT_DIR/lib/utils.sh      ] && . $CIS_ROOT_DIR/lib/utils.sh
-
-
 
 # For --init
 if [ $INIT_G_CONFIG -eq 1 ]; then

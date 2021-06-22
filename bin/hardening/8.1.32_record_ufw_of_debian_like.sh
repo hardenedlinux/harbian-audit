@@ -33,14 +33,20 @@ audit () {
     	IFS=$c_IFS
     	for AUDIT_VALUE in $AUDIT_PARAMS; do
         	debug "$AUDIT_VALUE should be in file $FILE"
-        	IFS=$d_IFS
-			RESULT=$(echo $AUDIT_VALUE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
-			does_valid_pattern_exist_in_file $FILE "$RESULT"
-        	IFS=$c_IFS
-        	if [ $FNRET != 0 ]; then
-            	crit "$RESULT is not in file $FILE"
-        	else
-            	ok "$RESULT is present in $FILE"
+			check_audit_path $AUDIT_VALUE 
+			if [ $FNRET -eq 1 ];then
+				warn "path is not exsit! Please check file path is exist!"
+				continue
+			else
+        		IFS=$d_IFS
+				RESULT=$(echo $AUDIT_VALUE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
+				does_valid_pattern_exist_in_file $FILE "$RESULT"
+        		IFS=$c_IFS
+        		if [ $FNRET != 0 ]; then
+            		crit "$RESULT is not in file $FILE"
+        		else
+            		ok "$RESULT is present in $FILE"
+				fi
         	fi
     	done
     	IFS=$d_IFS
@@ -55,14 +61,20 @@ apply () {
     	IFS=$'\n'
     	for AUDIT_VALUE in $AUDIT_PARAMS; do
         	debug "$AUDIT_VALUE should be in file $FILE"
-			RESULT=$(echo $AUDIT_VALUE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
-			does_valid_pattern_exist_in_file $FILE "$RESULT"
-        	if [ $FNRET != 0 ]; then
-            	warn "$AUDIT_VALUE is not in file $FILE, adding it"
-            	add_end_of_file $FILE $AUDIT_VALUE
-				check_auditd_is_immutable_mode
-        	else
-            	ok "$AUDIT_VALUE is present in $FILE"
+			check_audit_path $AUDIT_VALUE 
+			if [ $FNRET -eq 1 ];then
+				warn "path is not exsit! Please check file path is exist!"
+				continue
+			else
+				RESULT=$(echo $AUDIT_VALUE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')
+				does_valid_pattern_exist_in_file $FILE "$RESULT"
+        		if [ $FNRET != 0 ]; then
+            		warn "$AUDIT_VALUE is not in file $FILE, adding it"
+            		add_end_of_file $FILE $AUDIT_VALUE
+					check_auditd_is_immutable_mode
+        		else
+            		ok "$AUDIT_VALUE is present in $FILE"
+				fi
         	fi
     	done
 	fi

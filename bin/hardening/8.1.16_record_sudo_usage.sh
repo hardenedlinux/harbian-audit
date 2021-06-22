@@ -22,12 +22,17 @@ audit () {
     # define custom IFS and save default one
     d_IFS=$IFS
     IFS=$'\n'
-	does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
-	if [ $FNRET != 0 ]; then
-		crit "$AUDIT_VALUE is not in file $FILE"
-		FNRET=1
-	else 
-		ok "$AUDIT_VALUE is present in $FILE"
+	check_audit_path $AUDIT_VALUE 
+	if [ $FNRET -eq 1 ];then
+		warn "path is not exsit! Please check file path is exist!"
+	else
+		does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
+		if [ $FNRET != 0 ]; then
+			crit "$AUDIT_VALUE is not in file $FILE"
+			FNRET=2
+		else 
+			ok "$AUDIT_VALUE is present in $FILE"
+		fi
 	fi
 	IFS=$d_IFS
 }
@@ -37,10 +42,12 @@ apply () {
     # define custom IFS and save default one
     d_IFS=$IFS
     IFS=$'\n'
-	if [ $FNRET = 1 ]; then
+	if [ $FNRET = 2 ]; then
 		warn "$AUDIT_VALUE is not in file $FILE, adding it"
 		add_end_of_file $FILE $AUDIT_VALUE
 		check_auditd_is_immutable_mode
+	elif [ $FNRET -eq 1 ];then
+		warn "path is not exsit! Please check file path is exist!"
 	else
 		ok "$AUDIT_VALUE is present in $FILE"
 	fi

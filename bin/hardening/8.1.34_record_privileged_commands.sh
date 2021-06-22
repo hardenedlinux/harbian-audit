@@ -1,12 +1,11 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 9/10 Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10 or CentOS Hardening
 #
 
 #
-# 8.1.34 Collect file transfer related items (Scored)
-# Add by Author : Samson wen, Samson <sccxboy@gmail.com>
+# 8.1.34 Collect Use of Privileged Commands (Scored)
 #
 
 set -e # One error, it's over
@@ -14,16 +13,10 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-AUDIT_PARAMS='-a always,exit -F path=/usr/bin/scp -F perm=x -k file_transfer_exec
--a always,exit -F path=/usr/bin/wget -F perm=x -k file_transfer_exec
--a always,exit -F path=/usr/bin/sftp -F perm=x -k file_transfer_exec
--a always,exit -F path=/usr/bin/curl -F perm=x -k file_transfer_exec'
-
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-	echo "DONT_AUDITD_BY_UID $DONT_AUDITD_BY_UID"
     # define custom IFS and save default one
     d_IFS=$IFS
     c_IFS=$'\n'
@@ -62,7 +55,16 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $DONT_AUDITD_BY_UID -eq 1 ]; then
+# Find all files with setuid or setgid set
+AUDIT_PARAMS=$(find / -xdev \( -perm -4000 -o -perm -2000 \) -type f | awk '{print \
+"-a always,exit -F path=" $1 " -F perm=x -k privileged" }')
+	else
+# Find all files with setuid or setgid set
+AUDIT_PARAMS=$(find / -xdev \( -perm -4000 -o -perm -2000 \) -type f | awk '{print \
+"-a always,exit -F path=" $1 " -F perm=x -F auid>=1000 -F auid!=4294967295 \
+-k privileged" }')
+	fi
 }
 
 # Source Root Dir Parameter

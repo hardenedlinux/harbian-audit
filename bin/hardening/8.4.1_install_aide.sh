@@ -15,7 +15,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=4
 
 # NB : in CIS, AIDE has been chosen, however we chose tripwire
-PACKAGE='aide'
+PACKAGE='aide aide-common'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {

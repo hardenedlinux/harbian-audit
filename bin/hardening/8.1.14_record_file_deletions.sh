@@ -14,9 +14,6 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-ARCH64_AUDIT_PARAMS='-a always,exit -F arch=b64 -S unlink -S unlinkat -S rename -S renameat -S rmdir -F auid>=1000 -F auid!=4294967295 -k delete
--a always,exit -F arch=b32 -S unlink -S unlinkat -S rename -S renameat -S rmdir -F auid>=1000 -F auid!=4294967295 -k delete'
-ARCH32_AUDIT_PARAMS='-a always,exit -F arch=b32 -S unlink -S unlinkat -S rename -S renameat -S rmdir -F auid>=1000 -F auid!=4294967295 -k delete'
 FILE='/etc/audit/rules.d/audit.rules'
 
 # This function will be called if the script status is on enabled / audit mode
@@ -63,7 +60,15 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	if [ $DONT_AUDITD_BY_UID -eq 1 ]; then
+ARCH64_AUDIT_PARAMS='-a always,exit -F arch=b64 -S unlink -S unlinkat -S rename -S renameat -S rmdir -k delete
+-a always,exit -F arch=b32 -S unlink -S unlinkat -S rename -S renameat -S rmdir -k delete'
+ARCH32_AUDIT_PARAMS='-a always,exit -F arch=b32 -S unlink -S unlinkat -S rename -S renameat -S rmdir -k delete'
+	else
+ARCH64_AUDIT_PARAMS='-a always,exit -F arch=b64 -S unlink -S unlinkat -S rename -S renameat -S rmdir -F auid>=1000 -F auid!=4294967295 -k delete
+-a always,exit -F arch=b32 -S unlink -S unlinkat -S rename -S renameat -S rmdir -F auid>=1000 -F auid!=4294967295 -k delete'
+ARCH32_AUDIT_PARAMS='-a always,exit -F arch=b32 -S unlink -S unlinkat -S rename -S renameat -S rmdir -F auid>=1000 -F auid!=4294967295 -k delete'
+	fi
 }
 
 # Source Root Dir Parameter
