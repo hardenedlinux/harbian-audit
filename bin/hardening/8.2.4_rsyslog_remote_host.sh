@@ -5,7 +5,7 @@
 #
 
 #
-# 8.2.5 Configure rsyslog to Send Logs to a Remote Log Host (Scored)
+# 8.2.4 Configure rsyslog to Send Logs to a Remote Log Host (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
