@@ -66,7 +66,7 @@ apply_debian () {
         for CONFFILE in $(grep -i "${OPTION}" /etc/apt/ -Ir | grep -v "^#" | awk -F: '{print $1}')
         do
 			backup_file ${CONFFILE}	
-            sed -i "s/^${OPTION}/#&/" ${CONFFILE}
+			sed -i "s/${OPTION}.*true.*/${OPTION} \"false\";/g" ${CONFFILE}
         done
     fi
 }
