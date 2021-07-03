@@ -6,6 +6,7 @@
 
 #
 # 1.3 Enable verify the signature of local packages (Scored)
+# Dependance pkg: debsig-verify
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
