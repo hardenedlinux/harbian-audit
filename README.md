@@ -146,6 +146,7 @@ If rsyslog is used, and you want to print the harbian-audit log to a separate lo
 user.info			/var/log/harbian-audit.log
 user.*				-/var/log/user.log
 ```
+The log will be output to the file /var/log/harbian-audit.log.
 
 ## After remediation (Very important)
 When exec --apply and set-hardening-level are set to 5 (the highest level), you need to do the following:
@@ -200,7 +201,7 @@ $ sed -i 's/^define int_if = ens33/define int_if = eth0/g' etc.nftables.conf
 Some check items check a variety of situations and are interdependent, they must be applied (fix) multiple times, and the OS must be a reboot after each applies (fix). 
 
 ### Items that must be applied after the first application(reboot after is better)
-8.1.32  Because this item is set, the audit rules will not be added. 
+8.1.35  Because this item is set, the audit rules will not be added. 
 
 ### Items that must be applied after all application is ok
 8.4.1   
@@ -208,9 +209,6 @@ Some check items check a variety of situations and are interdependent, they must
 These are all related to the aide. It is best to fix all the items after they have been fixed to fix the integrity of the database in the system. 
 
 ### Items that need to be fix twice  
-8.1.1.2  
-8.1.1.3  
-8.1.12  
 4.5  
 
 ## Hacking
