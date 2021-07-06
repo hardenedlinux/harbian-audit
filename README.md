@@ -140,6 +140,13 @@ Use the command to harden your OS:
 # bash bin/hardening.sh --apply 
 ```
 
+### rsyslog config   
+If rsyslog is used, and you want to print the harbian-audit log to a separate log file, the configuration is as follows:  
+```
+user.info			/var/log/harbian-audit.log
+user.*				-/var/log/user.log
+```
+
 ## After remediation (Very important)
 When exec --apply and set-hardening-level are set to 5 (the highest level), you need to do the following:
 
@@ -279,7 +286,6 @@ AMI Name: harbian-audit complianced for Debian GNU/Linux 9
 #### Docs   
 [How to creating and making a QEMU image of harbian-audit complianced Debian GNU/Linux 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/QEMU/how_to_creating_and_making_a_QEMU_img.mkd)  
 [How to use QEMU image of harbian-audit complicanced Debian GNU/Linux 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/QEMU/how_to_use_QEMU_image_of_harbian_audit_complianced_Debian_9.mkd)   
-
 
 ## harbian-audit License   
 GPL 3.0 
