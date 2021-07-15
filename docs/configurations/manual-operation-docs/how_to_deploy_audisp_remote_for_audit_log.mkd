@@ -45,10 +45,16 @@ etc/audisp/audisp-remote.conf is inconsistent with the MAN document
 queue_error_action. 
 ```
 
-If not record logs on local filesystem, Modify /etc/audit/auditd.conf:
+If not record logs on local filesystem, Modify /etc/audit/auditd.conf:   
 ```
 write_logs = no
 ```
+
+Set name_format of /etc/audisp/audispd.conf to NUMERIC, in audit.log, the node will record the IP address:   
+```
+name_format = NUMERIC 
+```  
+** Note: The IP address may be 127.0.1.1, please modify it in /etc/hosts. You can use hostname -i to check whether it is the correct address. **    
 
 ### Restart service 
 Restart auditd service:
