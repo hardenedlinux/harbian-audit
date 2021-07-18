@@ -84,7 +84,11 @@ check_config() {
 -a always,exit -F dir=/etc/sysconfig/ip6tables -F perm=wa -k config_file_change
 -a always,exit -F dir=/etc/sysconfig/ip6tables-config -F perm=wa -k config_file_change
 -a always,exit -F dir=/etc/sysconfig/iptables-config -F perm=wa -k config_file_change
--a always,exit -F path=/etc/sysctl.conf -F perm=wa -k config_file_change'
+-a always,exit -F path=/etc/sysctl.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/rsyslog.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/audisp/plugins.d/au-remote.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/logrotate.conf -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/logrotate.d/ -F perm=wa -k config_file_change'
 	# Debian
 	else
 		AUDIT_PARAMS='-a always,exit -F path=/etc/audisp/audisp-remote.conf -F perm=wa -k config_file_change
@@ -99,7 +103,11 @@ check_config() {
 -a always,exit -F dir=/etc/profile.d/ -F perm=wa -k config_file_change
 -a always,exit -F dir=/etc/security/ -F perm=wa -k config_file_change
 -a always,exit -F dir=/etc/iptables/ -F perm=wa -k config_file_change
--a always,exit -F path=/etc/sysctl.conf -F perm=wa -k config_file_change'
+-a always,exit -F path=/etc/sysctl.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/rsyslog.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/audisp/plugins.d/au-remote.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/logrotate.conf -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/logrotate.d/ -F perm=wa -k config_file_change'
 	fi
 }
 

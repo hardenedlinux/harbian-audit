@@ -6,6 +6,7 @@
 
 #
 # 8.1.1.9 Set space left for auditd service (Scored)
+# If the value of the "space_left" keyword is set to more than 25 percent of the total partition size, this is a finding.
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -34,7 +35,7 @@ audit () {
                     FNRET=3
                 else                
                     SETSIZE=$(grep "^space_left.=.*"  $FILE | awk '{printf $3}')
-                    if [ "${SETSIZE}" -lt "${LEFTSIZE}" ]; then
+                    if [ "${SETSIZE}" -gt "${LEFTSIZE}" ]; then
                         crit "Space left value: ${SETSIZE} is more than audit log filesystem 25%"
                         FNRET=4
                     else

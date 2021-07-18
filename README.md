@@ -148,6 +148,12 @@ user.*				-/var/log/user.log
 ```
 The log will be output to the file /var/log/harbian-audit.log.
 
+If you apply docs/configurations/etc.iptables.rules.v4.sh to your firewall rules, and want to print the iptables log to a separate log file, insert the following lines to rsyslog.conf:  
+```
+:msg,contains,"FW-"                     -/var/log/firewalllog.log
+&                                       stop
+```
+
 ## After remediation (Very important)
 When exec --apply and set-hardening-level are set to 5 (the highest level), you need to do the following:
 
