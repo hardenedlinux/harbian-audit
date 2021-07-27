@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9/10 or CentOS Hardening 
+# harbian-audit for Debian GNU/Linux 9/10 or CentOS Hardening 
 # Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
-# 4.8 Disable USB Devices
-# TODO test
+# 4.8 Disable USB storage Devices
+# TODO: CentOS 
 #
 
 set -e # One error, it's over
@@ -15,43 +15,39 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-USER='root'
-PATTERN='ACTION=="add", SUBSYSTEMS=="usb", TEST=="authorized_default", ATTR{authorized_default}="0"' # We do test disabled by default, whitelist is up to you
-FILES_TO_SEARCH='/etc/udev/rules.d'
-FILE='/etc/udev/rules.d/CIS_4.6_usb_devices.conf'
-
-BLACKRULEPATTERN='^blacklist[[:blank:]].*usb-storage'
-BLACKRULE='blacklist usb-storage'
+BLACKRULEPATTERN='install[[:blank:]].*usb_storage[[:blank:]].*/bin/true'
+BLACKRULE='install usb_storage /bin/true'
 BLACKCONFILE='/etc/modprobe.d/blacklist.conf'
+BLACKCONDIR='/etc/modprobe.d'
 
 audit_debian () {
     SEARCH_RES=0
-    for FILE_SEARCHED in $FILES_TO_SEARCH; do
+    for FILE_SEARCHED in $BLACKCONDIR; do
         if [ $SEARCH_RES = 1 ]; then break; fi
         if test -d $FILE_SEARCHED; then
             debug "$FILE_SEARCHED is a directory"
             for file_in_dir in $(ls $FILE_SEARCHED); do
-                does_pattern_exist_in_file "$FILE_SEARCHED/$file_in_dir" "^$PATTERN"
+                does_pattern_exist_in_file "$FILE_SEARCHED/$file_in_dir" "^$BLACKRULEPATTERN"
                 if [ $FNRET != 0 ]; then
-                    debug "$PATTERN is not present in $FILE_SEARCHED/$file_in_dir"
+                    debug "$BLACKRULEPATTERN is not present in $FILE_SEARCHED/$file_in_dir"
                 else
-                    ok "$PATTERN is present in $FILE_SEARCHED/$file_in_dir"
+                    ok "$BLACKRULEPATTERN is present in $FILE_SEARCHED/$file_in_dir"
                     SEARCH_RES=1
                     break
                 fi
             done
         else
-            does_pattern_exist_in_file "$FILE_SEARCHED" "^$PATTERN"
+            does_pattern_exist_in_file "$FILE_SEARCHED" "^$BLACKRULEPATTERN"
             if [ $FNRET != 0 ]; then
-                debug "$PATTERN is not present in $FILE_SEARCHED"
+                debug "$BLACKRULEPATTERN is not present in $FILE_SEARCHED"
             else
-                ok "$PATTERN is present in $FILES_TO_SEARCH"
+                ok "$BLACKRULEPATTERN is present in $BLACKCONDIR"
                 SEARCH_RES=1
             fi
         fi
     done
     if [ $SEARCH_RES = 0 ]; then
-        crit "$PATTERN is not present in $FILES_TO_SEARCH"
+        crit "$BLACKRULEPATTERN is not present in $BLACKCONDIR"
     fi
 }
 
@@ -74,47 +70,41 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
     SEARCH_RES=0
-    for FILE_SEARCHED in $FILES_TO_SEARCH; do
+    for FILE_SEARCHED in $BLACKCONDIR; do
         if [ $SEARCH_RES = 1 ]; then break; fi
         if test -d $FILE_SEARCHED; then
             debug "$FILE_SEARCHED is a directory"
             for file_in_dir in $(ls $FILE_SEARCHED); do
-                does_pattern_exist_in_file "$FILE_SEARCHED/$file_in_dir" "^$PATTERN"
+                does_pattern_exist_in_file "$FILE_SEARCHED/$file_in_dir" "^$BLACKRULEPATTERN"
                 if [ $FNRET != 0 ]; then
-                    debug "$PATTERN is not present in $FILE_SEARCHED/$file_in_dir"
+                    debug "$BLACKRULEPATTERN  is not present in $FILE_SEARCHED/$file_in_dir"
                 else
-                    ok "$PATTERN is present in $FILE_SEARCHED/$file_in_dir"
+                    ok "$BLACKRULEPATTERN  is present in $FILE_SEARCHED/$file_in_dir"
                     SEARCH_RES=1
                     break
                 fi
             done
         else
-            does_pattern_exist_in_file "$FILE_SEARCHED" "^$PATTERN"
+            does_pattern_exist_in_file "$FILE_SEARCHED" "^$BLACKRULEPATTERN "
             if [ $FNRET != 0 ]; then
-                debug "$PATTERN is not present in $FILE_SEARCHED"
+                debug "$BLACKRULEPATTERN  is not present in $FILE_SEARCHED"
             else
-                ok "$PATTERN is present in $FILES_TO_SEARCH"
+                ok "$BLACKRULEPATTERN  is present in $BLACKCONDIR"
                 SEARCH_RES=1
             fi
         fi
     done
     if [ $SEARCH_RES = 0 ]; then
-        warn "$PATTERN is not present in $FILES_TO_SEARCH"
-        touch $FILE
-        chmod 644 $FILE
-        add_end_of_file $FILE '
-# By default, disable all.
-ACTION=="add", SUBSYSTEMS=="usb", TEST=="authorized_default", ATTR{authorized_default}="0"
-
-# Enable hub devices.
-ACTION=="add", ATTR{bDeviceClass}=="09", TEST=="authorized", ATTR{authorized}="1"
-
-# Enables keyboard devices
-ACTION=="add", ATTR{product}=="*[Kk]eyboard*", TEST=="authorized", ATTR{authorized}="1"
-
-# PS2-USB converter
-ACTION=="add", ATTR{product}=="*Thinnet TM*", TEST=="authorized", ATTR{authorized}="1"
-'
+		warn "$BLACKRULEPATTERN  is not present in $BLACKCONDIR"
+		if [ -f $BLACKCONFILE ]; then
+			warn "Add $BLACKRULE to $BLACKCONFILE"
+			add_end_of_file $BLACKCONFILE "$BLACKRULE"
+		else
+			warn "Create $BLACKCONFILE and add $BLACKRULE to $BLACKCONFILE"
+			touch $BLACKCONFILE
+			chmod 644 $BLACKCONFILE
+			add_end_of_file $BLACKCONFILE "$BLACKRULE"
+		fi
     fi
 }
 
