@@ -67,7 +67,7 @@ root@harbian:/opt/harbian-audit-master#  bash bin/hardening.sh --init
 root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --audit-all  
 root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --set-hardening-level 5 
 root@harbian:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/7.4.4_hosts_deny.cfg 
-root@harbian:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/8.1.32_freeze_auditd_conf.cfg 
+root@harbian:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/8.1.35_freeze_auditd_conf.cfg 
 root@harbian:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/8.4.1_install_aide.cfg 
 root@harbian:/opt/harbian-audit-master# sed -i 's/^status=.*/status=disabled/' etc/conf.d/8.4.2_aide_cron.cfg 
 root@harbian:/opt/harbian-audit-master# ./bin/hardening.sh --apply 
@@ -119,16 +119,16 @@ If need adds a project on AMI, add the project on such as /opt, /usr/local/bin d
 # rm /opt/master.zip 
 # rm /opt/harbian-audit-master/tmp/backups/*
 $ cd /opt/harbian-audit-master/etc/conf.d
-# rm -f !(8.1.32_freeze_auditd_conf.cfg|8.4.1_install_aide.cfg|8.4.2_aide_cron.cfg) 
+# rm -f !(8.1.35_freeze_auditd_conf.cfg|8.4.1_install_aide.cfg|8.4.2_aide_cron.cfg) 
 ```
 
 #### Final fix  
 ```
 $ cd /opt/harbian-audit-master 
-# sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.1.32_freeze_auditd_conf.cfg
+# sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.1.35_freeze_auditd_conf.cfg
 # sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.1_install_aide.cfg 
 # sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.2_aide_cron.cfg 
-# bash bin/hardening.sh --apply --only 8.1.32
+# bash bin/hardening.sh --apply --only 8.1.35
 # bash bin/hardening.sh --apply --only 8.4.1
 # bash bin/hardening.sh --apply --only 8.4.2
 # rm /opt/harbian-audit-master/tmp/backups/*

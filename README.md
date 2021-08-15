@@ -157,7 +157,7 @@ If you apply docs/configurations/etc.iptables.rules.v4.sh to your firewall rules
 ## After remediation (Very important)
 When exec --apply and set-hardening-level are set to 5 (the highest level), you need to do the following:
 
-1) When applying 9.5(Restrict Access to the su Command), you must use the root account to log in to the OS because ordinary users cannot perform subsequent operations. 
+1) When applying 9.4(Restrict Access to the su Command), you must use the root account to log in to the OS because ordinary users cannot perform subsequent operations. 
 If you can only use ssh for remote login, you must use the su command when the normal user logs in. Then do the following:
 ```
 # sed -i '/^[^#].*pam_wheel.so.*/s/^/# &/' /etc/pam.d/su 
