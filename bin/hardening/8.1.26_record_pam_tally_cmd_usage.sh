@@ -6,6 +6,7 @@
 
 #
 # 8.1.26  Recored pam_tally/pam_tally2 command usage(Only for Debian) (Scored)
+# Replaced pam_tally2 with faillock in debian 11
 # Author : Samson wen, Samson <sccxboy@gmail.com> Author add this 
 #
 
@@ -74,13 +75,23 @@ apply () {
 }
 
 # This function will check config parameters required
+# Replaced pam_tally2 with faillock in debian 11
 check_config() {
+	is_debian_11
 	if [ $DONT_AUDITD_BY_UID -eq 1 ]; then
+		if [ $FNRET = 1 ]; then
 AUDIT_PARAMS='-a always,exit -F path=/sbin/pam_tally -F perm=wxa -k privileged-pam
 -a always,exit -F path=/sbin/pam_tally2 -F perm=wxa -k privileged-pam'
+		elif [ $FNRET = 0 ]; then
+AUDIT_PARAMS='-a always,exit -F path=/usr/sbin/faillock -F perm=wxa -k privileged-pam'
+		fi
 	else
+		if [ $FNRET = 1 ]; then
 AUDIT_PARAMS='-a always,exit -F path=/sbin/pam_tally -F perm=wxa -F auid>=1000 -F auid!=4294967295 -k privileged-pam
 -a always,exit -F path=/sbin/pam_tally2 -F perm=wxa -F auid>=1000 -F auid!=4294967295 -k privileged-pam'
+		elif [ $FNRET = 0 ]; then
+AUDIT_PARAMS='-a always,exit -F path=/usr/sbin/faillock -F perm=wxa -F auid>=1000 -F auid!=4294967295 -k privileged-pam'
+		fi
 	fi
 }
 

@@ -98,6 +98,22 @@ is_debian_10()
 	fi
 }
 
+is_debian_11()
+{
+	if [ -r /etc/debian_version ]; then
+    	if $(cat /etc/debian_version | grep -q "^11.[0-9]"); then
+       		debug "Debian version is 11."
+        	FNRET=0
+    	else
+        	debug "Debian version is not 11."
+        	FNRET=1
+    	fi
+	else
+		debug "Current OS is not Debian."
+		FNRET=2
+	fi
+}
+
 is_64bit_arch()
 {
 	if $(uname -m | grep -q "64"); then 
