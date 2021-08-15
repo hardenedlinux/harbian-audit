@@ -98,6 +98,22 @@ is_debian_10()
 	fi
 }
 
+is_debian_11()
+{
+	if [ -r /etc/debian_version ]; then
+    	if $(cat /etc/debian_version | grep -q "^11.[0-9]"); then
+       		debug "Debian version is 11."
+        	FNRET=0
+    	else
+        	debug "Debian version is not 11."
+        	FNRET=1
+    	fi
+	else
+		debug "Current OS is not Debian."
+		FNRET=2
+	fi
+}
+
 is_64bit_arch()
 {
 	if $(uname -m | grep -q "64"); then 
@@ -749,6 +765,31 @@ check_param_pair_by_value ()
     else
         debug "$FILENAME is not exist"
         FNRET=3   
+    fi
+}
+
+# Only check option name 
+check_no_param_option_by_value()
+{   
+    LOCATION=$1
+    OPTION=$2
+
+    #Example:
+    #LOCATION="/etc/security/faillock.conf"
+    #OPTION="even_deny_root"
+    
+    if [ -f "$LOCATION" ];then
+        RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep "$OPTION" | wc -l)
+        if [ "$RESULT" -eq 1 ]; then
+            debug "$OPTION is conf"
+            FNRET=0
+        else
+            debug "$OPTION is not conf"
+            FNRET=2
+        fi
+    else
+        debug "$LOCATION is not exist"
+        FNRET=1   
     fi
 }
 
