@@ -5,7 +5,7 @@
 #
 
 #
-# 8.1.32 Record netfilter related Events (Scored)
+# 8.1.18 Record netfilter related Events (Scored)
 # Author: Samson-W (samson@hardenedlinux.org) author add this 
 # todo test for centos
 
