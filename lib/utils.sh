@@ -768,6 +768,31 @@ check_param_pair_by_value ()
     fi
 }
 
+# Only check option name 
+check_no_param_option_by_value()
+{   
+    LOCATION=$1
+    OPTION=$2
+
+    #Example:
+    #LOCATION="/etc/security/faillock.conf"
+    #OPTION="even_deny_root"
+    
+    if [ -f "$LOCATION" ];then
+        RESULT=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $LOCATION | grep "$OPTION" | wc -l)
+        if [ "$RESULT" -eq 1 ]; then
+            debug "$OPTION is conf"
+            FNRET=0
+        else
+            debug "$OPTION is not conf"
+            FNRET=2
+        fi
+    else
+        debug "$LOCATION is not exist"
+        FNRET=1   
+    fi
+}
+
 check_param_pair_by_pam()
 {   
     LOCATION=$1
