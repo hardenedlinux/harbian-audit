@@ -17,13 +17,12 @@ HARDENING_LEVEL=3
 LOGDIR='/var/log'
 ERRPERFILELIST='/dev/shm/8.5-filelist'
 PERMISS_MODE='/7137'
-PERMISS_SET='0640'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	find $LOGDIR -type f -perm $PERMISS_MODE -ls > $ERRPERFILELIST
-	countnum=$(cat $ERRPERFILELIST | wc -l)
-	if [ $countnum -gt 0 ]; then
+	countnum=$(wc -l < $ERRPERFILELIST)
+	if [ "$countnum" -gt 0 ]; then
 		crit  "Permissions of all log files are not correctly configured!"
 		cat $ERRPERFILELIST
 		FNRET=1
@@ -36,11 +35,11 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-	if [ FNRET = 0 ]; then
+	if [ $FNRET = 0 ]; then
 		ok "Permissions of all log files have correctly configured!"
 	else
 		warn  "Permissions of all log files are not correctly configured! Set it"
-		chmod -R $PERMISS_SET $LOGDIR/*
+        find $LOGDIR -type f -perm $PERMISS_MODE -exec chmod a-x,go-w,o-r {} \;
 		if [ -r $ERRPERFILELIST ]; then
 			rm $ERRPERFILELIST
 		fi
@@ -63,8 +62,8 @@ if [ -z "$CIS_ROOT_DIR" ]; then
 fi
 
 # Main function, will call the proper functions given the configuration (audit, enabled, disabled)
-if [ -r $CIS_ROOT_DIR/lib/main.sh ]; then
-    . $CIS_ROOT_DIR/lib/main.sh
+if [ -r "$CIS_ROOT_DIR/lib/main.sh" ]; then
+    . "$CIS_ROOT_DIR/lib/main.sh"
 else
     echo "Cannot find main.sh, have you correctly defined your root directory? Current value is $CIS_ROOT_DIR in /etc/default/cis-hardening"
     exit 128
