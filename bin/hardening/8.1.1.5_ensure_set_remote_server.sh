@@ -15,7 +15,6 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=4
 
 PACKAGE='audispd-plugins'
-FILE='/etc/audisp/audisp-remote.conf'
 PATTERN='remote_server'
 
 # This function will be called if the script status is on enabled / audit mode
@@ -59,7 +58,12 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	#Ubuntu 
+	if [ $OS_RELEASE -eq 3 ]; then
+		FILE='/etc/audit/audisp-remote.conf'
+	else
+		FILE='/etc/audisp/audisp-remote.conf'
+	fi
 }
 
 # Source Root Dir Parameter

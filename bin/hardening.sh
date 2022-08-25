@@ -205,15 +205,21 @@ fi
 [ -r $CIS_ROOT_DIR/lib/common.sh     ] && . $CIS_ROOT_DIR/lib/common.sh
 [ -r $CIS_ROOT_DIR/lib/utils.sh      ] && . $CIS_ROOT_DIR/lib/utils.sh
 
+### Debian: OS_RELEASE=1  Redhat/centos: OS_RELEASE=2 Ubuntu: OS_RELEASE=3
 # For --init
 if [ $INIT_G_CONFIG -eq 1 ]; then
 	if [ -r /etc/redhat-release ]; then
 		info "This OS is redhat/CentOS."
 		sed -i 's/^OS_RELEASE=.*/OS_RELEASE=2/g' /etc/default/cis-hardening 
 		. /etc/default/cis-hardening
+	elif [ $(grep -i Ubuntu /etc/lsb-release -c) -gt 0 ]; then
+		info "This OS is Ubuntu."
+		sed -i 's/^OS_RELEASE=.*/OS_RELEASE=3/g' /etc/default/cis-hardening 
+		. /etc/default/cis-hardening
 	elif [ -r /etc/debian_version ]; then
 		info "This OS is Debian."
-		:
+		sed -i 's/^OS_RELEASE=.*/OS_RELEASE=1/g' /etc/default/cis-hardening 
+		. /etc/default/cis-hardening
 	else
 		crit "This OS not support!"
 		exit 128
@@ -225,6 +231,8 @@ if [ $OS_RELEASE -eq 1 ]; then
 	info "Start auditing for Debian."
 elif [ $OS_RELEASE -eq 2 ]; then
 	info "Start auditing for redhat/CentOS."
+elif [ $OS_RELEASE -eq 3 ]; then
+	info "Start auditing for Ubuntu."
 else
 	crit "This OS not support!"
 	exit 128
@@ -251,9 +259,9 @@ if [ $FINAL_G_CONFIG -eq 1 ]; then
 
 	# Reinit aide database 
 	info "Will reinitialize the AIDE database"
-	if [ $OS_RELEASE -eq 1 ]; then
+	if [ $OS_RELEASE -eq 1 -o $OS_RELEASE -eq 3 ]; then
 		aideinit
-	elif [ $OS_RELEASE -eq 2 ]; then
+	elif [ $OS_RELEASE -eq 2]; then
 		aide --init
         mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
 	fi

@@ -89,8 +89,26 @@ check_config() {
 -a always,exit -F path=/etc/audisp/plugins.d/au-remote.conf -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/logrotate.conf -F perm=wa -k config_file_change
 -a always,exit -F dir=/etc/logrotate.d/ -F perm=wa -k config_file_change'
+	# Ubuntu
+	elif [ $OS_RELEASE -eq 3 ]; then
+		AUDIT_PARAMS='-a always,exit -F path=/etc/audit/audisp-remote.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/audit/auditd.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/default/grub -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/fstab -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/hosts.deny -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/login.defs -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/audit/rules.d/ -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/pam.d/ -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/profile -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/profile.d/ -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/security/ -F perm=wa -k config_file_change
+-a always,exit -F dir=/etc/iptables/ -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/sysctl.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/rsyslog.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/audisp/plugins.d/au-remote.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/logrotate.conf -F perm=wa -k config_file_change'
 	# Debian
-	else
+	elif [ $OS_RELEASE -eq 1 ]; then
 		AUDIT_PARAMS='-a always,exit -F path=/etc/audisp/audisp-remote.conf -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/audit/auditd.conf -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/default/grub -F perm=wa -k config_file_change
@@ -108,6 +126,8 @@ check_config() {
 -a always,exit -F path=/etc/audisp/plugins.d/au-remote.conf -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/logrotate.conf -F perm=wa -k config_file_change
 -a always,exit -F dir=/etc/logrotate.d/ -F perm=wa -k config_file_change'
+	else
+		warn "No support!!!"
 	fi
 }
 

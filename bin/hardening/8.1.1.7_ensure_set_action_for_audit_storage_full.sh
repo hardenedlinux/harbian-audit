@@ -15,7 +15,6 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=4
 
 PACKAGE='audispd-plugins'
-FILE='/etc/audisp/audisp-remote.conf'
 PATTERN='disk_full_action'
 SETVALUE='syslog'
 
@@ -70,7 +69,12 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	#Ubuntu 
+	if [ $OS_RELEASE -eq 3 ]; then
+		FILE='/etc/audit/audisp-remote.conf'
+	else
+		FILE='/etc/audisp/audisp-remote.conf'
+	fi
 }
 
 # Source Root Dir Parameter
