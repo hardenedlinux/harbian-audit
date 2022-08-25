@@ -105,7 +105,7 @@ check_config() {
 -a always,exit -F dir=/etc/iptables/ -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/sysctl.conf -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/rsyslog.conf -F perm=wa -k config_file_change
--a always,exit -F path=/etc/audisp/plugins.d/au-remote.conf -F perm=wa -k config_file_change
+-a always,exit -F path=/etc/audit/plugins.d/au-remote.conf -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/logrotate.conf -F perm=wa -k config_file_change'
 	# Debian
 	elif [ $OS_RELEASE -eq 1 ]; then
