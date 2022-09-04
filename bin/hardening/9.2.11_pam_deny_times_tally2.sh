@@ -75,7 +75,7 @@ audit_debian11 () {
 }
 
 audit () {
-	if [ $ISDEBIAN11 = 1 ]; then
+	if [ $ISDEBIAN11 -eq 1 ]; then
 		audit_debian11
 	else
 		audit_before11
@@ -160,12 +160,12 @@ apply () {
 check_config() {
 	if [ $OS_RELEASE -eq 2 ]; then
 		PACKAGE='pam'
-		PAMLIBNAME='pam_failloc.so'
-		AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_failloc.so'
+		PAMLIBNAME='pam_faillock.so'
+		AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_faillock.so'
 		AUTHFILE='/etc/pam.d/password-auth'
-		AUTHRULE='auth    required pam_failloc.so deny=3 even_deny_root unlock_time=900'
+		AUTHRULE='auth    required pam_faillock.so deny=3 even_deny_root unlock_time=900'
 		ADDPATTERNLINE='auth[[:space:]]*required'
-	else
+	elif [ $OS_RELEASE -eq 1 ]; then
 		is_debian_11
 		# faillock for Debian 11 
                 if [ $FNRET = 0 ]; then
@@ -179,6 +179,12 @@ check_config() {
 			AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_tally2.so'
 			AUTHRULE='auth    required pam_tally2.so deny=3 even_deny_root unlock_time=900'
 		fi
+	# same to debian11
+	elif [ $OS_RELEASE -eq 3 ]; then
+			ISDEBIAN11=1
+			SECCONFFILE='/etc/security/faillock.conf'
+			AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_faillock.so'
+			AUTHRULE='auth    required pam_faillock.so'
 	fi
 }
 
