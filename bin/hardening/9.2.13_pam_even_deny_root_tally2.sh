@@ -156,7 +156,7 @@ check_config() {
 		AUTHRULE='auth    required pam_faillock.so preauth silent audit deny=3 even_deny_root fail_interval=900 unlock_time=900'
 		ADDPATTERNLINE='auth[[:space:]]*required'
 		DENYROOT='even_deny_root'
-	else
+	elif [ $OS_RELEASE -eq 1 ]; then
 		is_debian_11
 		# faillock for Debian 11 
                 if [ $FNRET = 0 ]; then
@@ -170,6 +170,12 @@ check_config() {
 			AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_tally2.so'
 			AUTHRULE='auth    required pam_tally2.so deny=3 even_deny_root unlock_time=900'
 		fi
+	# same to debian11
+	elif [ $OS_RELEASE -eq 3 ]; then
+			ISDEBIAN11=1
+			SECCONFFILE='/etc/security/faillock.conf'
+			AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_faillock.so'
+			AUTHRULE='auth    required pam_faillock.so'
 	fi
 }
 
