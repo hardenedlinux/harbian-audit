@@ -21,7 +21,7 @@ audit () {
 	# This feature is only for debian
 	if [ $OS_RELEASE -eq 2 ]; then
 		ok "CentOS/Redhat is not support, so pass"
-	elif [ $OS_RELEASE -eq 1 ]; then
+	elif [ $OS_RELEASE -eq 1 -o $OS_RELEASE -eq 3 ]; then
     	# define custom IFS and save default one
     	d_IFS=$IFS
     	c_IFS=$'\n'
@@ -52,7 +52,7 @@ apply () {
 	# This feature is only for debian
 	if [ $OS_RELEASE -eq 2 ]; then
 		ok "CentOS/Redhat is not support, so pass"
-	elif [ $OS_RELEASE -eq 1 ]; then
+	elif [ $OS_RELEASE -eq 1 -o $OS_RELEASE -eq 3 ]; then
     	IFS=$'\n'
     	for AUDIT_VALUE in $AUDIT_PARAMS; do
 			check_audit_path $AUDIT_VALUE 
@@ -77,20 +77,29 @@ apply () {
 # This function will check config parameters required
 # Replaced pam_tally2 with faillock in debian 11
 check_config() {
-	is_debian_11
-	if [ $DONT_AUDITD_BY_UID -eq 1 ]; then
-		if [ $FNRET = 1 ]; then
-AUDIT_PARAMS='-a always,exit -F path=/sbin/pam_tally -F perm=wxa -k privileged-pam
--a always,exit -F path=/sbin/pam_tally2 -F perm=wxa -k privileged-pam'
-		elif [ $FNRET = 0 ]; then
+	# support to ubuntu 
+	if [ $OS_RELEASE -eq 3 ]; then
+		if [ $DONT_AUDITD_BY_UID -eq 1 ]; then
 AUDIT_PARAMS='-a always,exit -F path=/usr/sbin/faillock -F perm=wxa -k privileged-pam'
+		else
+AUDIT_PARAMS='-a always,exit -F path=/usr/sbin/faillock -F perm=wxa -F auid>=1000 -F auid!=4294967295 -k privileged-pam'
 		fi
 	else
-		if [ $FNRET = 1 ]; then
+		is_debian_11
+		if [ $DONT_AUDITD_BY_UID -eq 1 ]; then
+			if [ $FNRET = 1 ]; then
+AUDIT_PARAMS='-a always,exit -F path=/sbin/pam_tally -F perm=wxa -k privileged-pam
+-a always,exit -F path=/sbin/pam_tally2 -F perm=wxa -k privileged-pam'
+			elif [ $FNRET = 0 ]; then
+AUDIT_PARAMS='-a always,exit -F path=/usr/sbin/faillock -F perm=wxa -k privileged-pam'
+			fi
+		else
+			if [ $FNRET = 1 ]; then
 AUDIT_PARAMS='-a always,exit -F path=/sbin/pam_tally -F perm=wxa -F auid>=1000 -F auid!=4294967295 -k privileged-pam
 -a always,exit -F path=/sbin/pam_tally2 -F perm=wxa -F auid>=1000 -F auid!=4294967295 -k privileged-pam'
-		elif [ $FNRET = 0 ]; then
+			elif [ $FNRET = 0 ]; then
 AUDIT_PARAMS='-a always,exit -F path=/usr/sbin/faillock -F perm=wxa -F auid>=1000 -F auid!=4294967295 -k privileged-pam'
+			fi
 		fi
 	fi
 }
