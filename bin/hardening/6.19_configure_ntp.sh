@@ -15,7 +15,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=3
 HARDENING_EXCEPTION=ntp
 
-ANALOGOUS_PKG='chrony'
+ANALOGOUS_PKG='chrony systemd-timesyncd'
 PACKAGE='ntp'
 NTP_CONF_DEFAULT_PATTERN='^restrict -4 default (kod nomodify notrap nopeer noquery|ignore)'
 NTP_CONF_FILE='/etc/ntp.conf'
@@ -26,10 +26,14 @@ NTP_POOL_CFG='pool 2.debian.pool.ntp.org iburst'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    is_pkg_installed $ANALOGOUS_PKG
-    if [ $FNRET = 0 ]; then
-        ok "Analogous pagkage $ANALOGOUS_PKG is installed. So pass check."
-    else
+    for PKG in $ANALOGOUS_PKG; do
+        is_pkg_installed $PKG
+        if [ $FNRET = 0 ]; then
+             ok "Analogous pagkage $PKG is installed. So pass check."
+             exit               
+        fi              
+    done        
+
         is_pkg_installed $PACKAGE
         if [ $FNRET != 0 ]; then
             crit "$PACKAGE is not installed!"
@@ -54,7 +58,6 @@ audit () {
                 ok "$NTP_INIT_PATTERN found in $NTP_INIT_FILE"
             fi
         fi
-    fi
 }
 
 # This function will be called if the script status is on enabled mode
