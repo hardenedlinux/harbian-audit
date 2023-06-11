@@ -25,6 +25,11 @@ PAMLIBNAME_CENTOS='pam_pwquality.so'
 PATTERN_CENTOS='^password.*pam_pwquality.so'
 FILE_CENTOS='/etc/pam.d/system-auth'
 
+# debian11/debian12 default use pam_pwquality
+PACKAGE_DEBIAN11='libpam-pwquality'
+PAMLIBNAME_DEBIAN11='pam_pwquality.so'
+PATTERN_DEBIAN11='^password.*pam_pwquality.so'
+
 OPTIONNAME='retry'
 
 # condition 
@@ -37,6 +42,11 @@ audit () {
 		PAMLIBNAME=$PAMLIBNAME_CENTOS
 		PATTERN=$PATTERN_CENTOS
 		FILE=$FILE_CENTOS
+	fi
+	if [ $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 ]; then
+		PACKAGE=$PACKAGE_DEBIAN11
+		PAMLIBNAME=$PAMLIBNAME_DEBIAN11
+		PATTERN=$PATTERN_DEBIAN11
 	fi
     is_pkg_installed $PACKAGE
     if [ $FNRET != 0 ]; then
