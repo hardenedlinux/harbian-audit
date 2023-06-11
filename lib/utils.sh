@@ -20,6 +20,56 @@ is_centos_8()
 	fi
 }
 
+# return 9 if it is debian9, return 10 if it is debian10, reutrn 11 if it is debian11, return 12 if it is debian12, return 1 if it is less than 9
+get_debian_ver()
+{
+	DEBIAN12CODENAME="bookworm"
+	DEBIAN11CODENAME="bullseye"
+	DEBIAN10CODENAME="buster"
+	DEBIAN9CODENAME="stretch"
+	if [ -r /etc/debian_version ]; then
+		if [ $(grep -cwi "^$DEBIAN12CODENAME" /etc/debian_version) -eq 1 -o  $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 12 ]; then
+			debug "Debian version is 12"
+			FNRET=12
+		elif [ $(grep -cwi "^$DEBIAN11CODENAME" /etc/debian_version) -eq 1 -o  $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 11 ]; then
+			debug "Debian version is 11"
+			FNRET=11
+		elif [ $(grep -cwi "^$DEBIAN10CODENAME" /etc/debian_version) -eq 1 -o  $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 10 ]; then
+			debug "Debian version is 10"
+			FNRET=10
+		elif [ $(grep -cwi "^$DEBIAN9CODENAME" /etc/debian_version) -eq 1 -o  $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 9 ]; then
+			debug "Debian version is 9"
+			FNRET=9
+		else
+			debug "Debian version is less than 9"
+			FNRET=1
+		fi
+	fi
+}
+
+is_debian_12()
+{
+	# For debian12
+	DEBIAN12CODENAME="bookworm"
+	if [ -r /etc/debian_version ]; then
+		if [ $(grep -cw "^$DEBIAN12CODENAME" /etc/debian_version) -eq 1 ]; then
+			debug "Debian version is 12"
+			FNRET=0
+			return 
+		fi
+		if [ $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 12 ]; then
+			debug "Debian version is 12"
+			FNRET=0
+		else
+			debug "Current OS is not Debian 12."
+			FNRET=2
+		fi
+	else
+		debug "Current OS is not Debian."
+		FNRET=2
+	fi
+}
+
 is_debian_ge_10()
 {
 	# For debian11 

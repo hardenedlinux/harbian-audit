@@ -205,20 +205,23 @@ fi
 [ -r $CIS_ROOT_DIR/lib/common.sh     ] && . $CIS_ROOT_DIR/lib/common.sh
 [ -r $CIS_ROOT_DIR/lib/utils.sh      ] && . $CIS_ROOT_DIR/lib/utils.sh
 
-### Debian: OS_RELEASE=1  Redhat/centos: OS_RELEASE=2 Ubuntu: OS_RELEASE=3
+### Debian: OS_RELEASE=1  Redhat/centos: OS_RELEASE=2 Ubuntu: OS_RELEASE=3 Debian9~12: OS_RELEASE=9~12
 # For --init
 if [ $INIT_G_CONFIG -eq 1 ]; then
 	if [ -r /etc/redhat-release ]; then
 		info "This OS is redhat/CentOS."
 		sed -i 's/^OS_RELEASE=.*/OS_RELEASE=2/g' /etc/default/cis-hardening 
 		. /etc/default/cis-hardening
-	elif [ $(grep -i Ubuntu /etc/lsb-release -c) -gt 0 ]; then
-		info "This OS is Ubuntu."
-		sed -i 's/^OS_RELEASE=.*/OS_RELEASE=3/g' /etc/default/cis-hardening 
-		. /etc/default/cis-hardening
+	elif [ -r /etc/lsb-release ]; then
+		if [ $(grep -i Ubuntu /etc/lsb-release -c) -ge 1 ]; then
+			info "This OS is Ubuntu."
+			sed -i 's/^OS_RELEASE=.*/OS_RELEASE=3/g' /etc/default/cis-hardening 
+			. /etc/default/cis-hardening
+		fi
 	elif [ -r /etc/debian_version ]; then
-		info "This OS is Debian."
-		sed -i 's/^OS_RELEASE=.*/OS_RELEASE=1/g' /etc/default/cis-hardening 
+		get_debian_ver
+		sed -i "s/^OS_RELEASE=.*/OS_RELEASE=${FNRET}/g" /etc/default/cis-hardening 
+		info "This OS is Debian $FNRET."
 		. /etc/default/cis-hardening
 	else
 		crit "This OS not support!"
@@ -229,6 +232,14 @@ fi
 
 if [ $OS_RELEASE -eq 1 ]; then
 	info "Start auditing for Debian."
+elif [ $OS_RELEASE -eq 9 ]; then
+	info "Start auditing for Debian9."
+elif [ $OS_RELEASE -eq 10 ]; then
+	info "Start auditing for Debian10."
+elif [ $OS_RELEASE -eq 11 ]; then
+	info "Start auditing for Debian11."
+elif [ $OS_RELEASE -eq 12 ]; then
+	info "Start auditing for Debian12."
 elif [ $OS_RELEASE -eq 2 ]; then
 	info "Start auditing for redhat/CentOS."
 elif [ $OS_RELEASE -eq 3 ]; then
