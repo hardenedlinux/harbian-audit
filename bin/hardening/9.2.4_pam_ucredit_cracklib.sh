@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 9/10 or CentOS Hardening
+# harbian-audit for Debian GNU/Linux 9/10/11/12 or CentOS Hardening
 #
 
 #
@@ -68,14 +68,14 @@ audit_centos () {
 audit () {
 	if [ $OS_RELEASE -eq 1 ]; then
 		audit_debian
-	elif [ $OS_RELEASE -eq 2 ]; then
+	# debian11/debian12 default use pam_pwquality, same as centos
+	elif [ $OS_RELEASE -eq 2 -o  $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 ]; then
 		audit_centos
 	else
 		crit "Current OS is not support!"
 		FNRET=44
 	fi
 }
-
 
 apply_debian () {
     if [ $FNRET = 0 ]; then
@@ -115,7 +115,8 @@ apply_centos () {
 apply () {
 	if [ $OS_RELEASE -eq 1 ]; then
 		apply_debian
-	elif [ $OS_RELEASE -eq 2 ]; then
+	# debian11/debian12 default use pam_pwquality, same as centos
+	elif [ $OS_RELEASE -eq 2 -o  $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 ]; then
 		apply_centos
 	else
 		crit "Current OS is not support!"
