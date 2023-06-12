@@ -108,7 +108,7 @@ check_config() {
 -a always,exit -F path=/etc/audit/plugins.d/au-remote.conf -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/logrotate.conf -F perm=wa -k config_file_change'
 	# Debian
-	elif [ $OS_RELEASE -eq 1 ]; then
+	elif [ $OS_RELEASE -eq 1 -o $OS_RELEASE -eq 9 -o $OS_RELEASE -eq 10 -o $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 ]; then
 		AUDIT_PARAMS='-a always,exit -F path=/etc/audisp/audisp-remote.conf -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/audit/auditd.conf -F perm=wa -k config_file_change
 -a always,exit -F path=/etc/default/grub -F perm=wa -k config_file_change

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9/10 or CentOS Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12 or CentOS Hardening
 #
 
 #
@@ -76,13 +76,10 @@ audit_centos () {
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-	if [ $OS_RELEASE -eq 1 ]; then
-		audit_debian
-	elif [ $OS_RELEASE -eq 2 ]; then
+	if [ $OS_RELEASE -eq 2 ]; then
 		audit_centos
 	else
-		crit "Current OS is not support!"
-		FNRET=44
+		audit_debian
 	fi
 }
 
@@ -135,13 +132,10 @@ apply_centos () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-	if [ $OS_RELEASE -eq 1 ]; then
-		apply_debian
-	elif [ $OS_RELEASE -eq 2 ]; then
+	if [ $OS_RELEASE -eq 2 ]; then
 		apply_centos
 	else
-		crit "Current OS is not support!"
-		FNRET=44
+		apply_debian
 	fi
 }
 

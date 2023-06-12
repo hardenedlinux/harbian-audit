@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9  Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12  Hardening
 # todo test for centos
 
 #
@@ -18,7 +18,7 @@ VIRULSERVER_CENTOS='clamav-server clamav-data clamav-update clamav-filesystem cl
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-	if [ $OS_RELEASE -eq 1 ]; then
+	if [ $OS_RELEASE -ne 2 ]; then
     	if [ $(dpkg -l  | grep -c $VIRULSERVER) -ge 1 ]; then
         	if [ $(systemctl | grep  $VIRULSERVER | grep -c "active running") -ne 1 ]; then
             	crit "$VIRULSERVER is not runing"
@@ -31,7 +31,8 @@ audit () {
         	crit "$VIRULSERVER is not installed"
         	FNRET=1
     	fi
-	elif [ $OS_RELEASE -eq 2 ]; then
+	#CentOS:OS_RELEASE -eq 2 
+	else
 		if [ $(rpm -qa | grep -c clamd) -ge 1 ]; then
 			ok "Clamav is installed"
         	FNRET=0
@@ -39,33 +40,32 @@ audit () {
 			crit "Clamav is not install"
         	FNRET=1
 		fi
-	else 
-		crit "Current OS is not support!"
 	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-	if [ $OS_RELEASE -eq 1 ]; then
+	if [ $OS_RELEASE -ne 2 ]; then
 		if [ $FNRET = 0 ]; then
 			ok "$VIRULSERVER is enable"
 		elif [ $FNRET = 1 ]; then
-        	warn "Install $VIRULSERVER"
-        	apt-get install -y $VIRULSERVER
-    	else
-        	warn "Start server $VIRULSERVER"
-        	systemctl start $VIRULSERVER
-    	fi
-	elif [ $OS_RELEASE -eq 2 ]; then
-    	if [ $FNRET = 0 ]; then
-        	ok "$VIRULSERVER_CENTOS is enable"
-    	elif [ $FNRET = 1 ]; then
-        	warn "Install $VIRULSERVER_CENTOS"
-        	yum install -y $VIRULSERVER_CENTOS
-    	else
-        	warn "Start server $VIRULSERVER"
-        	systemctl start $VIRULSERVER
-    	fi
+        		warn "Install $VIRULSERVER"
+        		apt-get install -y $VIRULSERVER
+    		else
+        		warn "Start server $VIRULSERVER"
+        		systemctl start $VIRULSERVER
+    		fi
+	#Centos: OS_RELEASE -eq 2 
+	else
+    		if [ $FNRET = 0 ]; then
+        		ok "$VIRULSERVER_CENTOS is enable"
+    		elif [ $FNRET = 1 ]; then
+        		warn "Install $VIRULSERVER_CENTOS"
+        		yum install -y $VIRULSERVER_CENTOS
+    		else
+        		warn "Start server $VIRULSERVER"
+        		systemctl start $VIRULSERVER
+    		fi
 	fi
 }
 
