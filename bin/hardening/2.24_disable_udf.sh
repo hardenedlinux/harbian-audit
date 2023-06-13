@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9  Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12  Hardening
+# Modify by: Samson-W (samson@hardenedlinux.org)
 #
 
 #
@@ -13,30 +14,46 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
 
+HARBIAN_SEC_CONF_FILE='/etc/modprobe.d/harbian-security-workaround.conf'
 KERNEL_OPTION="CONFIG_UDF_FS"
-MODULE_FILE="udf"
-
+MODULE_NAME="udf"
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    is_kernel_option_enabled $KERNEL_OPTION $MODULE_FILE
+    is_kernel_option_enabled $KERNEL_OPTION $MODULE_NAME
     if [ $FNRET = 0 ]; then # 0 means true in bash, so it IS activated
-        crit "$KERNEL_OPTION is enabled!"
+        debug "$MODULE_NAME's kernel option is enabled"
+	check_blacklist_module_set $MODULE_NAME
+    	if [ $FNRET = 0 ]; then
+		ok "$MODULE_NAME was set to blacklist"
+	else
+		crit "$MODULE_NAME is not set to blacklist"
+	fi
     else
-        ok "$KERNEL_OPTION is disabled"
+        ok "$MODULE_NAME's kernel option is disabled"
     fi
-    :
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    is_kernel_option_enabled $KERNEL_OPTION
+    is_kernel_option_enabled $KERNEL_OPTION $MODULE_NAME
     if [ $FNRET = 0 ]; then # 0 means true in bash, so it IS activated
-        warn "I cannot fix $KERNEL_OPTION enabled, recompile your kernel please"
+        debug "$MODULE_NAME's kernel option is enabled"
+		check_blacklist_module_set $MODULE_NAME
+    	if [ $FNRET = 0 ]; then
+		ok "$MODULE_NAME was set to blacklist"
+	else
+		warn "$MODULE_NAME is not set to blacklist, add to config file $HARBIAN_SEC_CONF_FILE"
+		if [ -w $HARBIAN_SEC_CONF_FILE ]; then
+			add_end_of_file "$HARBIAN_SEC_CONF_FILE" "blacklist $MODULE_NAME"
+		else
+			touch $HARBIAN_SEC_CONF_FILE
+			add_end_of_file "$HARBIAN_SEC_CONF_FILE" "blacklist $MODULE_NAME"
+		fi
+	fi
     else
         ok "$KERNEL_OPTION is disabled, nothing to do"
     fi
-    :
 }
 
 # This function will check config parameters required
