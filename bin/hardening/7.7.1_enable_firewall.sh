@@ -22,28 +22,52 @@ PACKAGES='iptables iptables-persistent'
 PACKAGES_CENTOS='iptables iptables-services nftables firewalld'
 SERVICENAME='netfilter-persistent'
 SERVICENAME_CENTOS='iptables ip6tables'
+PACKAGE_NFT='nftables'
+SERVICENAME_NFT='nftables.service'
 
 audit_debian () {
-    for PACKAGE in $PACKAGES
-    do
-        is_pkg_installed $PACKAGE
+	is_pkg_installed $PACKAGE_NFT
+    if [ $FNRET != 0 ]; then
+    	for PACKAGE in $PACKAGES
+    	do
+        	is_pkg_installed $PACKAGE
+        	if [ $FNRET != 0 ]; then
+            	crit "$PACKAGE is not installed!"
+            	FNRET=1
+            	break 
+        	else
+            	ok "$PACKAGE is installed"
+            	FNRET=0
+        	fi	
+    	done
+    	if [ $FNRET = 0 ]; then
+	    	if [ $(systemctl status ${SERVICENAME}  | grep -c "Active:.active") -ne 1 ]; then
+            	crit "${SERVICENAME} service is not actived"
+            	FNRET=2
+        	else
+            	ok "${SERVICENAME} service is actived"
+            	FNRET=0
+        	fi
+		fi
+	# check nftables
+	else
+        is_pkg_installed $PACKAGE_NFT
         if [ $FNRET != 0 ]; then
-            crit "$PACKAGE is not installed!"
-            FNRET=1
-            break 
+        	crit "$PACKAGE_NFT is not installed!"
+        	FNRET=3
         else
-            ok "$PACKAGE is installed"
+            ok "$PACKAGE_NFT is installed"
             FNRET=0
         fi
-    done
-    if [ $FNRET = 0 ]; then
-	    if [ $(systemctl status ${SERVICENAME}  | grep -c "Active:.active") -ne 1 ]; then
-            crit "${SERVICENAME} service is not actived"
-            FNRET=2
-        else
-            ok "${SERVICENAME} service is actived"
-            FNRET=0
-        fi
+    	if [ $FNRET = 0 ]; then
+	    	if [ $(systemctl status ${SERVICENAME_NFT}  | grep -c "Active:.active") -ne 1 ]; then
+            	crit "${SERVICENAME_NFT} service is not actived"
+            	FNRET=4
+        	else
+            	ok "${SERVICENAME_NFT} service is actived"
+            	FNRET=0
+        	fi
+	fi
     fi
 }
 
@@ -85,23 +109,34 @@ audit () {
 
 apply_debian () {
         if [ $FNRET = 0 ]; then
-            ok "$PACKAGES is installed"
+            ok "Firewall is enabled"
         elif [ $FNRET = 1 ]; then
             for PACKAGE in $PACKAGES
             do
                 warn "$PACKAGE is absent, installing it"
                 apt_install $PACKAGE
             done
+        elif [ $FNRET = 3 ]; then
+			warn "$PACKAGE_NFT is absent, installing it"
+			apt_install $PACKAGE_NFT
         elif [ $FNRET = 2 ]; then
             warn "Enable ${SERVICENAME} service to actived"
 			is_service_enabled ${SERVICENAME}
 			if [ $FNRET = 1 ]; then
 				systemctl enable ${SERVICENAME}
 				systemctl daemon-reload
-			else
-				:
 			fi
             systemctl start ${SERVICENAME}
+        elif [ $FNRET = 4 ]; then
+            warn "Enable ${SERVICENAME_NFT} service to actived"
+			is_service_enabled ${SERVICENAME_NFT}
+			if [ $FNRET = 1 ]; then
+				systemctl enable ${SERVICENAME_NFT}
+				systemctl daemon-reload
+			fi
+            systemctl start ${SERVICENAME_NFT}
+		else
+			:
         fi
 }
 
