@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 9 Hardening
+# harbian-audit for Debian GNU/Linux 9/10/11/12 Hardening
 #
 
 #
@@ -17,6 +17,7 @@ HARDENING_LEVEL=2
 
 IPS4=$(which iptables)
 IPS6=$(which ip6tables)
+PACKAGE_NFT='nftables'
 
 IPV4_RET=1
 IPV6_RET=1
@@ -27,48 +28,63 @@ IPV6_ISENABLE=1
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-	# ipv4
-    if [ $(${IPS4} -S | grep -E "\-m.*limit" | grep -Ec "\-\-limit-burst") -eq 0 ]; then
-		info "Iptables is not set rules of protect DOS attacks!"
-		IPV4_RET=1
-	else
-		info "Iptables has set rules for protect DOS attacks!"
-		IPV4_RET=0
-	fi
-	# ipv6
-	check_ipv6_is_enable
-	IPV6_ISENABLE=$FNRET
-	if [ $IPV6_ISENABLE = 0 ]; then 
-    	if [ $(${IPS6} -S | grep -E "\-m.*limit" | grep -Ec "\-\-limit-burst") -eq 0 ]; then
-			info "Ip6tables is not set rules of protect DOS attacks!"
-			IPV6_RET=1
+	is_pkg_installed $PACKAGE_NFT
+    if [ $FNRET != 0 ]; then
+		# ipv4
+    	if [ $(${IPS4} -S | grep -E "\-m.*limit" | grep -Ec "\-\-limit-burst") -eq 0 ]; then
+			info "Iptables is not set rules of protect DOS attacks!"
+			IPV4_RET=1
 		else
-			info "Ip6tables has set rules for protect DOS attacks!"
-			IPV6_RET=0
+			info "Iptables has set rules for protect DOS attacks!"
+			IPV4_RET=0
 		fi
-	fi
-	if [ $IPV6_ISENABLE -eq 0 ]; then
-		if [ $IPV4_RET -eq 1 -o $IPV6_RET -eq 1 ]; then
-			crit "Iptables/ip6tables is not set rules of protect DOS attacks!"
-			FNRET=1
+		# ipv6
+		check_ipv6_is_enable
+		IPV6_ISENABLE=$FNRET
+		if [ $IPV6_ISENABLE = 0 ]; then 
+    		if [ $(${IPS6} -S | grep -E "\-m.*limit" | grep -Ec "\-\-limit-burst") -eq 0 ]; then
+				info "Ip6tables is not set rules of protect DOS attacks!"
+				IPV6_RET=1
+			else
+				info "Ip6tables has set rules for protect DOS attacks!"
+				IPV6_RET=0
+			fi
+		fi
+		if [ $IPV6_ISENABLE -eq 0 ]; then
+			if [ $IPV4_RET -eq 1 -o $IPV6_RET -eq 1 ]; then
+				crit "Iptables/ip6tables is not set rules of protect DOS attacks!"
+				FNRET=1
+			else
+				ok "Iptables/ip6tables has set rules for protect DOS attacks!"
+				FNRET=0
+			fi
 		else
-			ok "Iptables/ip6tables has set rules for protect DOS attacks!"
-			FNRET=0
+			if [ $IPV4_RET -eq 1 ]; then
+				crit "Iptables is not set rules of protect DOS attacks!"
+				FNRET=1
+			else
+				ok "Iptables has set rules for protect DOS attacks!"
+				FNRET=0
+			fi
 		fi
 	else
-		if [ $IPV4_RET -eq 1 ]; then
-			crit "Iptables is not set rules of protect DOS attacks!"
-			FNRET=1
+		if [ $(nft list ruleset 2>/dev/null | grep -v '^$' | grep -c 'limit.*burst') -gt 0 ]; then
+			FNRET=10
+        	ok "nftables has set rules for protect DOS attacks!"
 		else
-			ok "Iptables has set rules for protect DOS attacks!"
-			FNRET=0
+			FNRET=11
+        	crit "nftables is not set rules for protect DOS attacks!"
 		fi
 	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    if [ $FNRET = 0 ]; then
+    if [ $FNRET = 10 ]; then
+        ok "nftables has set rules for protect DOS attacks!"
+	elif [ $FNRET = 11 ]; then
+        crit "nftables is not set rules for protect DOS attacks!"
+    elif [ $FNRET = 0 ]; then
 		if [ $IPV6_ISENABLE -eq 0 ]; then
         	ok "Iptables/Ip6tables has set rules for protect DOS attacks!"
 		else

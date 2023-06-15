@@ -1,12 +1,11 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 9 Hardening
+# harbian-audit for Debian GNU/Linux 9/10/11/12 Hardening
 #
 
 #
 # 7.7.4.4 Ensure outbound and established connections are configured (Not Scored)
-# For ipv4
 # Add this feature:Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -20,52 +19,72 @@ RET_VALUE2=1
 
 PROTOCOL_LIST="tcp udp icmp"
 IP4VERSION="IPS4"
+PACKAGE_NFT='nftables'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	is_pkg_installed $PACKAGE_NFT
+    if [ $FNRET != 0 ]; then
+		IS_NFT=1
+	else
+		IS_NFT=0
+	fi
 	for protocol in $PROTOCOL_LIST
 	do
-		# Check INPUT with ESTABLISHED is config
-		check_input_with_established_is_accept "${protocol}" "$IP4VERSION"
-		if [ $FNRET = 0 ]; then 
-			RET_VALUE1=0
-			info "Portocol $protocol INPUT is conf"
+		if [ $IS_NFT = 1 ]; then
+			# Check INPUT with ESTABLISHED is config
+			check_input_with_established_is_accept "${protocol}" "$IP4VERSION"
+			if [ $FNRET = 0 ]; then 
+				RET_VALUE1=0
+				info "Portocol $protocol INPUT is conf"
+			else
+				RET_VALUE1=1
+				info "Portocol $protocol INPUT is not conf"
+				break
+			fi
+			# Check outbound is config
+			check_outbound_connect_is_accept "${protocol}" "$IP4VERSION"
+			if [ $FNRET = 0 ]; then 
+				RET_VALUE2=0
+				info "Portocol $protocol outbound is conf"
+			else
+				RET_VALUE2=1
+				info "Portocol $protocol outbound is not conf"
+				break
+			fi
 		else
-			RET_VALUE1=1
-			info "Portocol $protocol INPUT is not conf"
-		fi
-		# Check outbound is config
-		check_outbound_connect_is_accept "${protocol}" "$IP4VERSION"
-		if [ $FNRET = 0 ]; then 
-			RET_VALUE2=0
-			info "Portocol $protocol outbound is conf"
-		else
-			RET_VALUE2=1
-			info "Portocol $protocol outbound is not conf"
+				if [ $(nft list  chain ip filter INPUT 2>/dev/null | grep -c "${protocol}.*established.*accept") -ge 1 -a $(nft list  chain ip filter OUTPUT 2>/dev/null | grep -c "${protocol}.*established.*accept") -ge 1 ]; then
+				ok "Portocol $protocol INPUT was conf(nft). Outbound and established connections are configured!"
+				FNRET=10
+			else
+				crit "Portocol $protocol INPUT is not conf(nft). Outbound and established connections are not configured!"
+				FNRET=11
+			fi
+			return
 		fi
 	done
 	if [ $RET_VALUE1 -eq 0 -a $RET_VALUE2 -eq 0 ]; then
 		ok "Outbound and established connections are configured!"
+		FNRET=0
 	else
 		crit "Outbound and established connections are not configured!"
+		FNRET=1
 	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-	for protocol in $PROTOCOL_LIST
-	do
-		# Apply INPUT with ESTABLISHED 
-		check_input_with_established_is_accept "${protocol}" $IP4VERSION
-		if [ $FNRET = 1 ]; then 
-			warn "Portocol $protocol INPUT is not set, need the administrator to manually add it. Howto apply: iptables -A INPUT -p $protocol -m state --state ESTABLISHED -j ACCEPT"
-		fi
-		# Apply outbound 
-		check_outbound_connect_is_accept "${protocol}" $IP4VERSION
-		if [ $FNRET = 1 ]; then 
-			warn "Portocol $protocol outbound is not set, need the administrator to manually add it. Howto apply: iptables -A OUTPUT -p $protocol -m state --state NEW,ESTABLISHED -j ACCEPT"
-		fi
-	done
+	if [ $FNRET = 0 ]; then
+		ok "Portocol $protocol INPUT was conf. Outbound and established connections are configured!"
+	elif [ $FNRET = 11 ]; then
+		warn "Portocol $protocol INPUT is not conf(nft). Outbound and established connections are not configured!"
+	elif [ $FNRET = 10 ]; then
+		ok "Portocol $protocol INPUT was conf(nft). Outbound and established connections are configured!"
+	elif [ $FNRET = 1 ]; then
+		warn "Portocol $protocol INPUT is not conf(nft). Outbound and established connections are not configured!"
+	else
+		:
+	fi
 }
 
 # This function will check config parameters required

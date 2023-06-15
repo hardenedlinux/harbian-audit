@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 9 Hardening
+# harbian-audit for Debian GNU/Linux 9/10/11/12 Hardening
 #
 
 #
@@ -19,61 +19,79 @@ INPUT_ACCEPT=1
 OUTPUT_ACCEPT=1
 INPUT_DENY=1
 IP4VERSION="IPS4"
+PACKAGE_NFT='nftables'
 		
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-	# Check the loopback interface to accept INPUT traffic.
-	ensure_lo_traffic_input_is_accept "$IP4VERSION"
-	if [ $FNRET = 0 ]; then
-		INPUT_ACCEPT=0
-		info "Iptables loopback traffic INPUT has configured!"
+	is_pkg_installed $PACKAGE_NFT
+    if [ $FNRET != 0 ]; then
+		# Check the loopback interface to accept INPUT traffic.
+		ensure_lo_traffic_input_is_accept "$IP4VERSION"
+		if [ $FNRET = 0 ]; then
+			INPUT_ACCEPT=0
+			info "Iptables loopback traffic INPUT has configured!"
+		else
+			INPUT_ACCEPT=1
+			info "Iptables: loopback traffic INPUT is not configured!"
+		fi 
+		# Check the loopback interface to accept OUTPUT traffic.
+		ensure_lo_traffic_output_is_accept "$IP4VERSION"
+		if [ $FNRET = 0 ]; then
+			OUTPUT_ACCEPT=0
+			info "Iptables loopback traffic OUTPUT has configured!"
+		else
+			OUTPUT_ACCEPT=1
+			info "Iptables: loopback traffic OUTPUT is not configured!"
+		fi 
+		# all other interfaces to deny traffic to the loopback network.
+		ensure_lo_traffic_other_if_input_is_deny "$IP4VERSION"
+		if [ $FNRET = 0 ]; then
+			INPUT_DENY=0
+			info "Iptables loopback traffic INPUT deny from other interfaces has configured!"
+		else
+			INPUT_DENY=1
+			info "Iptables: loopback traffic INPUT deny from other interfaces is not configured!"
+		fi 
+		if [ $INPUT_ACCEPT -eq 0 -a $OUTPUT_ACCEPT -eq 0 -a $INPUT_DENY -eq 0 ]; then
+			ok "Loopback traffic rules are configured!"
+		else
+			crit "Loopback traffic rules are not configured!"
+		fi
 	else
-		INPUT_ACCEPT=1
-		info "Iptables: loopback traffic INPUT is not configured!"
-	fi 
-	# Check the loopback interface to accept OUTPUT traffic.
-	ensure_lo_traffic_output_is_accept "$IP4VERSION"
-	if [ $FNRET = 0 ]; then
-		OUTPUT_ACCEPT=0
-		info "Iptables loopback traffic OUTPUT has configured!"
-	else
-		OUTPUT_ACCEPT=1
-		info "Iptables: loopback traffic OUTPUT is not configured!"
-	fi 
-	# all other interfaces to deny traffic to the loopback network.
-	ensure_lo_traffic_other_if_input_is_deny "$IP4VERSION"
-	if [ $FNRET = 0 ]; then
-		INPUT_DENY=0
-		info "Iptables loopback traffic INPUT deny from other interfaces has configured!"
-	else
-		INPUT_DENY=1
-		info "Iptables: loopback traffic INPUT deny from other interfaces is not configured!"
-	fi 
-	if [ $INPUT_ACCEPT -eq 0 -a $OUTPUT_ACCEPT -eq 0 -a $INPUT_DENY -eq 0 ]; then
-		ok "Loopback traffic rules are configured!"
-	else
-		crit "Loopback traffic rules are not configured!"
+			if [ $(nft list  chain ip filter INPUT | grep -c 'lo.*accept') -gt 0 -a $(nft list  chain ip filter OUTPUT | grep -c 'lo.*accept') -gt 0 -a $(nft list  chain ip filter INPUT | grep -c 'saddr.*127.0.0.0/8.*drop') -gt 0 ]; then
+				ok "nftables loopback traffic INPUT/OUTPUT/deny-other-loopback-interfaces has configured!"
+				FNRET=10
+			else
+				crit "nftables loopback traffic INPUT/OUTPUT/deny-other-loopback-interfaces is not configured!"
+				FNRET=11
+			fi
 	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
-	if [ $INPUT_ACCEPT = 0 ]; then 
-		ok "Iptables loopback traffic INPUT has configured!"
+	if [ $FNRET = 10 ]; then
+		ok "nftables loopback traffic INPUT/OUTPUT/deny-other-loopback-interfaces has configured!"
+	elif [ $FNRET = 11 ]; then
+		warn "nftables loopback traffic INPUT/OUTPUT/deny-other-loopback-interfaces is not configured! Need the administrator to manually add it. "
 	else
-        warn "Iptables loopback traffic INPUT is not configured! need the administrator to manually add it. Howto set: iptables -A INPUT -i lo -j ACCEPT"
-	fi
+		if [ $INPUT_ACCEPT = 0 ]; then 
+			ok "Iptables loopback traffic INPUT has configured!"
+		else
+        	warn "Iptables loopback traffic INPUT is not configured! Need the administrator to manually add it. Howto set: iptables -A INPUT -i lo -j ACCEPT"
+		fi
 
-	if [ $OUTPUT_ACCEPT = 0 ]; then 
-		ok "Iptables loopback traffic OUTPUT has configured!"
-	else
-        warn "Iptables loopback traffic OUTPUT is not configured! need the administrator to manually add it. Howto set: iptables -A OUTPUT -o lo -j ACCEPT"
-	fi
+		if [ $OUTPUT_ACCEPT = 0 ]; then 
+			ok "Iptables loopback traffic OUTPUT has configured!"
+		else
+        	warn "Iptables loopback traffic OUTPUT is not configured! Need the administrator to manually add it. Howto set: iptables -A OUTPUT -o lo -j ACCEPT"
+		fi
 
-	if [ $INPUT_DENY = 0 ]; then 
-		ok "Iptables loopback traffic INPUT deny from other interfaces has configured!"
-	else
-        warn "Iptables loopback traffic INPUT deny from 127.0.0.0/8 is not configured! need the administrator to manually add it. Howto set: iptables -A INPUT -s 127.0.0.0/8 -j DROP"
+		if [ $INPUT_DENY = 0 ]; then 
+			ok "Iptables loopback traffic INPUT deny from other interfaces has configured!"
+		else
+        	warn "Iptables loopback traffic INPUT deny from 127.0.0.0/8 is not configured! Need the administrator to manually add it. Howto set: iptables -A INPUT -s 127.0.0.0/8 -j DROP"
+		fi
 	fi
 }
 

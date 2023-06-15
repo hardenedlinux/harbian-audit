@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 9 Hardening
+# harbian-audit for Debian GNU/Linux 9/10/11/12 Hardening
 #
 
 #
@@ -17,27 +17,43 @@ HARDENING_LEVEL=2
 
 IPS4=$(which iptables)
 IPS6=$(which ip6tables)
+PACKAGE_NFT='nftables'
 
 # Quick note here : CIS recommends your iptables rules to be persistent. 
 # Do as you want, but this script does not handle this
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $(${IPS4} -S | grep -Ec "^-A|^-I") -eq 0 -o $(${IPS6} -S | grep -Ec "^-A|^-I") -eq 0 ]; then
-        crit "Iptables/Ip6tables is not set rule!"
-        FNRET=1
-    else
-        ok "Iptables/Ip6tables rules are set!"
-        FNRET=0
-    fi
+	is_pkg_installed $PACKAGE_NFT
+    if [ $FNRET != 0 ]; then
+    	if [ $(${IPS4} -S | grep -Ec "^-A|^-I") -eq 0 -o $(${IPS6} -S | grep -Ec "^-A|^-I") -eq 0 ]; then
+        	crit "Iptables/Ip6tables is not set rule!"
+        	FNRET=1
+    	else
+       		ok "Iptables/Ip6tables rules are set!"
+        	FNRET=0
+    	fi
+	else
+		if [ $(nft list ruleset 2>/dev/null | grep -v '^table' | grep -v 'chain.*{' | grep -v '}' | grep -v 'policy' | grep -v '^$' | wc -l) -gt 0 ]; then
+       		ok "nftables rules are set!"
+        	FNRET=10
+		else
+        	crit "Nftables is not set rule!"
+        	FNRET=2
+		fi
+	fi
 }
 
 # This function will be called if the script status is on enabled mode
 apply () {
     if [ $FNRET = 0 ]; then
         ok "Iptables/Ip6tables rules are set!"
-    else
+    elif [ $FNRET = 10 ]; then
+        ok "Nftables rules are set!"
+    elif [ $FNRET = 1 ]; then
         warn "Iptables/Ip6tables rules are not set, need the administrator to manually add it."
+    elif [ $FNRET = 2 ]; then
+        warn "Nftables rules are not set, need the administrator to manually add it."
     fi
 }
 
