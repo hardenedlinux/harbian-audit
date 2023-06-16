@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9  Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12  Hardening
 #
 
 #
@@ -61,12 +61,10 @@ audit_centos () {
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-    if [ $OS_RELEASE -eq 1 ]; then
-		audit_debian
-	elif [ $OS_RELEASE -eq 2 ]; then
+    if [ $OS_RELEASE -eq 2 ]; then
 		audit_centos
 	else
-		warn "Current OS is not support!"	
+		audit_debian
 	fi
 }
 
@@ -144,23 +142,19 @@ apply_centos () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-    if [ $OS_RELEASE -eq 1 ]; then
-		apply_debian
-	elif [ $OS_RELEASE -eq 2 ]; then
+    if [ $OS_RELEASE -eq 2 ]; then
 		apply_centos
 	else
-		warn "Current OS is not support!"	
+		apply_debian
 	fi
 }
 
 # This function will check config parameters required
 check_config() {
-    if [ $OS_RELEASE -eq 1 ]; then
-		:
-	elif [ $OS_RELEASE -eq 2 ]; then
+    if [ $OS_RELEASE -eq 2 ]; then
 		OPTIONS=$OPTIONS_CENTOS
 	else
-		warn "Current OS is not support!"	
+		:
 	fi
 }
 
