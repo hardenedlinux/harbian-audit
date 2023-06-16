@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 9 Hardening
+# harbian-audit for Debian GNU/Linux 9/10/11/12 Hardening
 #
 
 #
@@ -10,7 +10,7 @@
 # Add this feature:Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
-set -e # One error, it's over
+#set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
@@ -21,38 +21,58 @@ IPV6_ENABLE=1
 
 RET_VALUE1=1
 RET_VALUE2=1
+PACKAGE_NFT='nftables'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	is_pkg_installed $PACKAGE_NFT
+    	if [ $FNRET != 0 ]; then
+		IS_NFT=1
+	else
+		IS_NFT=0
+	fi
 	check_ipv6_is_enable
 	IPV6_ENABLE=$FNRET
 	if [ $IPV6_ENABLE -eq 0 ]; then
 		for protocol in $PROTOCOL_LIST
 		do
-			# Check INPUT with ESTABLISHED is config
-			check_input_with_established_is_accept "${protocol}" "$IP6VERSION"
-			if [ $FNRET = 0 ]; then 
-				RET_VALUE1=0
-				info "Portocol $protocol INPUT is conf"
+			if [ $IS_NFT = 1 ]; then
+				# Check INPUT with ESTABLISHED is config
+				check_input_with_established_is_accept "${protocol}" "$IP6VERSION"
+				if [ $FNRET = 0 ]; then 
+					RET_VALUE1=0
+					info "Portocol $protocol INPUT is conf"
+				else
+					RET_VALUE1=1
+					info "Portocol $protocol INPUT is not conf"
+				fi
+				# Check outbound is config
+				check_outbound_connect_is_accept "${protocol}" $IP6VERSION
+				if [ $FNRET = 0 ]; then 
+					RET_VALUE2=0
+					info "Portocol $protocol outbound is conf"
+				else
+					RET_VALUE2=1
+					info "Portocol $protocol outbound is not conf"
+				fi
 			else
-				RET_VALUE1=1
-				info "Portocol $protocol INPUT is not conf"
-			fi
-			# Check outbound is config
-			check_outbound_connect_is_accept "${protocol}" $IP6VERSION
-			if [ $FNRET = 0 ]; then 
-				RET_VALUE2=0
-				info "Portocol $protocol outbound is conf"
-			else
-				RET_VALUE2=1
-				info "Portocol $protocol outbound is not conf"
+				if [ $(nft list chain ip6 filter INPUT 2>/dev/null | grep -c "${protocol}.*established.*accept") -ge 1 -a $(nft list chain ip6 filter OUTPUT 2>/dev/null | grep -c "${protocol}.*established.*accept") -ge 1 ]; then
+					ok "Nftables's ipv6 Portocol $protocol INPUT was conf(nft). Outbound and established connections are configured!"
+					FNRET=10
+				else
+					crit "Nftables's ipv6 Portocol $protocol INPUT is not conf(nft). Outbound and established connections are not configured!"
+					FNRET=11
+				fi
+				return
 			fi
 		done
 
 		if [ $RET_VALUE1 -eq 0 -a $RET_VALUE2 -eq 0 ]; then
 			ok "Outbound and established connections are configured for v6."
+			FNRET=0
 		else
 			crit "Outbound and established connections are not configured for v6."
+			FNRET=1
 		fi
 	else
 		ok "Ipv6 has set disabled, so pass."
@@ -62,19 +82,15 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
 	if [ $IPV6_ENABLE -eq 0 ]; then
-		for protocol in $PROTOCOL_LIST
-		do
-			# Apply INPUT with ESTABLISHED 
-			check_input_with_established_is_accept "${protocol}" "$IP6VERSION"
-			if [ $FNRET = 1 ]; then 
-				warn "Portocol $protocol INPUT is not set, need the administrator to manually add it. Howto apply: ip6tables -A INPUT -p $protocol -m state --state ESTABLISHED -j ACCEPT"
-			fi
-			# Apply outbound 
-			check_outbound_connect_is_accept "${protocol}" "$IP6VERSION"
-			if [ $FNRET = 1 ]; then 
-				warn "Portocol $protocol outbound is not set, need the administrator to manually add it. Howto apply: ip6tables -A OUTPUT -p $protocol -m state --state NEW,ESTABLISHED -j ACCEPT"
-			fi
-		done
+		if [ $FNRET = 0 ]; then
+			ok "Portocol $protocol INPUT was conf. Outbound and established connections are configured!"
+		elif [ $FNRET = 11 ]; then
+			warn "Nftables's ipv6 Portocol $protocol INPUT is not conf(nft). Outbound and established connections are not configured!"
+		elif [ $FNRET = 10 ]; then
+			ok "Portocol $protocol INPUT was conf(nft). Outbound and established connections are configured!"
+		elif [ $FNRET = 1 ]; then
+			warn "Nftables's ipv6 Portocol $protocol INPUT is not conf(nft). Outbound and established connections are not configured!"
+		fi
 	else
 		ok "Ipv6 has set disabled, so pass."
 	fi

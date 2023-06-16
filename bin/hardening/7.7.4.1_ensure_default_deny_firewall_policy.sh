@@ -10,7 +10,7 @@
 # Add this feature:Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
-set -e # One error, it's over
+#set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
@@ -30,7 +30,7 @@ audit () {
 			FNRET=0
 		fi
 	else
-		if [ $(nft list ruleset  | grep -c 'input.*policy drop') -eq 0 -o $(nft list ruleset  | grep -c 'output.*policy drop') -eq 0 -o $(nft list ruleset  | grep -c 'forward.*policy drop') -eq 0 ]; then
+		if [ $(nft list chain ip filter INPUT 2>/dev/null | grep -c 'input.*policy drop') -eq 0 -o $(nft list chain ip filter OUTPUT 2>/dev/null  | grep -c 'output.*policy drop') -eq 0 -o $(nft list chain ip filter FORWARD 2>/dev/null  | grep -c 'forward.*policy drop') -eq 0 ]; then
 			crit "nftables: Firewall policy is not default deny!"
 			FNRET=11
 		else
@@ -57,7 +57,6 @@ apply () {
 check_config() {
     :
 }
-
 # Source Root Dir Parameter
 if [ -r /etc/default/cis-hardening ]; then
     . /etc/default/cis-hardening

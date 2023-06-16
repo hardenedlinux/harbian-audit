@@ -58,7 +58,7 @@ audit () {
 			crit "Loopback traffic rules are not configured!"
 		fi
 	else
-			if [ $(nft list  chain ip filter INPUT | grep -c 'lo.*accept') -gt 0 -a $(nft list  chain ip filter OUTPUT | grep -c 'lo.*accept') -gt 0 -a $(nft list  chain ip filter INPUT | grep -c 'saddr.*127.0.0.0/8.*drop') -gt 0 ]; then
+			if [ $(nft list  chain ip filter INPUT 2>/dev/null | grep -c 'lo.*accept') -gt 0 -a $(nft list  chain ip filter OUTPUT 2>/dev/null | grep -c 'lo.*accept') -gt 0 -a $(nft list  chain ip filter INPUT 2>/dev/null | grep -c 'saddr.*127.0.0.0/8.*drop') -gt 0 ]; then
 				ok "nftables loopback traffic INPUT/OUTPUT/deny-other-loopback-interfaces has configured!"
 				FNRET=10
 			else

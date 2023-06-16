@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 9 Hardening
+# harbian-audit for Debian GNU/Linux 9/10/11/12 Hardening
 #
 
 #
@@ -10,19 +10,26 @@
 # Add this feature:Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
-set -e # One error, it's over
+#set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
 
 IPS6=$(which ip6tables)
 IPV6_ENABLE=1
+PACKAGE_NFT='nftables'
 
 NETLISTENLIST="/dev/shm/7.7.5.3"
 PROTO_PORT="/dev/shm/proto_port_pair_v6"
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
+	is_pkg_installed $PACKAGE_NFT
+    if [ $FNRET != 0 ]; then
+		ISNFTABLES=1
+	else
+		ISNFTABLES=0
+	fi
 	rm -f $NETLISTENLIST
 	rm -f $PROTO_PORT
 	check_ipv6_is_enable
@@ -40,18 +47,35 @@ audit () {
 				PROTO_TYPE="udp"
 			fi
 			LISTEN_PORT=$(echo ${LISTENING} | awk '{print $4}' | awk -F: '{print $NF}')
-			if [ $($IPS6 -S | grep "^\-A INPUT \-p $PROTO_TYPE" | grep -c "\-\-dport $LISTEN_PORT \-m state \-\-state NEW \-j ACCEPT") -ge 1 ]; then
-        		info "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT was set ipv6 firewall rules."
-			else	
-				echo "${PROTO_TYPE} ${LISTEN_PORT}" >> $PROTO_PORT
-				info "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT is not set ipv6 firewall rules."
+			if [ $ISNFTABLES = 1 ]; then
+				if [ $($IPS6 -S 2>/dev/null | grep "^\-A INPUT \-p $PROTO_TYPE" | grep -c "\-\-dport $LISTEN_PORT \-m state \-\-state NEW \-j ACCEPT") -ge 1 ]; then
+        			info "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT was set ipv6 firewall rules."
+				else	
+					echo "${PROTO_TYPE} ${LISTEN_PORT}" >> $PROTO_PORT
+					info "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT is not set ipv6 firewall rules."
+				fi
+			else
+				if [ $(nft list chain ip6 filter INPUT 2>/dev/null | grep -c "dport.*$LISTEN_PORT.*new.*accept") -ge 1 ]; then
+					info "Service(nft): protocol $PROTO_TYPE listening port $LISTEN_PORT was set firewall(nft) rules."
+				else	
+					echo "${PROTO_TYPE} ${LISTEN_PORT}" >> $PROTO_PORT
+					info "Service(nft): protocol $PROTO_TYPE listening port $LISTEN_PORT is not set firewall(nft) rules."
+				fi
 			fi
 		done
 		rm -f $NETLISTENLIST
-    	if [ -f $PROTO_PORT ]; then
-        	crit "Ip6tables is not set firewall rules exist for all open ports!"
+		if [ $ISNFTABLES = 1 ]; then
+    		if [ -f $PROTO_PORT ]; then
+        		crit "Ip6tables is not set firewall rules exist for all open ports!"
+			else
+        		ok "Ip6tables has set firewall rules exist for all open ports!"
+			fi
 		else
-        	ok "Ip6tables has set firewall rules exist for all open ports!"
+    		if [ -f $PROTO_PORT ]; then
+        		crit "Nftables is not set firewall rules exist for all open ports!"
+			else
+        		ok "Nftables has set firewall rules exist for all open ports!"
+			fi
 		fi
 	else	
 		ok "Ipv6 has set disabled, so pass."
@@ -66,11 +90,19 @@ apply () {
 			do
 				PROTO_TYPE=$(echo ${NOSETPAIR} | awk '{print $1}')
 				LISTEN_PORT=$(echo ${NOSETPAIR} | awk '{print $2}')
-				warn "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT is not set firewall rules, need the administrator to manually add it. Howto set: ip6tables -A INPUT -p <protocol> --dport <port> -m state --state NEW -j ACCEPT"
+				if [ $ISNFTABLES = 1 ]; then
+					warn "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT is not set firewall rules, need the administrator to manually add it. Howto set: ip6tables -A INPUT -p <protocol> --dport <port> -m state --state NEW -j ACCEPT"
+				else
+					warn "Nftables Service: protocol $PROTO_TYPE listening port $LISTEN_PORT is not set firewall rules, need the administrator to manually add it. "
+				fi
 			done
 			rm -f $PROTO_PORT 
     	else
-        	ok "Ip6tables has set firewall rules exist for all open ports!"
+			if [ $ISNFTABLES = 1 ]; then
+        		ok "Ip6tables has set firewall rules exist for all open ports!"
+			else
+        		ok "Nftables'ip6 has set firewall rules exist for all open ports!"
+			fi
     	fi
 	else
 		ok "Ipv6 has set disabled, so pass."

@@ -10,7 +10,7 @@
 # Add this feature:Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
-set -e # One error, it's over
+#set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2

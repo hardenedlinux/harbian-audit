@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 9 Hardening
+# harbian-audit for Debian GNU/Linux 9/10/11/12 Hardening
 #
 
 #
@@ -10,7 +10,7 @@
 # Add this feature:Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
-set -e # One error, it's over
+#set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
@@ -20,45 +20,57 @@ OUTPUT_ACCEPT=1
 INPUT_DENY=1
 IP6VERSION="IPS6"
 IPV6_ENABLE=1
+PACKAGE_NFT='nftables'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	check_ipv6_is_enable
 	IPV6_ENABLE=$FNRET
 	if [ $IPV6_ENABLE -eq 0 ]; then
-		# Check the loopback interface to accept INPUT traffic.
-		ensure_lo_traffic_input_is_accept $IP6VERSION
-		if [ $FNRET = 0 ]; then
-			INPUT_ACCEPT=0
-			info "Ip6tables loopback traffic INPUT has configured!"
-		else
-			INPUT_ACCEPT=1
-			info "Ip6tables: loopback traffic INPUT is not configured!"
-		fi 
-		# Check the loopback interface to accept OUTPUT traffic.
-		ensure_lo_traffic_output_is_accept $IP6VERSION
-		if [ $FNRET = 0 ]; then
-			OUTPUT_ACCEPT=0
-			info "Ip6tables loopback traffic OUTPUT has configured!"
-		else
-			OUTPUT_ACCEPT=1
-			info "Ip6tables: loopback traffic OUTPUT is not configured!"
-		fi 
-		# all other interfaces to deny traffic to the loopback network.
-		ensure_lo_traffic_other_if_input_is_deny $IP6VERSION
-		if [ $FNRET = 0 ]; then
-			INPUT_DENY=0
-			info "Ip6tables loopback traffic INPUT deny from other interfaces has configured!"
-		else
-			INPUT_DENY=1
-			info "Ip6tables: loopback traffic INPUT deny from other interfaces is not configured!"
-		fi 
+		is_pkg_installed $PACKAGE_NFT
+    		if [ $FNRET != 0 ]; then
+			# Check the loopback interface to accept INPUT traffic.
+				ensure_lo_traffic_input_is_accept $IP6VERSION
+				if [ $FNRET = 0 ]; then
+					INPUT_ACCEPT=0
+					info "Ip6tables loopback traffic INPUT has configured!"
+				else
+					INPUT_ACCEPT=1
+					info "Ip6tables: loopback traffic INPUT is not configured!"
+				fi 
+				# Check the loopback interface to accept OUTPUT traffic.
+				ensure_lo_traffic_output_is_accept $IP6VERSION
+				if [ $FNRET = 0 ]; then
+					OUTPUT_ACCEPT=0
+					info "Ip6tables loopback traffic OUTPUT has configured!"
+				else
+					OUTPUT_ACCEPT=1
+					info "Ip6tables: loopback traffic OUTPUT is not configured!"
+				fi 
+				# all other interfaces to deny traffic to the loopback network.
+				ensure_lo_traffic_other_if_input_is_deny $IP6VERSION
+				if [ $FNRET = 0 ]; then
+					INPUT_DENY=0
+					info "Ip6tables loopback traffic INPUT deny from other interfaces has configured!"
+				else
+					INPUT_DENY=1
+					info "Ip6tables: loopback traffic INPUT deny from other interfaces is not configured!"
+				fi 
 
-		if [ $INPUT_ACCEPT -eq 0 -a $OUTPUT_ACCEPT -eq 0 -a $OUTPUT_ACCEPT -eq 0 ]; then
-			ok "Loopback traffic rules were configured for v6!"
-		else
-			crit "Loopback traffic rules are not configured for v6!"
-		fi
+				if [ $INPUT_ACCEPT -eq 0 -a $OUTPUT_ACCEPT -eq 0 -a $OUTPUT_ACCEPT -eq 0 ]; then
+					ok "Loopback traffic rules were configured for v6!"
+				else
+					crit "Loopback traffic rules are not configured for v6!"
+				fi
+			else
+				if [ $(nft list  chain ip6 filter INPUT 2>/dev/null | grep -c 'lo.*accept') -gt 0 -a $(nft list  chain ip6 filter OUTPUT 2>/dev/null | grep -c 'lo.*accept') -gt 0 -a $(nft list chain ip6 filter INPUT 2>/dev/null | grep -c 'saddr.*fe80::/64.*drop') -gt 0 ]; then
+					ok "nftables's ipv6 loopback traffic INPUT/OUTPUT/deny-other-loopback-interfaces has configured!"
+					FNRET=10
+				else
+					crit "nftables's ipv6 loopback traffic INPUT/OUTPUT/deny-other-loopback-interfaces is not configured!"
+					FNRET=11
+				fi
+			fi
 	else
 		ok "Ipv6 has set disabled, so pass."
 	fi
@@ -67,22 +79,28 @@ audit () {
 # This function will be called if the script status is on enabled mode
 apply () {
 	if [ $IPV6_ENABLE -eq 0 ]; then
-		if [ $INPUT_ACCEPT = 0 ]; then 
-			ok "Ip6tables loopback traffic INPUT has configured!"
-		else
-        	warn "Ip6tables loopback traffic INPUT is not configured! need the administrator to manually add it. Howto set: ip6tables -A INPUT -i lo -j ACCEPT"
-		fi
+		if [ $FNRET = 10 ]; then 
+			ok "nftables's ipv6 loopback traffic INPUT/OUTPUT/deny-other-loopback-interfaces has configured!"
+		elif [ $FNRET = 11 ]; then 
+			warn "nftables's ipv6 loopback traffic INPUT/OUTPUT/deny-other-loopback-interfaces is not configured!"
+		else	
+			if [ $INPUT_ACCEPT = 0 ]; then 
+				ok "Ip6tables loopback traffic INPUT has configured!"
+			else
+        			warn "Ip6tables loopback traffic INPUT is not configured! need the administrator to manually add it. Howto set: ip6tables -A INPUT -i lo -j ACCEPT"
+			fi
 
-		if [ $OUTPUT_ACCEPT = 0 ]; then 
-			ok "Ip6tables loopback traffic OUTPUT has configured!"
-		else
-        	warn "Ip6tables loopback traffic OUTPUT is not configured! need the administrator to manually add it. Howto set: ip6tables -A OUTPUT -o lo -j ACCEPT"
-		fi
+			if [ $OUTPUT_ACCEPT = 0 ]; then 
+				ok "Ip6tables loopback traffic OUTPUT has configured!"
+			else
+        			warn "Ip6tables loopback traffic OUTPUT is not configured! need the administrator to manually add it. Howto set: ip6tables -A OUTPUT -o lo -j ACCEPT"
+			fi
 
-		if [ $INPUT_DENY = 0 ]; then 
-			ok "Ip6tables loopback traffic INPUT deny from other interfaces has configured!"
-		else
-        	warn "Ip6tables loopback traffic INPUT deny from 127.0.0.0/8 is not configured! need the administrator to manually add it. Howto set: ip6tables -A INPUT -s ::1 -j DROP"
+			if [ $INPUT_DENY = 0 ]; then 
+				ok "Ip6tables loopback traffic INPUT deny from other interfaces has configured!"
+			else
+        		warn "Ip6tables loopback traffic INPUT deny from 127.0.0.0/8 is not configured! need the administrator to manually add it. Howto set: ip6tables -A INPUT -s ::1 -j DROP"
+			fi
 		fi
 	else
 		ok "Ipv6 has set disabled, so pass."

@@ -9,7 +9,7 @@
 # Add this feature:Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
-set -e # One error, it's over
+#set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
@@ -44,7 +44,7 @@ audit () {
 				info "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT is not set firewall rules."
 			fi
 		else
-			if [ $(nft list  chain ip filter INPUT | grep -c "dport.*$LISTEN_PORT.*new.*accept") -ge 1 ]; then
+			if [ $(nft list  chain ip filter INPUT 2>/dev/null | grep -c "dport.*$LISTEN_PORT.*new.*accept") -ge 1 ]; then
 					info "Service: protocol $PROTO_TYPE listening port $LISTEN_PORT was set firewall(nft) rules."
 			else	
 				echo "${PROTO_TYPE} ${LISTEN_PORT}" >> $PROTO_PORT
