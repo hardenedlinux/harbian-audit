@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 10 Hardening
+# harbian-audit for Debian GNU/Linux 10/11/12 Hardening
 #
 
 #
@@ -15,11 +15,12 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=4
 
 FILE='/etc/audit/rules.d/audit.rules'
+PACKAGE_NFT='nftables'
 
 # This function will be called if the script status is on enabled / audit mode
 audit () {
-	is_debian_10
-	if [ $FNRET != 0 ]; then 
+	is_pkg_installed $PACKAGE_NFT
+    	if [ $FNRET != 0 ]; then
 		ok "OS not support nft, so pass"
 	else 
     	# define custom IFS and save default one
@@ -43,8 +44,8 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-	is_debian_10
-	if [ $FNRET != 0 ]; then 
+	is_pkg_installed $PACKAGE_NFT
+    	if [ $FNRET != 0 ]; then
 		ok "OS not support nft, so pass"
 	else 
     	IFS=$'\n'

@@ -8,7 +8,7 @@
 # 2.17 Set Sticky Bit on All World-Writable Directories (Scored)
 #
 
-set -e # One error, it's over
+#set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2

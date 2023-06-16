@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9/10 or CentOS Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12 or CentOS Hardening
 #
 
 #
@@ -95,10 +95,10 @@ AUDIT_PARAMS_CENTOS="-a always,exit -F path=/bin/su -F perm=x -F auid>=1000 -F a
 -a always,exit -F path=/bin/chfn -F perm=x -F auid>=500 -F auid!=4294967295 -k privileged-priv_change"
 	fi
 
-	if [ $OS_RELEASE -eq 1 ]; then
-		AUDIT_PARAMS=$AUDIT_PARAMS_DEBIAN
-	elif [ $OS_RELEASE -eq 2 ]; then
+	if [ $OS_RELEASE -eq 2 ]; then
 		AUDIT_PARAMS=$AUDIT_PARAMS_CENTOS
+	else
+		AUDIT_PARAMS=$AUDIT_PARAMS_DEBIAN
 	fi
 }
 
