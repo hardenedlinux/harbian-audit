@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 9 or CentOS Hardening
+# harbian-audit for Debian GNU/Linux 9/10/11/12 or CentOS Hardening
 #
 
 #
@@ -17,7 +17,7 @@ HARDENING_LEVEL=3
 # This function will be called if the script status is on enabled / audit mode
 audit () {
 	if [ $(lspci  | grep -ic wireless ) -eq 0 ]; then
-		info "The OS is not wireless device! "
+		ok "The OS is not wireless device! "
 		FNRET=0
 	else
 		if [ $(wc -l /proc/net/wireless) -lt 3 ]; then

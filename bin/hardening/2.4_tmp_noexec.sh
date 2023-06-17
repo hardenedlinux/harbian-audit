@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux Debian 7/8/9/10 or CentOS Hardening
+# harbian-audit for Debian GNU/Linux Debian 7/8/9/10/11/12 or CentOS Hardening
 # Modify by: Samson-W (sccxboy@gmail.com)
 #
 
@@ -47,10 +47,10 @@ audit () {
        fi
     else
         warn "$PARTITION is not partition in /etc/fstab, check tmp.mount service"
-		if [ $OS_RELEASE -eq 1 ]; then
-			UNITSERVICEPATH=$DEBIAN_SERVICEPATH
-		elif [ $OS_RELEASE -eq 2 ]; then
+		if [ $OS_RELEASE -eq 2 ]; then
 			UNITSERVICEPATH=$CENTOS_SERVICEPATH
+		else
+			UNITSERVICEPATH=$DEBIAN_SERVICEPATH
 		fi
 		if [ -e $UNITSERVICEPATH ]; then
 			has_mount_option_systemd $UNITSERVICEPATH $OPTION
@@ -77,10 +77,10 @@ audit () {
 
 # This function will be called if the script status is on enabled mode
 apply () {
-	if [ $OS_RELEASE -eq 1 ]; then
-		UNITSERVICEPATH=$DEBIAN_SERVICEPATH		
-	elif [ $OS_RELEASE -eq 2 ]; then
+	if [ $OS_RELEASE -eq 2 ]; then
 		UNITSERVICEPATH=$CENTOS_SERVICEPATH
+	else
+		UNITSERVICEPATH=$DEBIAN_SERVICEPATH		
 	fi
     if [ $FNRET = 0 ]; then
         ok "$PARTITION is correctly set"
