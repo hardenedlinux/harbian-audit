@@ -60,9 +60,11 @@ apply () {
 			else
 				warn "$BLACKLIST_CONF is not set to blacklist, add to config file $HARBIAN_SEC_CONF_FILE"
 				if [ -w $HARBIAN_SEC_CONF_FILE ]; then
+					add_end_of_file "$HARBIAN_SEC_CONF_FILE" "install $BLACKLIST_CONF /bin/true" 
 					add_end_of_file "$HARBIAN_SEC_CONF_FILE" "blacklist $BLACKLIST_CONF"
 				else
 					touch $HARBIAN_SEC_CONF_FILE
+					add_end_of_file "$HARBIAN_SEC_CONF_FILE" "install $BLACKLIST_CONF /bin/true" 
 					add_end_of_file "$HARBIAN_SEC_CONF_FILE" "blacklist $BLACKLIST_CONF"
 				fi
 			fi

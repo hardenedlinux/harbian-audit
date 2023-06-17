@@ -96,10 +96,12 @@ apply () {
 		if [ -f $BLACKCONFILE ]; then
 			warn "Add $BLACKRULE to $BLACKCONFILE"
 			add_end_of_file $BLACKCONFILE "$BLACKRULE"
+			add_end_of_file $BLACKCONFILE "blacklist usb_storage"
 		else
 			warn "Create $BLACKCONFILE and add $BLACKRULE to $BLACKCONFILE"
 			touch $BLACKCONFILE
 			chmod 644 $BLACKCONFILE
+			add_end_of_file $BLACKCONFILE "blacklist usb_storage"
 			add_end_of_file $BLACKCONFILE "$BLACKRULE"
 		fi
     fi

@@ -47,8 +47,10 @@ apply () {
 		warn "$MODULE_NAME is not set to blacklist, add to config file $HARBIAN_SEC_CONF_FILE"
 		if [ -w $HARBIAN_SEC_CONF_FILE ]; then
 			add_end_of_file "$HARBIAN_SEC_CONF_FILE" "blacklist $MODULE_NAME"
+			add_end_of_file "$HARBIAN_SEC_CONF_FILE" "install $MODULE_NAME /bin/true"
 		else
 			touch $HARBIAN_SEC_CONF_FILE
+			add_end_of_file "$HARBIAN_SEC_CONF_FILE" "install $MODULE_NAME /bin/true"
 			add_end_of_file "$HARBIAN_SEC_CONF_FILE" "blacklist $MODULE_NAME"
 		fi
 	fi
