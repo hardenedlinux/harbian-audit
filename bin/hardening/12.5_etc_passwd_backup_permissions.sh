@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9 or CentOS 8 Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12 or CentOS 8 Hardening
 #
 
 #
@@ -15,7 +15,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=1
 
 FILE='/etc/passwd-'
-PERMISSIONS='600'
+PERMISSIONS='644'
 USER='root'
 GROUP='root'
 

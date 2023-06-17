@@ -15,7 +15,7 @@ set -u # One variable unset, it's over
 HARDENING_LEVEL=1
 
 FILE='/etc/shadow-'
-PERMISSIONS='600'
+PERMISSIONS='640'
 PERMISSIONS_CENTOS='0'
 USER='root'
 GROUP='shadow'
