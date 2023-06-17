@@ -4,7 +4,7 @@
 
 Hardened Debian GNU/Linux and CentOS 8 distro auditing.  
 
-The main test environment is in debian GNU/Linux 9/10/11 and CentOS 8, and other versions are not fully tested. There are no implementations of desktop related items in this release.
+The main test environment is in debian GNU/Linux 9/10/11/12 and CentOS 8, and other versions are not fully tested. There are no implementations of desktop related items in this release.
 
 The code framework is based on the [OVH-debian-cis](https://github.com/ovh/debian-cis) project, Modified some of the original implementations according to the features of Debian 9/10/11 and CentOS 8, added and implemented check items for [STIG Red_Hat_Enterprise_Linux_7_V2R5](https://github.com/hardenedlinux/STIG-OS-mirror/blob/master/redhat-STIG-DOCs/U_Red_Hat_Enterprise_Linux_7_V2R5_STIG.zip) [STIG Ubuntu V1R2](https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_Canonical_Ubuntu_16-04_LTS_V1R2_STIG.zip) and [cisecurity.org](https://www.cisecurity.org/) recommendations, and also added and implemented some check items by the HardenedLinux community. The audit and apply functions of the infrastructure are implemented, and the automatic fix function is implemented for the items that can be automatically fixed. 
 
@@ -21,12 +21,12 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 
 [...]
 ################### SUMMARY ###################
-      Total Available Checks : 272
-         Total Runned Checks : 272
-         Total Passed Checks : [ 240/272 ]
-         Total Failed Checks : [  32/272 ]
+      Total Available Checks : 268
+         Total Runned Checks : 268
+         Total Passed Checks : [ 224/268 ]
+         Total Failed Checks : [  44/268 ]
    Enabled Checks Percentage : 100.00 %
-       Conformity Percentage : 88.24 %
+       Conformity Percentage : 83.58 %
 ```
 ## Quickstart
 
@@ -46,12 +46,12 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 1.1_install_updates       [ OK ] Check Passed
 [...]
 ################### SUMMARY ###################
-      Total Available Checks : 272
-         Total Runned Checks : 272
-         Total Passed Checks : [ 240/272 ]
-         Total Failed Checks : [  32/272 ]
+      Total Available Checks : 268
+         Total Runned Checks : 268
+         Total Passed Checks : [ 224/268 ]
+         Total Failed Checks : [  44/268 ]
    Enabled Checks Percentage : 100.00 %
-       Conformity Percentage : 88.24 %
+       Conformity Percentage : 83.58 %
 # bin/hardening.sh --set-hardening-level 5
 # bin/hardening.sh --apply 
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
@@ -318,13 +318,8 @@ Additionally, quoting the License:
 
 3-Clause BSD
 
-
 ## Reference
 
 - **Center for Internet Security**: [https://www.cisecurity.org](https://www.cisecurity.org)
 - **STIG V1R4**: [https://iasecontent.disa.mil/stigs/zip/U_Red_Hat_Enterprise_Linux_7_V1R4_STIG.zip](https://iasecontent.disa.mil/stigs/zip/U_Red_Hat_Enterprise_Linux_7_V1R4_STIG.zip) 
 - **Firewall Rules**: [https://github.com/citypw/arsenal-4-sec-testing/blob/master/bt5_firewall/debian_fw](https://github.com/citypw/arsenal-4-sec-testing/blob/master/bt5_firewall/debian_fw)
-
-
-
-
