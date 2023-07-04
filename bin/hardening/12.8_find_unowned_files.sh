@@ -1,14 +1,13 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9 or CentOS 8 Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12 or CentOS 8 Hardening
 #
 
 #
 # 12.8 Find Un-owned Files and Directories (Scored)
 #
 
-set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
