@@ -1,14 +1,13 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9  Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12  Hardening
 #
 
 #
 # 8.2.3 Create and Set Permissions on rsyslog Log Files by conf file (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
-
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
@@ -16,7 +15,7 @@ HARDENING_LEVEL=3
 
 PACKAGE_NG='syslog-ng'
 
-PERMISSIONS='640'
+PERMISSIONS='0640'
 USER='root'
 GROUP='adm'
 
@@ -60,18 +59,29 @@ audit () {
 				fi
 			fi
 
-			does_pattern_exist_in_file "$FILE" "^\\$PERMIS_KEY"
+		does_pattern_exist_in_file "$FILE" "^\\$PERMIS_KEY"
     		if [ $FNRET != 0 ]; then
-				crit "$PERMIS_KEY is not exist in $FILE"
+			info "$PERMIS_KEY is not exist in $FILE"
+			PERMIS_KEY_NAME=$(find /etc/rsyslog.d/ -name "*.conf" | xargs grep  "^\\$PERMIS_KEY"  2>>/dev/null | awk -F':' '{print $2}' | awk '{print $2}')	
+			if [ "X$PERMIS_KEY_NAME" = "X" ]; then
+				crit "$PERMIS_KEY is not set in $FILE or $FILE_WIDE!"
+			elif [ "$PERMIS_KEY_NAME" != "$PERMISSIONS" -a "$PERMIS_KEY_NAME" != "0$PERMISSIONS" ]; then
+				CONFIG_NAME=$(find /etc/rsyslog.d/ -name "*.conf" | xargs grep  "^\\$PERMIS_KEY"  2>>/dev/null  | awk -F':' '{print $1}')	
+				crit "File permissions not set is $PERMISSIONS in $CONFIG_NAME!"
 			else
-				PERMIS_KEY_NAME=$(grep "^\\$PERMIS_KEY" $FILE $FILE_WIDE 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
-				if [ "$PERMIS_KEY_NAME" != "$PERMISSIONS" -a "$PERMIS_KEY_NAME" != "0$PERMISSIONS" ]; then
-					crit "File permissions not set is $PERMISSIONS!"
-				else
-					ok "File permissions set is $PERMISSIONS!"
-				fi
+				CONFIG_NAME=$(find /etc/rsyslog.d/ -name "*.conf" | xargs grep  "^\\$PERMIS_KEY"  2>>/dev/null  | awk -F':' '{print $1}')	
+				ok "File permissions set is $PERMISSIONS in $CONFIG_NAME!"
 			fi
+		else	
+			info "$PERMIS_KEY was existed in $FILE"
+			PERMIS_KEY_NAME=$(grep "^\\$PERMIS_KEY" $FILE 2>>/dev/null | awk '{print $2}')        
+ 			if [ "$PERMIS_KEY_NAME" != "$PERMISSIONS" -a "$PERMIS_KEY_NAME" != "0$PERMISSIONS" ]; then
+				crit "File permissions not set is $PERMISSIONS!"
+			else
+				ok "File permissions set is $PERMISSIONS in $FILE!"
+			fi	
 		fi
+	  fi
 	fi
 }
 
@@ -112,19 +122,31 @@ apply () {
 				fi
 			fi
 
-			does_pattern_exist_in_file "$FILE" "^\\$PERMIS_KEY"
+		does_pattern_exist_in_file "$FILE" "^\\$PERMIS_KEY"
     		if [ $FNRET != 0 ]; then
-				warn "$PERMIS_KEY is not exist in $FILE, add it"
-				add_end_of_file $FILE "$PERMIS_KEY $PERMISSIONS"
+			info "$PERMIS_KEY is not exist in $FILE"
+			PERMIS_KEY_NAME=$(find /etc/rsyslog.d/ -name "*.conf" | xargs grep  "^\\$PERMIS_KEY"  2>>/dev/null | awk -F':' '{print $2}' | awk '{print $2}')	
+			if [ "X$PERMIS_KEY_NAME" = "X" ]; then
+				warn "$PERMIS_KEY is not exist in $FILE or $FILE_WIDE, add it to $FILE"
+                        	add_end_of_file $FILE "$PERMIS_KEY $PERMISSIONS"
+			elif [ "$PERMIS_KEY_NAME" != "$PERMISSIONS" -a "$PERMIS_KEY_NAME" != "0$PERMISSIONS" ]; then
+				CONFIG_NAME=$(find /etc/rsyslog.d/ -name "*.conf" | xargs grep  "^\\$PERMIS_KEY"  2>>/dev/null  | awk -F':' '{print $1}')	
+				warn "File permissions not set is $PERMISSIONS in $CONFIG_NAME! Reset it"
+                        	replace_in_file $CONFIG_NAME "$PERMIS_KEY.*" "$PERMIS_KEY $PERMISSIONS"
 			else
-				PERMIS_KEY_NAME=$(grep "^\\$PERMIS_KEY" $FILE $FILE_WIDE 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')	
-				if [ "$PERMIS_KEY_NAME" != "$PERMISSIONS" -a "$PERMIS_KEY_NAME" != "0$PERMISSIONS" ]; then
-					warn "File permissions not set is $PERMISSIONS! Reset it"
-					replace_in_file $FILE "$PERMIS_KEY.*" "$PERMIS_KEY $PERMISSIONS"
-				else
-					ok "File permissions set is $PERMISSIONS!"
-				fi
+				CONFIG_NAME=$(find /etc/rsyslog.d/ -name "*.conf" | xargs grep  "^\\$PERMIS_KEY"  2>>/dev/null  | awk -F':' '{print $1}')	
+				ok "File permissions set is $PERMISSIONS in $CONFIG_NAME!"
 			fi
+		else
+			info "$PERMIS_KEY is exist in $FILE"
+			PERMIS_KEY_NAME=$(grep "^\\$PERMIS_KEY" $FILE 2>>/dev/null | awk -F: '{print $2}' | awk '{print $2}')        
+ 			if [ "$PERMIS_KEY_NAME" != "$PERMISSIONS" -a "$PERMIS_KEY_NAME" != "0$PERMISSIONS" ]; then
+				warn "File permissions not set is $PERMISSIONS in $FILE! Reset it"
+                        	replace_in_file $FILE "$PERMIS_KEY.*" "$PERMIS_KEY $PERMISSIONS"
+			else
+				ok "File permissions set is $PERMISSIONS in $FILE!"
+			fi	
+		fi
 		fi
 	fi
 }
