@@ -120,6 +120,7 @@ Use the following guidelines to reduce the attack surface and improve the reliab
 
 #### Clear the current log:
 ```
+$ echo > ~/.ssh/known_hosts
 # find /var/log/ -name "*.log" -exec shred -u {} \; 
 # find /var/log/ -name "*.log.*" -exec shred -u {} \; 
 # find / -name "authorized_keys" -exec shred -u {} \; 

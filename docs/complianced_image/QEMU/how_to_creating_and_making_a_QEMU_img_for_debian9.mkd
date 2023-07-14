@@ -123,6 +123,7 @@ $ cd /opt/harbian-audit-master/etc/conf.d
 
 #### Final fix  
 ```
+$ echo > ~/.ssh/known_hosts
 $ cd /opt/harbian-audit-master 
 # sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.1.35_freeze_auditd_conf.cfg
 # sed -i 's/^status=.*/status=enabled/' etc/conf.d/8.4.1_install_aide.cfg 
