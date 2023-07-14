@@ -21,13 +21,12 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 
 [...]
 ################### SUMMARY ###################
-      Total Available Checks : 268
-         Total Runned Checks : 268
-         Total Passed Checks : [ 224/268 ]
-         Total Failed Checks : [  44/268 ]
+      Total Available Checks : 270
+         Total Runned Checks : 270
+         Total Passed Checks : [ 226/270 ]
+         Total Failed Checks : [  44/270 ]
    Enabled Checks Percentage : 100.00 %
-       Conformity Percentage : 83.58 %
-```
+       Conformity Percentage : 83.70 %```
 ## Quickstart
 
 ```console
@@ -46,12 +45,12 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 1.1_install_updates       [ OK ] Check Passed
 [...]
 ################### SUMMARY ###################
-      Total Available Checks : 268
-         Total Runned Checks : 268
-         Total Passed Checks : [ 224/268 ]
-         Total Failed Checks : [  44/268 ]
+      Total Available Checks : 270
+         Total Runned Checks : 270
+         Total Passed Checks : [ 226/270 ]
+         Total Failed Checks : [  44/270 ]
    Enabled Checks Percentage : 100.00 %
-       Conformity Percentage : 83.58 %
+       Conformity Percentage : 83.70 %
 # bin/hardening.sh --set-hardening-level 5
 # bin/hardening.sh --apply 
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
