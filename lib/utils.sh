@@ -780,6 +780,54 @@ verify_integrity_all_packages()
 	fi
 }
 
+# Check paramer with str
+# example: Storage=persistent
+# return: 0 1 2 3 
+check_param_pair_by_str ()
+{
+	FILENAME=$1
+	OPTION=$2
+	EXPECT_OPSTR=$3
+
+    #Example:
+    # FILENAME="/etc/systemd/journald.conf"
+    # OPTION="Storage"
+	# EXPECT_OPSTR="persistent"
+
+	if [ ! -f $FILENAME ]; then
+		debug "$FILENAME file is not exist!"
+		FNRET=1
+	else
+		if [ $(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILENAME | grep "$OPTION=" | wc -l) -gt 0 ]; then
+			debug "$OPTION is exist in $FILENAME."
+			OP_STR=$(sed -e '/^#/d' -e '/^[ \t][ \t]*#/d' -e 's/#.*$//' -e '/^$/d' $FILENAME | grep $OPTION | awk -F'=' '{print $2}')
+			if [ $OP_STR == $EXPECT_OPSTR ]; then
+				debug "The str value is eq to expect str."
+				FNRET=0
+			else
+				debug "The str value is not eq to expect str."
+				FNRET=2
+			fi
+		else
+			debug "The options $OPTION is not exist in $FILENAME"
+			FNRET=3
+		fi
+	fi
+}
+
+reset_option_str_to_journald ()
+{
+	FILENAME=$1
+	OPTION=$2
+	SET_OPSTR=$3
+
+    #Example:
+    # FILENAME="/etc/systemd/journald.conf"
+    # OPTION="Storage"
+	# SET_OPSTR="persistent"
+    sed -i "s/${OPTION}=.*/${OPTION}=${SET_OPSTR}/" $FILENAME
+}
+
 # Check paramer with value 
 # example : minlen = 9
 # ruturn: 0  1  2  3 
