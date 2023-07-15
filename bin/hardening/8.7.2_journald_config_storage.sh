@@ -5,7 +5,7 @@
 #
 
 #
-# 8.7.1 Ensure journald is configured to compress large log files (Scored)
+# 8.7.2 Ensure journald is configured to write logfiles to persistent disk (Scored)
 # Author : Samson wen, Samson <samson@hardenedlinux.org>
 #
 
