@@ -26,7 +26,9 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
          Total Passed Checks : [ 226/270 ]
          Total Failed Checks : [  44/270 ]
    Enabled Checks Percentage : 100.00 %
-       Conformity Percentage : 83.70 %```
+       Conformity Percentage : 83.70 %
+```
+
 ## Quickstart
 
 ```console
