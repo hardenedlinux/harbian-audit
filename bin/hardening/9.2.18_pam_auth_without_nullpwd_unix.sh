@@ -5,7 +5,7 @@
 #
 
 #
-# 9.2.14 Configure password without blank or null passwords (Scored)
+# 9.2.18 Configure password without blank or null passwords (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
