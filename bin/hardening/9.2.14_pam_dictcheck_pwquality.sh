@@ -6,13 +6,14 @@
 
 #
 # 9.2.14  Must prevent the use of dictionary words for passwords: audit dictcheck option (Scored)
-# Author : Samson wen, Samson <sccxboy@gmail.com>
+# Author : Samson wen, Samson <samson@hardenedlinux.org>
 #
 
 set -e # One error, it's over
 set -u # One variable unset, it's over
 
 HARDENING_LEVEL=2
+PACKAGES='libpam-pwquality libpwquality1 libpwquality-common'
 
 # Redhat/CentOS default use pam_pwquality
 FILE_CENTOS='/etc/security/pwquality.conf'
@@ -23,11 +24,11 @@ OPTIONNAME='dictcheck'
 CONDT_VAL=1
 
 audit_centos () {
-	check_param_pair_by_value $FILE_CENTOS $OPTIONNAME eq $CONDT_VAL  
+	check_param_pair_by_value $FILE_CENTOS $OPTIONNAME ge $CONDT_VAL  
 	if [ $FNRET = 0 ]; then
-		ok "Option $OPTIONNAME set condition is equal to $CONDT_VAL in $FILE_CENTOS"
+		ok "Option $OPTIONNAME set condition is greater than or equal to $CONDT_VAL in $FILE_CENTOS"
 	elif [ $FNRET = 1 ]; then
-		crit "Option $OPTIONNAME set condition is not equal $CONDT_VAL in $FILE_CENTOS"
+		crit "Option $OPTIONNAME set condition is greater than or not equal $CONDT_VAL in $FILE_CENTOS"
 	elif [ $FNRET = 2 ]; then
 		ok "Option $OPTIONNAME is not conf in $FILE_CENTOS, but because it default is enable, so pass"
 	elif [ $FNRET = 3 ]; then
@@ -51,14 +52,20 @@ audit () {
 
 apply_centos () {
 	if [ $FNRET = 0 ]; then
-		ok "$OPTIONNAME set condition is equal to $CONDT_VAL in $FILE_CENTOS"
+		ok "$OPTIONNAME set condition is greater than or equal to $CONDT_VAL in $FILE_CENTOS"
 	elif [ $FNRET = 1 ]; then
 		warn "Set option $OPTIONNAME to $CONDT_VAL in $FILE_CENTOS"
 		replace_in_file $FILE_CENTOS "^$OPTIONNAME.*" "$OPTIONNAME = $CONDT_VAL"
 	elif [ $FNRET = 2 ]; then
 		ok "Option $OPTIONNAME is not conf in $FILE_CENTOS, but because default set enable, so pass"
 	elif [ $FNRET = 3 ]; then
-		crit "Config file $FILE_CENTOS is not exist!"
+		warn "Config file $FILE_CENTOS is not exist! Install $PACKAGES"
+		# For ubuntu deiban11 debian12
+		if [ $OS_RELEASE -eq 3 -o  $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 ]; then
+        		apt_install $PACKAGES
+		elif [ $OS_RELEASE -eq 2 ]; then
+			yum_install  $PACKAGES
+		fi
     fi
 }
 
