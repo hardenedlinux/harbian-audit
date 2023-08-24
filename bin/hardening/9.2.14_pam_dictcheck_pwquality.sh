@@ -29,7 +29,7 @@ audit_centos () {
 	elif [ $FNRET = 1 ]; then
 		crit "Option $OPTIONNAME set condition is not equal $CONDT_VAL in $FILE_CENTOS"
 	elif [ $FNRET = 2 ]; then
-		crit "Option $OPTIONNAME is not conf in $FILE_CENTOS"
+		ok "Option $OPTIONNAME is not conf in $FILE_CENTOS, but because it default is enable, so pass"
 	elif [ $FNRET = 3 ]; then
 		crit "Config file $FILE_CENTOS is not exist!"
     fi
@@ -56,8 +56,7 @@ apply_centos () {
 		warn "Set option $OPTIONNAME to $CONDT_VAL in $FILE_CENTOS"
 		replace_in_file $FILE_CENTOS "^$OPTIONNAME.*" "$OPTIONNAME = $CONDT_VAL"
 	elif [ $FNRET = 2 ]; then
-		warn "$OPTIONNAME is not conf, add to $FILE_CENTOS"
-		add_end_of_file $FILE_CENTOS "$OPTIONNAME = $CONDT_VAL"
+		ok "Option $OPTIONNAME is not conf in $FILE_CENTOS, but because default set enable, so pass"
 	elif [ $FNRET = 3 ]; then
 		crit "Config file $FILE_CENTOS is not exist!"
     fi
