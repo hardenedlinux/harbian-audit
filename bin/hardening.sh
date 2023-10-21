@@ -272,8 +272,10 @@ if [ $FINAL_G_CONFIG -eq 1 ]; then
 	info "Will reinitialize the AIDE database"
 	if [ $OS_RELEASE -eq 1 -o $OS_RELEASE -eq 3 ]; then
 		aideinit
-	elif [ $OS_RELEASE -eq 2]; then
+	elif [ $OS_RELEASE -eq 2 ]; then
 		aide --init
+	else
+		aide --config /etc/aide/aide.conf --init
         mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
 	fi
 	exit 0
