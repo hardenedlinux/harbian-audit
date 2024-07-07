@@ -32,7 +32,7 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 ## Quickstart
 
 ```console
-$ git clone https://github.com/hardenedlinux/harbian-audit.git && cd harbian-audit
+$ git clone --depth 1 https://github.com/hardenedlinux/harbian-audit.git && cd harbian-audit
 # cp etc/default.cfg /etc/default/cis-hardening
 # sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening
 # bin/hardening.sh --init
