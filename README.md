@@ -268,18 +268,10 @@ This document is a description of the additions to the sections not included in 
 ## harbian-audit complianced image 
 
 ### AMI(Amazon Machine Image) Public
-The HardenedLinux community has created public AMI images for three different regions.
-
-Destination region: US East(Ohio)   
-AMI ID: ami-091d37e9d358aaa84   
-AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
+The HardenedLinux community has created public AMI images for Frankfurt regions.
 
 Destination region: EU(Frankfurt)  
 AMI ID: ami-073725a8c2cf45418  
-AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
-
-Destination region: Asia Pacific(Tokyo)  
-AMI ID: ami-06c0adb6ee5e7d417   
 AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 #### Docs  
