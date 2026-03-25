@@ -268,11 +268,6 @@ This document is a description of the additions to the sections not included in 
 ## harbian-audit complianced image 
 
 ### AMI(Amazon Machine Image) Public
-The HardenedLinux community has created public AMI images for Frankfurt regions.
-
-Destination region: EU(Frankfurt)  
-AMI ID: ami-073725a8c2cf45418  
-AMI Name: harbian-audit complianced for Debian GNU/Linux 9   
 
 #### Docs  
 [how to creating and making an AMI public](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/complianced_image/AMI/how_to_creating_and_making_an_AMI_public.mkd)  
