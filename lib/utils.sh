@@ -20,15 +20,19 @@ is_centos_8()
 	fi
 }
 
-# return 9 if it is debian9, return 10 if it is debian10, reutrn 11 if it is debian11, return 12 if it is debian12, return 1 if it is less than 9
+# return 9 if it is debian9, return 10 if it is debian10, reutrn 11 if it is debian11, return 12 if it is debian12, return 13 if it is debian13, return 1 if it is less than 9
 get_debian_ver()
 {
+	DEBIAN13CODENAME="trixie"
 	DEBIAN12CODENAME="bookworm"
 	DEBIAN11CODENAME="bullseye"
 	DEBIAN10CODENAME="buster"
 	DEBIAN9CODENAME="stretch"
 	if [ -r /etc/debian_version ]; then
-		if [ $(grep -cwi "^$DEBIAN12CODENAME" /etc/debian_version) -eq 1 -o  $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 12 ]; then
+		if [ $(grep -cwi "^$DEBIAN13CODENAME" /etc/debian_version) -eq 1 -o  $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 13 ]; then
+			debug "Debian version is 13"
+			FNRET=13
+		elif [ $(grep -cwi "^$DEBIAN12CODENAME" /etc/debian_version) -eq 1 -o  $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 12 ]; then
 			debug "Debian version is 12"
 			FNRET=12
 		elif [ $(grep -cwi "^$DEBIAN11CODENAME" /etc/debian_version) -eq 1 -o  $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 11 ]; then
@@ -44,6 +48,29 @@ get_debian_ver()
 			debug "Debian version is less than 9"
 			FNRET=1
 		fi
+	fi
+}
+
+is_debian_13()
+{
+	# For debian13
+	DEBIAN13CODENAME="trixie"
+	if [ -r /etc/debian_version ]; then
+		if [ $(grep -cw "^$DEBIAN13CODENAME" /etc/debian_version) -eq 1 ]; then
+			debug "Debian version is 13"
+			FNRET=0
+			return
+		fi
+		if [ $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 13 ]; then
+			debug "Debian version is 13"
+			FNRET=0
+		else
+			debug "Current OS is not Debian 13."
+			FNRET=2
+		fi
+	else
+		debug "Current OS is not Debian."
+		FNRET=2
 	fi
 }
 
@@ -63,6 +90,29 @@ is_debian_12()
 		else
 			debug "Current OS is not Debian 12."
 			FNRET=2
+		fi
+	else
+		debug "Current OS is not Debian."
+		FNRET=2
+	fi
+}
+
+is_debian_ge_13()
+{
+	# For debian13
+	DEBIAN13CODENAME="trixie"
+	if [ -r /etc/debian_version ]; then
+		if [ $(grep -cw "^$DEBIAN13CODENAME" /etc/debian_version) -eq 1 ]; then
+			debug "Debian version is greater than or equal to 13"
+			FNRET=0
+			return
+		fi
+		if [ $(cat /etc/debian_version | awk -F"." '{print $1}') -ge 13 ]; then
+			debug "Debian version is greater than or equal to 13"
+			FNRET=0
+		else
+			debug "Debian version is less than 13"
+			FNRET=1
 		fi
 	else
 		debug "Current OS is not Debian."

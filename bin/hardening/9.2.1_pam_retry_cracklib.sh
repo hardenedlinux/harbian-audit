@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12 or CentOS Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12/13 or CentOS Hardening
 #
 
 #
@@ -93,7 +93,7 @@ check_config() {
 		PATTERN=$PATTERN_CENTOS
 		FILE=$FILE_CENTOS
 	fi
-	if [ $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 ]; then
+	if [ $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 -o $OS_RELEASE -eq 13 ]; then
 		PACKAGE=$PACKAGE_DEBIAN11
 		PAMLIBNAME=$PAMLIBNAME_DEBIAN11
 		PATTERN=$PATTERN_DEBIAN11

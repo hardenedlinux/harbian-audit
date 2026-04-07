@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 11/12/Ubuntu 16~22.4 and CentOS Hardening
+# harbian-audit for Debian GNU/Linux 11/12/13/Ubuntu 16~22.4 and CentOS Hardening
 #
 
 #
@@ -42,7 +42,7 @@ audit () {
 		FNRET=0
 		ok "Option $OPTIONNAME is not support in Debian 7/8/9/10, so pass."
 	# debian11/debian12 ubuntu 16~ default use pam_pwquality, same as centos
-	elif [ $OS_RELEASE -eq 2 -o $OS_RELEASE -eq 3 -o  $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 ]; then
+	elif [ $OS_RELEASE -eq 2 -o $OS_RELEASE -eq 3 -o  $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 -o $OS_RELEASE -eq 13 ]; then
 		audit_centos
 	else
 		crit "Current OS is not support!"
@@ -61,7 +61,7 @@ apply_centos () {
 	elif [ $FNRET = 3 ]; then
 		warn "Config file $FILE_CENTOS is not exist! Install $PACKAGES"
 		# For ubuntu deiban11 debian12
-		if [ $OS_RELEASE -eq 3 -o  $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 ]; then
+		if [ $OS_RELEASE -eq 3 -o  $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 -o $OS_RELEASE -eq 13 ]; then
         		apt_install $PACKAGES
 		elif [ $OS_RELEASE -eq 2 ]; then
 			yum_install  $PACKAGES
@@ -74,7 +74,7 @@ apply () {
 	if [ $OS_RELEASE -eq 1 ]; then
 		ok "Option $OPTIONNAME is not support in Debian 7/8/9/10, so pass."
 	# debian11/debian12 ubuntu 16~ default use pam_pwquality, same as centos
-	elif [ $OS_RELEASE -eq 2 -o $OS_RELEASE -eq 3 -o  $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 ]; then
+	elif [ $OS_RELEASE -eq 2 -o $OS_RELEASE -eq 3 -o  $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 -o $OS_RELEASE -eq 13 ]; then
 		apply_centos
 	else
 		crit "Current OS is not support!"
