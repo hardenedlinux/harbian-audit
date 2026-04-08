@@ -240,6 +240,8 @@ elif [ $OS_RELEASE -eq 11 ]; then
 	info "Start auditing for Debian11."
 elif [ $OS_RELEASE -eq 12 ]; then
 	info "Start auditing for Debian12."
+elif [ $OS_RELEASE -eq 13 ]; then
+	info "Start auditing for Debian13."
 elif [ $OS_RELEASE -eq 2 ]; then
 	info "Start auditing for redhat/CentOS."
 elif [ $OS_RELEASE -eq 3 ]; then
