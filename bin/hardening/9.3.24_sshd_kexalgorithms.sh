@@ -32,7 +32,7 @@ audit () {
 		SSH_PARAM=$(echo $OPTIONS | cut -d= -f 1)
 		SSH_VALUES=$(echo $OPTIONS | cut -d= -f 2)
 		VALUES_CHECK=$(echo $SSH_VALUES | sed 's@,@ @g')
-		VALUES_RUNTIME=$(sshd -T | grep -i $SSH_PARAM | awk '{print $2}')
+		VALUES_RUNTIME=$(sshd -T | grep -iw "^${SSH_PARAM}" | awk '{print $2}')
 		SET_VALUES_TMP=""
 		for VALUE in $VALUES_CHECK; do
 			if [ $(echo $VALUES_RUNTIME | grep -wc $VALUE) -eq 1 ]; then
@@ -60,7 +60,7 @@ apply () {
 		0)	ok "The value of keyword $SSH_PARAM has set to $SSH_VALUES, it's correct."
 		;;
 		1)	VALUES_CHECK=$(echo $SSH_VALUES | sed 's@,@ @g')
-			VALUES_RUNTIME=$(sshd -T | grep -i $SSH_PARAM | awk '{print $2}')
+			VALUES_RUNTIME=$(sshd -T | grep -iw "^${SSH_PARAM}" | awk '{print $2}')
 			SET_VALUES_TMP=""
 			for VALUE in $VALUES_CHECK; do
 				if [ $(echo $VALUES_RUNTIME | grep -wc $VALUE) -eq 1 ]; then
