@@ -499,7 +499,7 @@ is_service_enabled() {
 	if [ $OS_RELEASE -eq 2 ]; then
 		FNRET=0
 	else
-    	is_debian_9
+    	is_debian_ge_9
 	fi
     if [ $FNRET = 0 ]; then
         if [ $(systemctl is-enabled $SERVICE | grep -c "^enabled") -eq 1 ]; then
@@ -764,7 +764,7 @@ yum_install()
 
 install_package()
 {
-	if [ $OS_RELEASE -eq 1 ]; then
+	if [ $OS_RELEASE -eq 1 -o $OS_RELEASE -ge 9 ]; then
 		local PACKAGE=$1
 		apt_install $PACKAGE
 	elif [ $OS_RELEASE -eq 2 ]; then
@@ -1439,13 +1439,13 @@ check_sshd_access_limit ()
 # If the value of keyword is not equal $2, return 2
 # Example: $1='PermitRootLogin'  $2='no'
 check_sshd_conf_for_one_value_runtime ()
-{
-	COUNT=$(sshd -T | grep -i $1 | wc -l)
+{	
+	COUNT=$(sshd -T | grep -i "^$1" | wc -l)
 	if [ $COUNT -eq 0 ]; then
 		debug "The keyword $1 does not exist in the sshd runtime configuration."
 		FNRET=1
 	else
-		RUNTIMEVALUE=$(sshd -T | grep -i $1 | awk '{print $2}')
+		RUNTIMEVALUE=$(sshd -T | grep -i "^$1" | awk '{print $2}')
 		if [ "$RUNTIMEVALUE" = "$2" ]; then
 			debug "The value of keyword $1 has set to $2, it's correct."
 			FNRET=0

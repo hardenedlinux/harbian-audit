@@ -47,12 +47,12 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 1.1_install_updates       [ OK ] Check Passed
 [...]
 ################### SUMMARY ###################
-      Total Available Checks : 270
-         Total Runned Checks : 270
-         Total Passed Checks : [ 226/270 ]
-         Total Failed Checks : [  44/270 ]
+      Total Available Checks : 284
+         Total Runned Checks : 284
+         Total Passed Checks : [ 260/284 ]
+         Total Failed Checks : [  24/284 ]
    Enabled Checks Percentage : 100.00 %
-       Conformity Percentage : 83.70 %
+       Conformity Percentage : 91.55 %
 # bin/hardening.sh --set-hardening-level 5
 # bin/hardening.sh --apply 
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
@@ -181,7 +181,7 @@ Set the corresponding firewall rules according to the applications used. Hardene
 
 ### Iptabels format rules:
 [etc.iptables.rules.v4.sh](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/etc.iptables.rules.v4.sh)
-to do the following:
+First install the iptables-persistent package, then to do the following:
 ```
 $ INTERFACENAME="your network interfacename(Example eth0)"
 # bash docs/configurations/etc.iptables.rules.v4.sh $INTERFACENAME

@@ -52,8 +52,15 @@ apply () {
         warn "$PACKAGE is absent, installing it"
         install_package $PACKAGE
     elif [ $FNRET = 2 ]; then
+	   set -x
         warn "$PATTERN is not present in $FILE"
-        add_line_file_before_pattern $FILE "session optional pam_lastlog.so showfailed" "# pam-auth-update(8) for details."
+	is_debian_13
+    	if [ $FNRET = 0 ]; then
+        	add_line_file_after_pattern $FILE "session optional pam_lastlog.so showfailed" "session    optional   pam_mail.so standard"
+	else
+        	add_line_file_before_pattern $FILE "session optional pam_lastlog.so showfailed" "# pam-auth-update(8) for details."
+	fi
+	set +x
     elif [ $FNRET = 3 ]; then
         crit "$FILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
@@ -70,6 +77,8 @@ check_config() {
 		FILE='/etc/pam.d/postlogin'
 		KEYWORD='pam_lastlog.so'
 		OPTIONNAME='showfailed'
+	elif [ $OS_RELEASE -eq 13 ]; then
+		PACKAGE='libpam-lastlog2'
 	else
 		:
 	fi
