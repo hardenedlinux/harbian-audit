@@ -52,7 +52,6 @@ apply () {
         warn "$PACKAGE is absent, installing it"
         install_package $PACKAGE
     elif [ $FNRET = 2 ]; then
-	   set -x
         warn "$PATTERN is not present in $FILE"
 	is_debian_13
     	if [ $FNRET = 0 ]; then
@@ -60,7 +59,6 @@ apply () {
 	else
         	add_line_file_before_pattern $FILE "session optional pam_lastlog.so showfailed" "# pam-auth-update(8) for details."
 	fi
-	set +x
     elif [ $FNRET = 3 ]; then
         crit "$FILE is not exist, please check"
     elif [ $FNRET = 4 ]; then
