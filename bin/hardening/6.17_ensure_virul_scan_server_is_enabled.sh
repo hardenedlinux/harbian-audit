@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12  Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12/13  Hardening
 # todo test for centos
 
 #
@@ -20,7 +20,7 @@ VIRULSERVER_CENTOS='clamav-server clamav-data clamav-update clamav-filesystem cl
 audit () {
 	if [ $OS_RELEASE -ne 2 ]; then
     	if [ $(dpkg -l  | grep -c $VIRULSERVER) -ge 1 ]; then
-        	if [ $(systemctl | grep  $VIRULSERVER | grep -c "active running") -ne 1 ]; then
+        	if [ $(systemctl | grep  "${VIRULSERVER}.service" | grep -c "active running") -ne 1 ]; then
             	crit "$VIRULSERVER is not runing"
             	FNRET=2
         	else

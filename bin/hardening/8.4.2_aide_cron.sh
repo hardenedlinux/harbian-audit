@@ -15,8 +15,6 @@ set -u # One variable unset, it's over
 
 HARDENING_LEVEL=4
 
-FILES='/etc/cron.daily/aide'
-
 # This function will be called if the script status is on enabled / audit mode
 audit () {
     if [ -x ${FILES} ]; then 
@@ -39,7 +37,13 @@ apply () {
 
 # This function will check config parameters required
 check_config() {
-    :
+	is_debian_13
+
+	if [ $FNRET -eq 0 ]; then
+		FILES='/etc/cron.daily/dailyaidecheck'
+	else
+		FILES='/etc/cron.daily/aide'
+	fi
 }
 
 # Source Root Dir Parameter

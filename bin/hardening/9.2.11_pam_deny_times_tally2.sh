@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12 or CentOS 8 Hardening
+# harbian-audit for Debian GNU/Linux 7/8/9/10/11/12/13 or CentOS 8 Hardening
 #
 
 #
@@ -171,7 +171,7 @@ check_config() {
 			AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_tally2.so'
 			AUTHRULE='auth    required pam_tally2.so deny=3 even_deny_root unlock_time=900'
 	# ubuntu/debian11/debian12
-	elif [ $OS_RELEASE -eq 3 -o $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 ]; then
+	elif [ $OS_RELEASE -eq 3 -o $OS_RELEASE -eq 11 -o $OS_RELEASE -eq 12 -o $OS_RELEASE -eq 13 ]; then
 			ISDEBIAN11=1
 			SECCONFFILE='/etc/security/faillock.conf'
 			AUTHPATTERN='^auth[[:space:]]*required[[:space:]]*pam_faillock.so'

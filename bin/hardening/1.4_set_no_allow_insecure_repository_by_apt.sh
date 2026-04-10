@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# harbian-audit for Debian GNU/Linux Debian 9/10/11/12 or CentOS 8 Hardening
+# harbian-audit for Debian GNU/Linux Debian 9/10/11/12/13 or CentOS 8 Hardening
 #
 
 #

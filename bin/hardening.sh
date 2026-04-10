@@ -240,6 +240,8 @@ elif [ $OS_RELEASE -eq 11 ]; then
 	info "Start auditing for Debian11."
 elif [ $OS_RELEASE -eq 12 ]; then
 	info "Start auditing for Debian12."
+elif [ $OS_RELEASE -eq 13 ]; then
+	info "Start auditing for Debian13."
 elif [ $OS_RELEASE -eq 2 ]; then
 	info "Start auditing for redhat/CentOS."
 elif [ $OS_RELEASE -eq 3 ]; then
@@ -276,7 +278,12 @@ if [ $FINAL_G_CONFIG -eq 1 ]; then
 		aide --init
 	else
 		aide --config /etc/aide/aide.conf --init
-        mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+	is_debian_13
+	if [ $FNRET -eq 0 ]; then
+	    :
+    	else
+            mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz
+	fi
 	fi
 	exit 0
 fi

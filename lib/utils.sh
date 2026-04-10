@@ -20,15 +20,19 @@ is_centos_8()
 	fi
 }
 
-# return 9 if it is debian9, return 10 if it is debian10, reutrn 11 if it is debian11, return 12 if it is debian12, return 1 if it is less than 9
+# return 9 if it is debian9, return 10 if it is debian10, reutrn 11 if it is debian11, return 12 if it is debian12, return 13 if it is debian13, return 1 if it is less than 9
 get_debian_ver()
 {
+	DEBIAN13CODENAME="trixie"
 	DEBIAN12CODENAME="bookworm"
 	DEBIAN11CODENAME="bullseye"
 	DEBIAN10CODENAME="buster"
 	DEBIAN9CODENAME="stretch"
 	if [ -r /etc/debian_version ]; then
-		if [ $(grep -cwi "^$DEBIAN12CODENAME" /etc/debian_version) -eq 1 -o  $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 12 ]; then
+		if [ $(grep -cwi "^$DEBIAN13CODENAME" /etc/debian_version) -eq 1 -o  $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 13 ]; then
+			debug "Debian version is 13"
+			FNRET=13
+		elif [ $(grep -cwi "^$DEBIAN12CODENAME" /etc/debian_version) -eq 1 -o  $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 12 ]; then
 			debug "Debian version is 12"
 			FNRET=12
 		elif [ $(grep -cwi "^$DEBIAN11CODENAME" /etc/debian_version) -eq 1 -o  $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 11 ]; then
@@ -44,6 +48,29 @@ get_debian_ver()
 			debug "Debian version is less than 9"
 			FNRET=1
 		fi
+	fi
+}
+
+is_debian_13()
+{
+	# For debian13
+	DEBIAN13CODENAME="trixie"
+	if [ -r /etc/debian_version ]; then
+		if [ $(grep -cw "^$DEBIAN13CODENAME" /etc/debian_version) -eq 1 ]; then
+			debug "Debian version is 13"
+			FNRET=0
+			return
+		fi
+		if [ $(cat /etc/debian_version | awk -F"." '{print $1}') -eq 13 ]; then
+			debug "Debian version is 13"
+			FNRET=0
+		else
+			debug "Current OS is not Debian 13."
+			FNRET=2
+		fi
+	else
+		debug "Current OS is not Debian."
+		FNRET=2
 	fi
 }
 
@@ -63,6 +90,29 @@ is_debian_12()
 		else
 			debug "Current OS is not Debian 12."
 			FNRET=2
+		fi
+	else
+		debug "Current OS is not Debian."
+		FNRET=2
+	fi
+}
+
+is_debian_ge_13()
+{
+	# For debian13
+	DEBIAN13CODENAME="trixie"
+	if [ -r /etc/debian_version ]; then
+		if [ $(grep -cw "^$DEBIAN13CODENAME" /etc/debian_version) -eq 1 ]; then
+			debug "Debian version is greater than or equal to 13"
+			FNRET=0
+			return
+		fi
+		if [ $(cat /etc/debian_version | awk -F"." '{print $1}') -ge 13 ]; then
+			debug "Debian version is greater than or equal to 13"
+			FNRET=0
+		else
+			debug "Debian version is less than 13"
+			FNRET=1
 		fi
 	else
 		debug "Current OS is not Debian."
@@ -449,7 +499,7 @@ is_service_enabled() {
 	if [ $OS_RELEASE -eq 2 ]; then
 		FNRET=0
 	else
-    	is_debian_9
+    	is_debian_ge_9
 	fi
     if [ $FNRET = 0 ]; then
         if [ $(systemctl is-enabled $SERVICE | grep -c "^enabled") -eq 1 ]; then
@@ -714,7 +764,7 @@ yum_install()
 
 install_package()
 {
-	if [ $OS_RELEASE -eq 1 ]; then
+	if [ $OS_RELEASE -eq 1 -o $OS_RELEASE -ge 9 ]; then
 		local PACKAGE=$1
 		apt_install $PACKAGE
 	elif [ $OS_RELEASE -eq 2 ]; then
@@ -1389,13 +1439,13 @@ check_sshd_access_limit ()
 # If the value of keyword is not equal $2, return 2
 # Example: $1='PermitRootLogin'  $2='no'
 check_sshd_conf_for_one_value_runtime ()
-{
-	COUNT=$(sshd -T | grep -i $1 | wc -l)
+{	
+	COUNT=$(sshd -T | grep -i "^$1" | wc -l)
 	if [ $COUNT -eq 0 ]; then
 		debug "The keyword $1 does not exist in the sshd runtime configuration."
 		FNRET=1
 	else
-		RUNTIMEVALUE=$(sshd -T | grep -i $1 | awk '{print $2}')
+		RUNTIMEVALUE=$(sshd -T | grep -i "^$1" | awk '{print $2}')
 		if [ "$RUNTIMEVALUE" = "$2" ]; then
 			debug "The value of keyword $1 has set to $2, it's correct."
 			FNRET=0
@@ -1422,3 +1472,108 @@ check_blacklist_module_set ()
 	fi
 }
 
+
+
+sysctl_check() {
+    local param=$1
+    local exp_val=$2
+    if [ "$(sysctl -n "$param" 2>/dev/null)" = "$exp_val" ]; then
+        ok "$param is correctly set to $exp_val"
+        FNRET=0
+    else
+        crit "$param is not set to $exp_val"
+        FNRET=1
+    fi
+}
+
+sysctl_apply() {
+    local param=$1
+    local exp_val=$2
+    warn "Setting $param to $exp_val"
+    sysctl -w "$param=$exp_val" || true
+    echo "$param = $exp_val" >> /etc/sysctl.d/99-sysctl.conf
+}
+
+service_disable_check() {
+    local svc=$1
+    if systemctl is-enabled "$svc" 2>/dev/null | grep -q "enabled"; then
+        crit "$svc is enabled"
+        FNRET=1
+    else
+        ok "$svc is disabled or not installed"
+        FNRET=0
+    fi
+}
+
+service_disable_apply() {
+    local svc=$1
+    warn "Disabling $svc"
+    systemctl disable "$svc" 2>/dev/null || true
+    systemctl mask "$svc" 2>/dev/null || true
+}
+
+file_limit_check() {
+    local conf=$1
+    if grep -q "^$conf" /etc/security/limits.conf /etc/security/limits.d/* 2>/dev/null; then
+        ok "Limits configured: $conf"
+        FNRET=0
+    else
+        crit "Limits not configured: $conf"
+        FNRET=1
+    fi
+}
+
+file_limit_apply() {
+    local conf=$1
+    warn "Configuring limits: $conf"
+    echo "$conf" >> /etc/security/limits.conf
+}
+
+pkg_installed_check() {
+    local pkg=$1
+    if dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "install ok installed"; then
+        ok "$pkg is installed"
+        FNRET=0
+    else
+        crit "$pkg is not installed"
+        FNRET=1
+    fi
+}
+
+pkg_installed_apply() {
+    local pkg=$1
+    warn "Installing $pkg"
+    apt-get install -y "$pkg" || true
+}
+
+service_enable_check() {
+    local svc=$1
+    if systemctl is-enabled "$svc" 2>/dev/null | grep -q "enabled"; then
+        ok "$svc is enabled"
+        FNRET=0
+    else
+        crit "$svc is not enabled"
+        FNRET=1
+    fi
+}
+
+service_enable_apply() {
+    local svc=$1
+    warn "Enabling $svc"
+    systemctl enable "$svc" 2>/dev/null || true
+    systemctl start "$svc" 2>/dev/null || true
+}
+
+replace_in_file_custom() {
+    local file=$1
+    local regex=$2
+    local replace=$3
+    if [ ! -f "$file" ]; then
+        touch "$file"
+    fi
+    if grep -qE "$regex" "$file"; then
+        sed -i -E "s|$regex|$replace|g" "$file"
+    else
+        echo "$replace" >> "$file"
+    fi
+}
