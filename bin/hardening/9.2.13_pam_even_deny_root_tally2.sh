@@ -107,7 +107,7 @@ apply_secconffile() {
 	if [ $FNRET = 0 ]; then
 		ok "Option $DENYROOT is conf in $SECCONFFILE"
 	elif [ $FNRET = 1 ]; then
-		warn "Config file $SECCONFFILE is not exist! Please check it by youself"
+		warn "Config file $SECCONFFILE is not exist! Please check it by yourself"
 	elif [ $FNRET = 2 ]; then
 		warn "Option $DENYROOT is not conf in $SECCONFFILE, add it "
 		add_end_of_file $SECCONFFILE "$DENYROOT"

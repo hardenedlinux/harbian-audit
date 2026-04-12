@@ -27,7 +27,7 @@ class SqlService {
 		//if exist database
 		await this.init_database();
 		//if exist table
-		let querys = [
+		let queries = [
 			{
 				tableName: 'test',
 				sqls: [
@@ -36,7 +36,7 @@ class SqlService {
 				]
 			},
 		]
-		await this.init_tables(querys);
+		await this.init_tables(queries);
 	}
 
 	//init database

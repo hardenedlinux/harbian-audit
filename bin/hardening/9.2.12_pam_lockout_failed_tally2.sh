@@ -118,7 +118,7 @@ apply_secconffile() {
 		warn "$UNLOCKOPTION is not conf, add to $SECCONFFILE"
 		add_end_of_file $SECCONFFILE "$UNLOCKOPTION = $UNLOCK_VAL"
 	elif [ $FNRET = 3 ]; then
-		warn "Config file $SECCONFFILE is not exist! Please check it by youself"
+		warn "Config file $SECCONFFILE is not exist! Please check it by yourself"
 	else
 		warn "This param $FNRET was not defined!!!"
 	fi

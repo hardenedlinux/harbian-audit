@@ -31,9 +31,9 @@ audit () {
 	fi
 		
 	if [ $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '$4 < "'$SSH_VALUE'" {print $1}' | wc -l) -gt 0 ]; then
-		crit "Have least user's mininum password lifttime is not equal or less than $SSH_VALUE day"
+		crit "Have least user's minimum password lifetime is not equal or less than $SSH_VALUE day"
 	else
-		ok "All user's mininum password lifttime is $SSH_VALUE day"
+		ok "All user's minimum password lifetime is $SSH_VALUE day"
 	fi
 }
 
@@ -56,13 +56,13 @@ apply () {
 		fi
 	fi
 	if [ $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '$4 < "'$SSH_VALUE'" {print $1}' | wc -l) -gt 0 ]; then
-		warn "Have least user's mininum password lifttime is not equal or less than $SSH_VALUE day, Fixing"
+		warn "Have least user's minimum password lifetime is not equal or less than $SSH_VALUE day, Fixing"
 		for USERNAME in $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '$4 < "'$SSH_VALUE'" {print $1}');	
 		do
 			chage --mindays $SSH_VALUE $USERNAME
 		done
 	else
-		ok "All user's mininum password lifttime is $SSH_VALUE day"
+		ok "All user's minimum password lifetime is $SSH_VALUE day"
 	fi
 }
 

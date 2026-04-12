@@ -1,8 +1,8 @@
 # harbian-audit审计与加固
 
 ## 简介 
-此项目是一个Debian GNU/Linux及CentOS 8及Ubuntu发行版加固的审计工具。主要的测试环境是基于Debian GNU/Linux 9/10/11/12/13及CentOS 8及Ubuntu22，其它版本未充分测试。此项目主要是针对服务器版本，对桌面版本的项没有实现。
-此项目的框架基于[OVH-debian-cis](https://github.com/ovh/debian-cis)，根据Debian GNU/Linux 9的一些特性进行了优化，并根据安全部署合规STIG（[STIG Red_Hat_Enterprise_Linux_7_V2R5](redhat-STIG-DOCs/U_Red_Hat_Enterprise_Linux_7_V2R5_STIG.zip)及[STIG Ubuntu V1R2](https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_Canonical_Ubuntu_16-04_LTS_V1R2_STIG.zip)）及CIS（[cisecurity.org](https://www.cisecurity.org/)）进行了安全检查项的添加，同时也根据HardenedLinux社区就具体生产环境添加了一些安全检查项的审计功能的实现。此项目不仅具有安全项的审计功能，同时也有自动修改的功能。
+本项目是面向 Debian GNU/Linux、CentOS 8 和 Ubuntu 发行版的安全审计与加固工具。当前主要测试环境为 Debian GNU/Linux 9/10/11/12/13、CentOS 8 以及 Ubuntu 22，其他版本尚未经过充分测试。本项目主要面向服务器场景，暂未针对桌面环境实现对应检查项。
+本项目基于 [OVH-debian-cis](https://github.com/ovh/debian-cis) 框架，并结合 Debian GNU/Linux 9 的一些特性进行了优化。同时参考了安全合规基线 STIG（[STIG Red_Hat_Enterprise_Linux_7_V2R5](redhat-STIG-DOCs/U_Red_Hat_Enterprise_Linux_7_V2R5_STIG.zip) 及 [STIG Ubuntu V1R2](https://dl.dod.cyber.mil/wp-content/uploads/stigs/zip/U_Canonical_Ubuntu_16-04_LTS_V1R2_STIG.zip)）和 CIS（[cisecurity.org](https://www.cisecurity.org/)），补充了安全检查项；另外也结合 HardenedLinux 社区在实际生产环境中的经验，实现了一些额外安全检查项的审计功能。项目不仅支持安全审计，也支持自动修复。
 
 审计功能的使用示例： 
 ```console
@@ -18,7 +18,7 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 [...]
 ################### SUMMARY ###################
       Total Available Checks : 271
-         Total Runned Checks : 271
+         Total Checks Run : 271
          Total Passed Checks : [ 226/271 ]
          Total Failed Checks : [  44/271 ]
    Enabled Checks Percentage : 100.00 %
@@ -33,7 +33,7 @@ $ git clone https://github.com/hardenedlinux/harbian-audit.git && cd harbian-aud
 # sed -i "s#CIS_ROOT_DIR=.*#CIS_ROOT_DIR='$(pwd)'#" /etc/default/cis-hardening
 # bin/hardening.sh --init
 ```
-### 对所有的安全检查项进行审计 
+### 对所有安全检查项执行审计 
 ```
 # bin/hardening.sh --audit-all
 hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening/1.1_install_updates.sh
@@ -47,13 +47,13 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 [...]
 ################### SUMMARY ###################
       Total Available Checks : 270
-         Total Runned Checks : 270
+         Total Checks Run : 270
          Total Passed Checks : [ 226/270 ]
          Total Failed Checks : [  44/270 ]
    Enabled Checks Percentage : 100.00 %
        Conformity Percentage : 83.70 %
 ```
-### 设置加固级别并进行自动修复  
+### 设置加固级别并执行自动修复  
 ```
 # bin/hardening.sh --set-hardening-level 5  
 # bin/hardening.sh --apply  
@@ -73,17 +73,17 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 ## 用法简介 
 
 ### 需要预装的软件  
-如果是使用的最小安装方式安装的Debian GNU/Linux系统，在使用此项目之前，需要安装如下的软件：
+如果 Debian GNU/Linux 系统采用最小化安装方式，在使用本项目之前需要先安装以下软件：
 ```
 # apt-get install -y bc net-tools pciutils 
 ```
-如果系统是Redhat/CentOS，在使用此项目前，需要安装如下的软件包：
+如果系统是 RedHat/CentOS，在使用本项目前，需要安装以下软件包：
 ```
 # yum install -y bc net-tools pciutils NetworkManager epel-release 
 ```
 
 ### 需要预先进行的配置 
-在使用此项目前，必须给所有要用到的用户设置了密码。如果没有设置密码的话，将在进行自动化加固后不能够登录到系统。例如(用户：root和test）:
+在使用本项目前，必须为所有会用到的用户设置密码。否则在执行自动化加固后，相关用户可能无法登录系统。例如（用户：root 和 test）：
 ```
  
 # passwd 
@@ -91,7 +91,7 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 ```
 
 ### 项目本身的配置 
-审计及修复的脚本代码位于bin/hardening目录中，每个脚本文件对应位于/etc/conf.d/[script_name].cfg的一个配置文件。每个脚本都能够单独设置为enabled或disabled，例如：
+审计与修复脚本位于 `bin/hardening` 目录中，每个脚本文件都对应一个位于 `/etc/conf.d/[script_name].cfg` 的配置文件。每个脚本都可以单独设置为 `enabled` 或 `disabled`，例如：
 ``disable_system_accounts``:
 
 ```
@@ -101,55 +101,56 @@ status=disabled
 EXCEPTIONS=""
 ```
 
-``status``参数可能的3个值： 
-- ``disabled`` (do nothing): 此脚本在执行时不会被运行 
-- ``audit`` (RO): 此脚本只会进行审计的检测 
-- ``enabled`` (RW): 此脚本不仅进行审计的检测，也能进行自动修改。
+`status` 参数有 3 个可选值： 
+- `disabled` (do nothing): 执行时不运行该脚本 
+- `audit` (RO): 仅执行审计检查 
+- `enabled` (RW): 执行审计检查，并尝试自动修复
 
-要生成每个脚本对应的配置文件并设置审计的级别，使用如下命令： 
-1) 当第一次执行本项目时，通过参数audit-all来生成etc/conf.d/[script_name].cfg 
+如需为每个脚本生成对应配置文件，并设置审计级别，可使用以下命令： 
+1. 首次执行本项目时，可通过 `audit-all` 参数生成 `etc/conf.d/[script_name].cfg`：
 ```
 # bash bin/hardening.sh --audit-all
 ```
-2) 使用参数set-hardening-level来设置对应级别的脚本的[script_name].cfg配置文件为enabled状态  
+2. 使用 `set-hardening-level` 参数，将对应级别的 `[script_name].cfg` 配置文件设为 `enabled` 状态：  
 ```
 # bash bin/hardening.sh --set-hardening-level <level>
 ```
-通用配置文件为``etc/hardening.cfg``，这个文件可以对日志文件的级别、备份目录进行控制，备份目录是当自动修复时对原配置文件进行备份的目录。
+通用配置文件为 `etc/hardening.cfg`。该文件可用于控制日志级别和备份目录；备份目录用于在自动修复时保存原始配置文件。
 
-### 审计及修复的操作 (进行加固后，必须进行“修复后”章节中的操作)
-要进行审计及修复，运行``bin/hardening.sh``，此命令有两个主要的执行模式：
-- ``--audit``: 对所有配置为enabled对应的脚本进行审计；
-- ``--apply``: 对所有配置为enabled对应的脚本进行审计及修复；
-另外, ``--audit-all`` 参数能够强制执行所有审计脚本，包括配置为disabled的脚本，此操作不会对系统有任何的影响(不会修复)；
-``--audit-all-enable-passed``参数可以用作快速启动配置的快捷方式，将在审计模式执行所有的脚本。如果脚本对应的审计通过，此脚本对应的配置文件将自动配置为enabled。如果你已经自定义了你的配置文件，别使用此参数进行执行。
+### 审计及修复操作（执行加固后，必须完成“修复后必须进行的操作”章节中的内容）
+执行审计或修复时，运行 `bin/hardening.sh`。该命令主要有两种执行模式：
+- `--audit`: 对所有配置为 `enabled` 的脚本执行审计
+- `--apply`: 对所有配置为 `enabled` 的脚本执行审计并尝试修复
 
-使用如下命令进行加固/修复系统:
+另外，`--audit-all` 参数会强制执行所有审计脚本，包括配置为 `disabled` 的脚本；该操作不会修改系统（即不会执行修复）。
+`--audit-all-enable-passed` 参数可用作快速初始化配置的快捷方式：它会以审计模式执行所有脚本，如果某个脚本审计通过，则自动将其对应配置文件设为 `enabled`。如果你已经自定义了配置文件，不建议使用此参数。
+
+使用以下命令对系统进行加固/修复：
 ```
 # bash bin/hardening.sh --apply 
 ```
 
-## 修复后必须进行的操作 (非常重要)
-当set-hardening-level配置为5（最高等级）且使用--apply运行了后，需要进行如下的操作：
-1) 当9.4项被修复后(Restrict Access to the su Command), 如果必须使用su的场景，例如如果使用ssh远程登录，当以普通用户登录后需要使用su命令时，可以使用如下命令进行解除限制：
+## 修复后必须进行的操作（非常重要）
+当 `set-hardening-level` 设为 5（最高等级）并执行 `--apply` 后，还需要完成以下操作：
+1. 当 9.4 项（Restrict Access to the su Command）被修复后，如果仍然存在必须使用 `su` 的场景，例如通过 SSH 以普通用户登录后再切换到其他用户，可以使用以下命令临时解除限制：
 ```
 # sed -i '/^[^#].*pam_wheel.so.*/s/^/# &/' /etc/pam.d/su 
 ```
-暂时注释掉包含pam_wheel.so的行，当使用完su命令后，请去掉此行的注释。
+该命令会临时注释掉包含 `pam_wheel.so` 的行。使用完 `su` 后，请恢复该行的注释状态。
 
-2) 当7.4.4项被修复后（7.4.4_hosts_deny.sh）, 系统将拒绝所有的连接（例如ssh连接），所以需要设置/etc/hosts.allow文件中允许访问此主机的列表，例如：
+2. 当 7.4.4 项（`7.4.4_hosts_deny.sh`）被修复后，系统将拒绝所有连接（例如 SSH 连接），因此需要在 `/etc/hosts.allow` 中配置允许访问此主机的来源，例如：
 ```
 # echo "ALL: 192.168.1. 192.168.5." >> /etc/hosts.allow
 ```
-此示例配置表示仅允许192.168.1.[1-255] 192.168.5.[1-255]两个网段能够访问此系统。 具体配置请根据实际场景进行配置。 
+该示例表示仅允许 `192.168.1.[1-255]` 和 `192.168.5.[1-255]` 两个网段访问此系统。请根据实际场景调整配置。 
 
-3) 为普通用户设置能力，例如(用户名为test):
+3. 为普通用户授予 sudo 权限，例如（用户名为 `test`）：
 ```
 # sed -i "/^root/a\test    ALL=(ALL:ALL) ALL" /etc/sudoers 
 ```
 
-4) 设置基本的iptables防火墙规则 
-根据实现场景进行防火墙规则的配置，可参考HardenedLinux社区归纳的基于Debian GNU/Linux的防火墙规则的基本规则：
+4. 设置基础 iptables 防火墙规则  
+请根据实际场景配置防火墙规则，可参考 HardenedLinux 社区整理的 Debian GNU/Linux 基础防火墙规则：
 [etc.iptables.rules.v4.sh](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/etc.iptables.rules.v4.sh)
 
 基于iptables的部署:
@@ -160,35 +161,35 @@ $ INTERFACENAME="your network interfacename(Example eth0)"
 # iptables-save > /etc/iptables/rules.v4 
 # ip6tables-save > /etc/iptables/rules.v6 
 ```
-基于nft的部署：
-按照以下命令修改nftables.conf(你的对外网口的名称，例如：eth0):
+基于 nft 的部署：
+按以下命令修改 `nftables.conf`（将对外网卡名称替换为实际值，例如 `eth0`）：
 ```
 $ sed -i 's/^define int_if = ens33/define int_if = eth0/g' etc.nftables.conf 
 # nft -f ./etc.nftables.conf 
 ```
-5) 当所有安全基线项都修复完成后，使用--final方法将完成以下的最终的工作：
-   1.使用passwd命令去重新设置常规用户及root用户的密码，以满足pam_cracklib模块配置的密码强度和健壮性。
-   2. 重新初始化aide工具的数据库。
+5. 当所有安全基线项都修复完成后，可使用 `--final` 完成以下收尾工作：
+   1. 使用 `passwd` 命令重新设置普通用户及 root 用户的密码，以满足 `pam_cracklib` 模块对密码强度的要求。
+   2. 重新初始化 aide 工具的数据库。
 ```
 # bin/hardening.sh --final
 ```
 
 ## 特别注意 
 
-### 必须在第一次修复应用后进行修复的项  
-8.1.35  因为此项一旦设置，审计规则将不能够再进行添加。
+### 必须在第一次应用修复后处理的项  
+8.1.35：此项一旦设置完成，将无法继续添加新的审计规则。
 
-### 必须在所有项都修复应用后进行修复的项  
-8.4.1  8.4.2 这都是与aide检测文件完整性相关的项，最好是在所有项都修复好后再进行修复，以修复好的系统中的文件进行完整性的数据库的初始化。
+### 必须在所有项都修复完成后再处理的项  
+8.4.1、8.4.2：这两项都与 aide 文件完整性检测有关，最好在所有修复完成后再执行，以便基于修复完成后的系统文件初始化完整性数据库。
 
-### 一些检查项需要依赖多次修复，且操作系统需要多次重启 
-#### 需要进行两次修复的项  
+### 一些检查项需要多次修复，且操作系统可能需要多次重启 
+#### 需要执行两次修复的项  
 8.1.1.2  
 8.1.1.3  
 8.1.12  
 4.5  
 
-## 玩（如何添加检查项）
+## 扩展（如何添加检查项）
 
 **获取源码**
 
@@ -203,7 +204,7 @@ $ cp src/skel bin/hardening/99.99_custom_script.sh
 $ chmod +x bin/hardening/99.99_custom_script.sh
 $ cp src/skel.cfg etc/conf.d/99.99_custom_script.cfg
 ```
-将对应的配置文件配置为enabled，并进行审计及加固的测试：
+将对应配置文件设为 `enabled`，然后执行审计及加固测试：
 ```console
 $ sed -i "s/status=.+/status=enabled/" etc/conf.d/99.99_custom_script.cfg
 $ bash bin/hardening.sh --audit --only 99.99
@@ -219,7 +220,7 @@ This document is a description of the additions to the sections not included in 
 [CIS Debian GNU/Linux 9 Benchmark v1.0.0](https://benchmarks.cisecurity.org/downloads/show-single/index.cfm?file=debian8.100)  
 [harbian audit Debian Linux 9 Benchmark](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/harbian_audit_Debian_9_Benchmark_v0.1.mkd)  
 
-### 手动修复的操作文档列表  
+### 手动修复操作文档列表  
 [How to config grub2 password protection](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_config_grub2_password_protection.mkd)  
 [How to persistent iptables rules with debian 9](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_persistent_iptables_rules_with_debian_9.mkd)  
 [How to deploy audisp-remote for auditd log](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/configurations/manual-operation-docs/how_to_deploy_audisp_remote_for_audit_log.mkd)
@@ -233,7 +234,7 @@ This document is a description of the additions to the sections not included in 
 [nginx-mutual-ssl-proxy-http](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/use-cases/tls-transmission-usecase/nginx-mutual-ssl-proxy-http-service/Readme.mkd)  
 [nginx-mutual-ssl-proxy-tcp-udp](https://github.com/hardenedlinux/harbian-audit/blob/master/docs/use-cases/tls-transmission-usecase/using-Nginx-as-SSL-tunnel-4TCP-UDP-service/Readme.mkd)   
 
-## harbian-audit合规制定的镜像  
+## harbian-audit 合规镜像  
 
 ### AMI(Amazon Machine Image) Public
 
@@ -281,6 +282,4 @@ Additionally, quoting the License:
 - **Center for Internet Security**: https://www.cisecurity.org/
 - **STIG V1R4**: https://iasecontent.disa.mil/stigs/zip/U_Red_Hat_Enterprise_Linux_7_V1R4_STIG.zip 
 - **Firewall Rules**: https://github.com/citypw/arsenal-4-sec-testing/blob/master/bt5_firewall/debian_fw
-
-
 

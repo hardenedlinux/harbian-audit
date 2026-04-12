@@ -55,7 +55,7 @@ and update
 
 #### Configurate Redis
 
-modify `/etc/redis/redis.conf`, changce supervised no to 
+modify `/etc/redis/redis.conf`, chance supervised no to 
 
 ```
 supervised systemd

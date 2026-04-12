@@ -146,7 +146,7 @@ Reset password for all users and reinit aide database:
 admin@ip:/opt/harbian-audit-master# ./bin/hardening.sh --final 
 ```
 
-#### Clear bash hostory 
+#### Clear bash history 
 ```
 # echo > ~/.bash_history 
 # history -cw 

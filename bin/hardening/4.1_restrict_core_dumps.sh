@@ -40,7 +40,7 @@ audit_debian () {
 audit_centos () {
 	is_service_active $SERVICE_NAME
 	if [ $FNRET -eq 0 ]; then
-		crit "$SERVICE_NAME is actived"
+		crit "$SERVICE_NAME is active"
 		FNRET=1
 	else
 		ok "$SERVICE_NAME is inactived"

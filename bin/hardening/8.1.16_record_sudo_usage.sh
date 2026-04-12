@@ -24,7 +24,7 @@ audit () {
     IFS=$'\n'
 	check_audit_path $AUDIT_VALUE 
 	if [ $FNRET -eq 1 ];then
-		warn "path is not exsit! Please check file path is exist!"
+		warn "path does not exist! Please check that the file path exists!"
 	else
 		does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
 		if [ $FNRET != 0 ]; then
@@ -47,7 +47,7 @@ apply () {
 		add_end_of_file $FILE $AUDIT_VALUE
 		check_auditd_is_immutable_mode
 	elif [ $FNRET -eq 1 ];then
-		warn "path is not exsit! Please check file path is exist!"
+		warn "path does not exist! Please check that the file path exists!"
 	else
 		ok "$AUDIT_VALUE is present in $FILE"
 	fi

@@ -41,7 +41,7 @@ apply () {
 		else
         	apt_install $PACKAGE
 	    	aideinit -y -f
-        	info "${PACKAGE} is now installed but not fully functionnal, please see readme to go further"
+        	info "${PACKAGE} is now installed but not fully functional, please see readme to go further"
 		fi
     fi
 }

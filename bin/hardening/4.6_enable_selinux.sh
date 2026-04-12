@@ -26,7 +26,7 @@ audit_debian () {
 	check_aa_status
 	set -e
 	if [ $FNRET = 0 ]; then
-		ok "AppArmor was actived. So pass."
+        ok "AppArmor was active. So pass."
 		return 0
 	fi
 	for PACKAGE in ${PACKAGES}
@@ -42,7 +42,7 @@ audit_debian () {
 		ok "$PACKAGE is installed"
 	fi
 	if [ $(grep -c "${SETSTRING}" $PROC_CMDLINE) -eq 1 ]; then
-		ok "SELinux is actived."
+        ok "SELinux is active."
 		does_valid_pattern_exist_in_file $SELINUXCONF_FILE $SELINUXENFORCE_MODE
 		if [ ${FNRET} -eq 0 -a $(getenforce | grep -c 'Enforcing') -eq 1 ]; then
 			ok "SELinux is in Enforcing mode."
@@ -105,7 +105,7 @@ apply_debian () {
 	check_aa_status
 	set -e
 	if [ $FNRET = 0 ]; then
-		ok "AppArmor was actived. So pass."
+        ok "AppArmor was active. So pass."
 		return 0
 	fi
 	case $FNRET in 

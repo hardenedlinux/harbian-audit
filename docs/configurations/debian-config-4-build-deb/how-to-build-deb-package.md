@@ -13,7 +13,7 @@ export DEBEMAIL DEBFULLNAME
 EOF
 $ . ~/.bashrc
 ```
-## Download realese  
+## Download release  
 ```
 $ wget https://github.com/hardenedlinux/harbian-audit/archive/V0.4.1.tar.gz
 $ tar zxvf V0.4.1.tar.gz 

@@ -5,7 +5,7 @@
 #
 
 #
-# 8.1.26  Recored pam_tally/pam_tally2 command usage(Only for Debian) (Scored)
+# 8.1.26  Recorded pam_tally/pam_tally2 command usage(Only for Debian) (Scored)
 # Replaced pam_tally2 with faillock in debian 11
 # Author : Samson wen, Samson <sccxboy@gmail.com> Author add this 
 #
@@ -29,7 +29,7 @@ audit () {
     	for AUDIT_VALUE in $AUDIT_PARAMS; do
 			check_audit_path $AUDIT_VALUE 
 			if [ $FNRET -eq 1 ];then
-				warn "path is not exsit! Please check file path is exist!"
+				warn "path does not exist! Please check that the file path exists!"
 				continue
 			else
         		debug "$AUDIT_VALUE should be in file $FILE"
@@ -57,7 +57,7 @@ apply () {
     	for AUDIT_VALUE in $AUDIT_PARAMS; do
 			check_audit_path $AUDIT_VALUE 
 			if [ $FNRET -eq 1 ];then
-				warn "path is not exsit! Please check file path is exist!"
+				warn "path does not exist! Please check that the file path exists!"
 				continue
 			else
         		debug "$AUDIT_VALUE should be in file $FILE"

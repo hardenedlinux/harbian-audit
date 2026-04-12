@@ -23,7 +23,7 @@ fi
 #unlimited 
 $IPT -A INPUT -i lo -j ACCEPT
 $IPT -A OUTPUT -o lo -j ACCEPT
-# DROP all incomming traffic
+# DROP all incoming traffic
 $IPT -P INPUT DROP
 $IPT -P OUTPUT DROP
 $IPT -P FORWARD DROP
@@ -79,7 +79,7 @@ do
     $IPT -I INPUT -p tcp --dport 22 -i ${PUB_IF} -m state --state NEW -m recent --set
     $IPT -I INPUT -p tcp --dport 22 -i ${PUB_IF} -m state --state NEW -m recent  --update --seconds 60 --hitcount 4 -j LOGDROP
  done
-    # Allow full outgoing connection but no incomming stuff
+    # Allow full outgoing connection but no incoming stuff
     $IPT -A INPUT -p ipv6-icmp -m ipv6-icmp  --icmpv6-type 4 -j ACCEPT
     $IPT -A OUTPUT -p ipv6-icmp -m ipv6-icmp --icmpv6-type 8 -j ACCEPT
 

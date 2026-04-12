@@ -20,7 +20,7 @@ is_centos_8()
 	fi
 }
 
-# return 9 if it is debian9, return 10 if it is debian10, reutrn 11 if it is debian11, return 12 if it is debian12, return 13 if it is debian13, return 1 if it is less than 9
+# return 9 if it is debian9, return 10 if it is debian10, return 11 if it is debian11, return 12 if it is debian12, return 13 if it is debian13, return 1 if it is less than 9
 get_debian_ver()
 {
 	DEBIAN13CODENAME="trixie"
@@ -477,7 +477,7 @@ is_service_active() {
 	fi
     if [ $FNRET = 0 ]; then
         if [ $(systemctl is-active $SERVICE | grep -c "^active") -eq 1 ]; then
-            debug "Service $SERVICE is actived"
+            debug "Service $SERVICE is active"
             FNRET=0
         else
             debug "Service $SERVICE is inactived"
@@ -830,7 +830,7 @@ verify_integrity_all_packages()
 	fi
 }
 
-# Check paramer with str
+# Check parameter with str
 # example: Storage=persistent
 # return: 0 1 2 3 
 check_param_pair_by_str ()
@@ -878,7 +878,7 @@ reset_option_str_to_journald ()
     sed -i "s/${OPTION}=.*/${OPTION}=${SET_OPSTR}/" $FILENAME
 }
 
-# Check paramer with value 
+# Check parameter with value 
 # example : minlen = 9
 # ruturn: 0  1  2  3 
 check_param_pair_by_value ()
@@ -1370,7 +1370,7 @@ check_audit_path ()
 # Reference: https://access.redhat.com/solutions/3906701 
 tcp_wrappers_warn ()
 {
-	warn "The package(tcp_wrappers) has been deprecated in RHEL 7 and therefore it will not be avaliable in RHEL 8 or later RHEL release."
+	warn "The package(tcp_wrappers) has been deprecated in RHEL 7 and therefore it will not be available in RHEL 8 or later RHEL release."
 }
 
 
@@ -1415,7 +1415,7 @@ check_aa_status ()
 }
 
 # Check sshd access limit 
-# If not exist key of above, it's fail beacause default is everyone to allow 
+# If not exist key of above, it's fail because default is everyone to allow 
 # Example: $1='AllowUsers'  $2='AllowUsers[[:space:]]*\*'
 check_sshd_access_limit ()
 {
@@ -1435,7 +1435,7 @@ check_sshd_access_limit ()
 
 # Check sshd conf for one value  sshd -T return 'keyword value' pairs
 # If the value of keyword is equal $2, return 0 
-# If the keywork does not exist in the sshd runtime configuration, return 1
+# If the keyword does not exist in the sshd runtime configuration, return 1
 # If the value of keyword is not equal $2, return 2
 # Example: $1='PermitRootLogin'  $2='no'
 check_sshd_conf_for_one_value_runtime ()

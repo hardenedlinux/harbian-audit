@@ -5,7 +5,7 @@
 #
 
 #
-# 8.1.19  Recored ssh-keysign command usage (Scored)
+# 8.1.19  Recorded ssh-keysign command usage (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
@@ -26,7 +26,7 @@ audit () {
     for AUDIT_VALUE in $AUDIT_PARAMS; do
 		check_audit_path $AUDIT_VALUE 
 		if [ $FNRET -eq 1 ];then
-			warn "path is not exsit! Please check file path is exist!"
+			warn "path does not exist! Please check that the file path exists!"
 			continue
 		else
         	debug "$AUDIT_VALUE should be in file $FILE"
@@ -49,7 +49,7 @@ apply () {
     for AUDIT_VALUE in $AUDIT_PARAMS; do
 		check_audit_path $AUDIT_VALUE 
 		if [ $FNRET -eq 1 ];then
-			warn "path is not exsit! Please check file path is exist!"
+			warn "path does not exist! Please check that the file path exists!"
 			continue
 		else
         	debug "$AUDIT_VALUE should be in file $FILE"

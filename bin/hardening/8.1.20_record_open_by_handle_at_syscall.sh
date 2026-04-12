@@ -5,7 +5,7 @@
 #
 
 #
-# 8.1.20  Recored open_by_handle_at syscall  (Scored)
+# 8.1.20  Recorded open_by_handle_at syscall  (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 
