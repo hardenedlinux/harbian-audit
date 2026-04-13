@@ -1615,7 +1615,7 @@ Verify the SSH daemon performs privilege separation. Check that the SSH daemon p
 $ sudo grep -i usepriv /etc/ssh/sshd_config
 UsePrivilegeSeparation sandbox
 ```
-If the "UsePrivilegeSeparation" keyword is set to "no", is missing, or the retuned line is commented out, this is a finding.
+If the "UsePrivilegeSeparation" keyword is set to "no", is missing, or the returned line is commented out, this is a finding.
 
 ### Remediation
 Uncomment the "UsePrivilegeSeparation" keyword in "/etc/ssh/sshd_config" (this file may be named differently or be in a different location if using a version of SSH that is provided by a third-party vendor) and set the value to "sandbox":
@@ -1641,7 +1641,7 @@ Verify the SSH daemon performs compression after a user successfully authenticat
 $ sudo grep -i compression /etc/ssh/sshd_config
 Compression delayed
 ```
-If the "Compression" keyword is set to "yes", is missing, or the retuned line is commented out, this is a finding.
+If the "Compression" keyword is set to "yes", is missing, or the returned line is commented out, this is a finding.
 
 ### Remediation
 Uncomment the "Compression" keyword in "/etc/ssh/sshd_config" (this file may be named differently or be in a different location if using a version of SSH that is provided by a third-party vendor) on the system and set the value to "no":
@@ -1667,7 +1667,7 @@ Verify the SSH daemon is configured to only use MACs employing FIPS 140-2-approv
 $ sudo grep -i macs /etc/ssh/sshd_config
 MACs hmac-sha2-256,hmac-sha2-512
 ```
-If any ciphers other than "hmac-sha2-256" or "hmac-sha2-512" are listed or the retuned line is commented out, this is a finding.
+If any ciphers other than "hmac-sha2-256" or "hmac-sha2-512" are listed or the returned line is commented out, this is a finding.
 
 ### Remediation
 Edit the "/etc/ssh/sshd_config" file to uncomment or add the line for the "MACs" keyword and set its value to "hmac-sha2-256" and/or "hmac-sha2-512" (this file may be named differently or be in a different location if using a version of SSH that is provided by a third-party vendor):
