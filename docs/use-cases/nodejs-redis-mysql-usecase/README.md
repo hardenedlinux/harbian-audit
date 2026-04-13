@@ -13,7 +13,7 @@
 ```
 # apt install mysql-server
 ```
-#### Configurate database
+#### Configure database
 
 Create helloworld database
 
@@ -53,7 +53,7 @@ and update
 # apt -t stretch-backports install -y redis-server
 ```
 
-#### Configurate Redis
+#### Configure Redis
 
 modify `/etc/redis/redis.conf`, change supervised no to 
 
