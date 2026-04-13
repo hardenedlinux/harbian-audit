@@ -35,7 +35,7 @@ audit () {
         crit "Some accounts have uid 0"
         crit $RESULT
     else
-        ok "No account with uid 0 appart from root and potential configured exceptions"
+        ok "No account with uid 0 apart from root and potential configured exceptions"
     fi
 }
 

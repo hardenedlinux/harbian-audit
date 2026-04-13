@@ -21,7 +21,7 @@ audit () {
 	if [ $OS_RELEASE -ne 2 ]; then
     	if [ $(dpkg -l  | grep -c $VIRULSERVER) -ge 1 ]; then
         	if [ $(systemctl | grep  "${VIRULSERVER}.service" | grep -c "active running") -ne 1 ]; then
-            	crit "$VIRULSERVER is not runing"
+            	crit "$VIRULSERVER is not running"
             	FNRET=2
         	else
             	ok "$VIRULSERVER is enable"

@@ -31,9 +31,9 @@ audit () {
 	fi
 
 	if [ $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '$5 > "'$SSH_VALUE'" {print $1}' | wc -l) -gt 0 ]; then
-		crit "Have least user's maxinum password lifttime is greater than $SSH_VALUE day"
+		crit "Have least user's maximum password lifetime is greater than $SSH_VALUE day"
 	else
-		ok "All user's maxinum password lifttime is equal or less than $SSH_VALUE day"
+		ok "All user's maximum password lifetime is equal or less than $SSH_VALUE day"
 	fi
 }
 
@@ -56,7 +56,7 @@ apply () {
 		fi
 	fi
 	if [ $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '$5 > "'$SSH_VALUE'" {print $1}' | wc -l) -gt 0 ]; then
-		warn "Have least user's maxinum password lifttime is greater than $SSH_VALUE day, Fixing"
+		warn "Have least user's maximum password lifetime is greater than $SSH_VALUE day, Fixing"
 		for USERNAME in $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '$5 > "'$SSH_VALUE'" {print $1}'); 
 		do 
 			chage --maxdays $SSH_VALUE $USERNAME

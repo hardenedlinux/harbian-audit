@@ -34,7 +34,7 @@ audit () {
 	fi
 	is_service_active $SERVICE_NAME
 	if [ $FNRET = 0 ]; then
-		ok "$SERVICE_NAME is actived"
+		ok "$SERVICE_NAME is active"
 	else
 		crit "$SERVICE_NAME is inactive"
 	fi
@@ -61,7 +61,7 @@ apply () {
 	fi
 	is_service_active $SERVICE_NAME
 	if [ $FNRET = 0 ]; then
-		ok "$SERVICE_NAME is actived"
+		ok "$SERVICE_NAME is active"
 	else
 		warn "$SERVICE_NAME is inactive, set enable this service"
 		systemctl enable $SERVICE_NAME

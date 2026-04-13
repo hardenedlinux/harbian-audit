@@ -8,7 +8,7 @@
 # 12.11 Find SGID System Executables (Not Scored)
 #
 
-#set -e # One error, it's over, for some user to audit desktop evn 
+#set -e # One error, it's over, for some user to audit desktop even 
 
 # One variable unset, it's over
 set -u

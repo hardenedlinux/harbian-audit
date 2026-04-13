@@ -42,10 +42,10 @@ audit_debian () {
     	done
     	if [ $FNRET = 0 ]; then
 	    	if [ $(systemctl status ${SERVICENAME}  | grep -c "Active:.active") -ne 1 ]; then
-            	crit "${SERVICENAME} service is not actived"
+            	crit "${SERVICENAME} service is not active"
             	FNRET=2
         	else
-            	ok "${SERVICENAME} service is actived"
+            	ok "${SERVICENAME} service is active"
             	FNRET=0
         	fi
 		fi
@@ -61,10 +61,10 @@ audit_debian () {
         fi
     	if [ $FNRET = 0 ]; then
 	    	if [ $(systemctl status ${SERVICENAME_NFT}  | grep -c "Active:.active") -ne 1 ]; then
-            	crit "${SERVICENAME_NFT} service is not actived"
+            	crit "${SERVICENAME_NFT} service is not active"
             	FNRET=4
         	else
-            	ok "${SERVICENAME_NFT} service is actived"
+            	ok "${SERVICENAME_NFT} service is active"
             	FNRET=0
         	fi
 	fi
@@ -88,10 +88,10 @@ audit_centos () {
 		for SERVICENAME in $SERVICENAME_CENTOS
 		do
 	    	if [ $(systemctl status ${SERVICENAME}  | grep -c "Active:.active") -ne 1 ]; then
-            	crit "${SERVICENAME} service is not actived"
+            	crit "${SERVICENAME} service is not active"
             	FNRET=2
         	else
-            	ok "${SERVICENAME} service is actived"
+            	ok "${SERVICENAME} service is active"
             	FNRET=0
         	fi
 		done
@@ -120,7 +120,7 @@ apply_debian () {
 			warn "$PACKAGE_NFT is absent, installing it"
 			apt_install $PACKAGE_NFT
         elif [ $FNRET = 2 ]; then
-            warn "Enable ${SERVICENAME} service to actived"
+            warn "Enable ${SERVICENAME} service to activate"
 			is_service_enabled ${SERVICENAME}
 			if [ $FNRET = 1 ]; then
 				systemctl enable ${SERVICENAME}
@@ -128,7 +128,7 @@ apply_debian () {
 			fi
             systemctl start ${SERVICENAME}
         elif [ $FNRET = 4 ]; then
-            warn "Enable ${SERVICENAME_NFT} service to actived"
+            warn "Enable ${SERVICENAME_NFT} service to activate"
 			is_service_enabled ${SERVICENAME_NFT}
 			if [ $FNRET = 1 ]; then
 				systemctl enable ${SERVICENAME_NFT}
@@ -150,7 +150,7 @@ apply_centos () {
                 yum_install $PACKAGE
             done
         elif [ $FNRET = 2 ]; then
-            warn "Enable ${SERVICENAME_CENTOS} service to actived"
+            warn "Enable ${SERVICENAME_CENTOS} service to activate"
 			for SERVICENAME in ${SERVICENAME_CENTOS}
 			do 
 				is_service_enabled ${SERVICENAME}

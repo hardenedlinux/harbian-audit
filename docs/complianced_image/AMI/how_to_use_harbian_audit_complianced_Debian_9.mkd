@@ -33,7 +33,7 @@ admin@ip-:/opt/harbian-audit-master# ./bin/hardening.sh --audit-all
 
 ################### SUMMARY ###################
       Total Available Checks : 256
-         Total Runned Checks : 256
+         Total Checks Run : 256
          Total Passed Checks : [ 227/256 ]
          Total Failed Checks : [  29/256 ]
    Enabled Checks Percentage : 100.00 %
@@ -68,6 +68,5 @@ This item requires the user to fix it himself. When the AMI is created, a new in
 
 ## Reference   
 [https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/concepts.html](https://docs.aws.amazon.com/zh_cn/AWSEC2/latest/UserGuide/concepts.html)    
-
 
 

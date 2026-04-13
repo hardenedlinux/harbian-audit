@@ -160,7 +160,7 @@ $ cd /opt/harbian-audit-master
 # aideinit -y -f  
 ``` 
 
-#### Clear bash hostory  
+#### Clear bash history  
 ```
 # echo > ~/.bash_history 
 # history -cw 

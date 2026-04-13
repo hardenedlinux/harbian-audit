@@ -5,7 +5,7 @@
 #
 
 #
-# 8.1.28  Recored Events that privileged-acl command usage (Scored)
+# 8.1.28  Recorded Events that privileged-acl command usage (Scored)
 # Author : Samson wen, Samson <sccxboy@gmail.com>
 #
 # todo to ensure path in debian 
@@ -25,7 +25,7 @@ audit () {
     for AUDIT_VALUE in $AUDIT_PARAMS; do
 		check_audit_path $AUDIT_VALUE 
 		if [ $FNRET -eq 1 ];then
-			warn "path is not exsit! Please check file path is exist!"
+			warn "path does not exist! Please check that the file path exists!"
 			continue
 		else
         	debug "$AUDIT_VALUE should be in file $FILE"
@@ -48,7 +48,7 @@ apply () {
     for AUDIT_VALUE in $AUDIT_PARAMS; do
 		check_audit_path $AUDIT_VALUE 
 		if [ $FNRET -eq 1 ];then
-			warn "path is not exsit! Please check file path is exist!"
+			warn "path does not exist! Please check that the file path exists!"
 			continue
 		else
         	debug "$AUDIT_VALUE should be in file $FILE"

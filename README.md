@@ -22,7 +22,7 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 [...]
 ################### SUMMARY ###################
       Total Available Checks : 271
-         Total Runned Checks : 271
+         Total Checks Run : 271
          Total Passed Checks : [ 226/271 ]
          Total Failed Checks : [  44/271 ]
    Enabled Checks Percentage : 100.00 %
@@ -48,7 +48,7 @@ hardening                 [INFO] Treating /home/test/harbian-audit/bin/hardening
 [...]
 ################### SUMMARY ###################
       Total Available Checks : 284
-         Total Runned Checks : 284
+         Total Checks Run : 284
          Total Passed Checks : [ 260/284 ]
          Total Failed Checks : [  24/284 ]
    Enabled Checks Percentage : 100.00 %

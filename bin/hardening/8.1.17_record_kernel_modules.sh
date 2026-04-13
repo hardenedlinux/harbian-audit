@@ -43,7 +43,7 @@ audit () {
         debug "$AUDIT_VALUE should be in file $FILE"
 		check_audit_path $AUDIT_VALUE 
 		if [ $FNRET -eq 1 ];then
-			warn "path is not exsit! Please check file path is exist!"
+			warn "path does not exist! Please check that the file path exists!"
 			continue
 		else
         	does_pattern_exist_in_file $FILE "$AUDIT_VALUE"
@@ -65,7 +65,7 @@ apply () {
         debug "$AUDIT_VALUE should be in file $FILE"
 		check_audit_path $AUDIT_VALUE 
 		if [ $FNRET -eq 1 ];then
-			warn "path is not exsit! Please check file path is exist!"
+			warn "path does not exist! Please check that the file path exists!"
 			continue
 		else
         	does_pattern_exist_in_file $FILE "$AUDIT_VALUE"

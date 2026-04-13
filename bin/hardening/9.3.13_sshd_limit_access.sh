@@ -6,7 +6,7 @@
 
 #
 # 9.3.13 Ensure SSH access is limited (Scored)
-# Auther: Samson-W (sccxboy@gmail.com)
+# Author: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over

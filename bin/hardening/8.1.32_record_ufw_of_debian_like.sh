@@ -35,7 +35,7 @@ audit () {
         	debug "$AUDIT_VALUE should be in file $FILE"
 			check_audit_path $AUDIT_VALUE 
 			if [ $FNRET -eq 1 ];then
-				warn "path is not exsit! Please check file path is exist!"
+				warn "path does not exist! Please check that the file path exists!"
 				continue
 			else
         		IFS=$d_IFS
@@ -63,7 +63,7 @@ apply () {
         	debug "$AUDIT_VALUE should be in file $FILE"
 			check_audit_path $AUDIT_VALUE 
 			if [ $FNRET -eq 1 ];then
-				warn "path is not exsit! Please check file path is exist!"
+				warn "path does not exist! Please check that the file path exists!"
 				continue
 			else
 				RESULT=$(echo $AUDIT_VALUE | awk -F"-F" '{print $2}' | awk -F"=" '{print $2}')

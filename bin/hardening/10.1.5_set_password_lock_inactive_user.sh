@@ -36,12 +36,12 @@ audit_debian () {
 		fi
 
 		if [ $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '{print $7}' | wc -w) -eq 0 ]; then
-			crit "Have least user's INACTIVE password lifttime is not set"
+			crit "Have least user's INACTIVE password lifetime is not set"
 		else
 			if [ $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '$7 > "'$SSH_VALUE'" {print $1}' | wc -l) -gt 0 ]; then
-				crit "Have least user's INACTIVE password lifttime is greater than $SSH_VALUE day"
+				crit "Have least user's INACTIVE password lifetime is greater than $SSH_VALUE day"
 			else
-				ok "All user's INACTIVE password lifttime is equal or less than $SSH_VALUE day"
+				ok "All user's INACTIVE password lifetime is equal or less than $SSH_VALUE day"
 			fi
 		fi
 }
@@ -86,20 +86,20 @@ apply_debian () {
 		fi
 	fi
 	if [ $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '{print $7}' | wc -w) -eq 0 ]; then
-		warn "Have least user's INACTIVE password lifttime is not set. Fixing"
+		warn "Have least user's INACTIVE password lifetime is not set. Fixing"
 		for USERNAME in $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '{print $1}'); 
 		do 
 			chage --inactive $SSH_VALUE $USERNAME			
 		done
 	else
 		if [ $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '$7 > "'$SSH_VALUE'" {print $1}' | wc -l) -gt 0 ]; then
-			warn "Have least user's INACTIVE password lifttime is greater than $SSH_VALUE day. Fixing"
+			warn "Have least user's INACTIVE password lifetime is greater than $SSH_VALUE day. Fixing"
 			for USERNAME in $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '$7 > "'$SSH_VALUE'" {print $1}'); 
 			do 
 				chage --inactive $SSH_VALUE $USERNAME
 			done
 		else
-			ok "All user's INACTIVE password lifttime is equal or less than $SSH_VALUE day"
+			ok "All user's INACTIVE password lifetime is equal or less than $SSH_VALUE day"
 		fi
 	fi
 }
@@ -122,7 +122,7 @@ apply_centos () {
 		fi
 	fi
 	if [ $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '{print $7}' | wc -w) -eq 0 ]; then
-		warn "Have least user's INACTIVE password lifttime is not set. Fixing"
+		warn "Have least user's INACTIVE password lifetime is not set. Fixing"
 		for USERNAME in $(egrep ^[^:]+:[^\!*] $SHA_FILE | awk -F: '{print $1}'); 
 		do 
 			chage --inactive $SSH_VALUE $USERNAME			

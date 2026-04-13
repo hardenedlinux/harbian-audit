@@ -24,7 +24,7 @@ SELINUXSETSTRING="security=selinux"
 
 audit_debian () {
 	if [ $(grep -c "${SELINUXSETSTRING}" /proc/cmdline) -eq 1 ]; then
-		ok "SELinux was actived. So pass."
+        ok "SELinux was active. So pass."
 		return 0
 	fi
     for PACKAGE in ${PACKAGES}
@@ -82,7 +82,7 @@ audit () {
 
 apply_debian () {
 	if [ $(grep -c "${SELINUXSETSTRING}" /proc/cmdline) -eq 1 ]; then
-		ok "SELinux was actived. So pass."
+        ok "SELinux was active. So pass."
 		return 0
 	fi
     if [ $FNRET = 0 ]; then

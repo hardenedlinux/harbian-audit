@@ -23,7 +23,7 @@ audit () {
     	info "Checking if $SERVICE_NAME is enabled"
     	is_service_active $SERVICE_NAME
     	if [ $FNRET = 0 ]; then
-        	crit "$SERVICE_NAME is actived"
+        	crit "$SERVICE_NAME is active"
     	else
         	ok "$SERVICE_NAME is inactived"
     	fi

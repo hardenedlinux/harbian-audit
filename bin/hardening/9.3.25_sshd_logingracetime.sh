@@ -6,7 +6,7 @@
 
 #
 # 9.3.25 Ensure SSH LoginGraceTime is set to one minute or less (Scored)
-# Auther: Samson-W (sccxboy@gmail.com)
+# Author: Samson-W (sccxboy@gmail.com)
 #
 
 set -e # One error, it's over

@@ -1,5 +1,5 @@
 # This file real path is: /usr/share/simple-cdd/profiles/default.preseed
-# these are the basic debconf pre-seeding items needed for a miminal
+# these are the basic debconf pre-seeding items needed for a minimal
 # interaction debian etch install using debian-installer
 
 # this example pre-seeding file was largely based on
@@ -60,8 +60,8 @@ console-data    console-data/keymap/policy      select  Don't touch keymap
 
 # To preseed the root password, you have to put it in the clear in this
 # file. That is not a very good idea, use caution!
-#passwd   passwd/root-password    password r00tme
-#passwd   passwd/root-password-again  password r00tme
+#passwd   passwd/root-password    password r00time
+#passwd   passwd/root-password-again  password r00time
 
 # If you want to skip creation of a normal user account.
 #passwd   passwd/make-user    boolean false
@@ -80,7 +80,7 @@ console-data    console-data/keymap/policy      select  Don't touch keymap
 d-i netcfg/choose_interface select auto
 
 # Note that any hostname and domain names assigned from dhcp take
-# precidence over values set here. However, setting the values still
+# precedence over values set here. However, setting the values still
 # prevents the questions from being shown even if values come from dhcp.
 d-i netcfg/get_hostname string unassigned
 d-i netcfg/get_domain string unassigned

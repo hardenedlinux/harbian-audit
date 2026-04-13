@@ -120,7 +120,7 @@ apply_secconffile() {
 		warn "$DENYOPTION is not conf, add to $SECCONFFILE"
 		add_end_of_file $SECCONFFILE "$DENYOPTION = $DENY_VAL"
 	elif [ $FNRET = 3 ]; then
-		warn "Config file $SECCONFFILE is not exist! Please check it by youself"
+		warn "Config file $SECCONFFILE is not exist! Please check it by yourself"
 	else
 		warn "This param $FNRET was not defined!!!"
 	fi

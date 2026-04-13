@@ -22,7 +22,7 @@ audit_debian () {
 	check_aa_status
 	set -e
 	if [ $FNRET = 0 ]; then
-		ok "AppArmor was actived. So pass."
+		ok "AppArmor was active. So pass."
 		return 0
 	fi
 	does_valid_pattern_exist_in_file $SELINUXCONF_FILE $SELINUXTYPE_VALUE
@@ -60,7 +60,7 @@ apply_debian () {
 	check_aa_status
 	set -e
 	if [ $FNRET = 0 ]; then
-		ok "AppArmor was actived. So pass."
+		ok "AppArmor was active. So pass."
 		return 0
 	fi
     if [ $FNRET = 0 ]; then

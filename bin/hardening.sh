@@ -395,17 +395,16 @@ TOTAL_TREATED_CHECKS=$((TOTAL_CHECKS-DISABLED_CHECKS))
 HARSUMMARY="/dev/shm/harbian-audit.summary"
 printf "%40s\n" "################### SUMMARY ###################" > ${HARSUMMARY}
 printf "%30s %s\n"        "Total Available Checks :" "$TOTAL_CHECKS" >> ${HARSUMMARY}
-printf "%30s %s\n"        "Total Runned Checks :" "$TOTAL_TREATED_CHECKS" >> ${HARSUMMARY}
+printf "%30s %s\n"        "Total Checks Run :" "$TOTAL_TREATED_CHECKS" >> ${HARSUMMARY}
 printf "%30s [ %7s ]\n"   "Total Passed Checks :" "$PASSED_CHECKS/$TOTAL_TREATED_CHECKS" >> ${HARSUMMARY}
 printf "%30s [ %7s ]\n"   "Total Failed Checks :" "$FAILED_CHECKS/$TOTAL_TREATED_CHECKS"  >> ${HARSUMMARY}
 printf "%30s %.2f %%\n"   "Enabled Checks Percentage :" "$( echo "($TOTAL_TREATED_CHECKS/$TOTAL_CHECKS) * 100" | bc -l)" >> ${HARSUMMARY}
 if [ $TOTAL_TREATED_CHECKS != 0 ]; then
     printf "%30s %.2f %%\n"   "Conformity Percentage :" "$( echo "($PASSED_CHECKS/$TOTAL_TREATED_CHECKS) * 100" | bc -l)" >> ${HARSUMMARY}
 else
-    printf "%30s %s %%\n"   "Conformity Percentage :" "N.A"  >> ${HARSUMMARY} # No check runned, avoid division by 0 
+    printf "%30s %s %%\n"   "Conformity Percentage :" "N.A"  >> ${HARSUMMARY} # No checks were run, avoid division by 0 
 fi
 
 cat ${HARSUMMARY}
 cat ${HARSUMMARY} | /usr/bin/logger -t "[CIS_Hardening] $SCRIPT_NAME" -p "user.info"
 rm -f ${HARSUMMARY}
-
